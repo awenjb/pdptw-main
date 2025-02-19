@@ -1,4 +1,5 @@
 #include "solution.h"
+#include <iostream>
 
 Solution::Solution(RequestBank bank, std::vector<Route> routes, int totalCost)
     : bank(bank), routes(routes), totalCost(totalCost) {}
@@ -16,4 +17,13 @@ const std::vector<Route> & Solution::getRoute() const
 int Solution::getCost()
 {
     return totalCost;
+}
+
+void Solution::print() const
+{
+    std::cout << "Cost :" << totalCost << "\n";
+    for (const Route& id : getRoute())
+    {
+        id.print();
+    }
 }

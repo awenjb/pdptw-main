@@ -22,4 +22,5 @@ public:
     const std::vector<Route> & getRoute() const;
     int getCost();
 
+    void print() const;
 };

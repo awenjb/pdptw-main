@@ -28,7 +28,7 @@ class PDPTWData
     int capacity;
     Location depot;
     std::vector<Location> locations;
-    Matrix distance_matrix;
+    Matrix distanceMatrix;
 
 
 public:
@@ -41,18 +41,22 @@ public:
      * Constructs an empty PDPTWData.
      * @see parsing::parseJson
      */
-    PDPTWData(unsigned int size, int capacity, Location depot, std::vector<Location> requests, Matrix distance_matrix);
+    PDPTWData(unsigned int size, int capacity, Location depot, std::vector<Location> requests, Matrix distanceMatrix);
     /**
      * Checks some data coherence
      */
     void checkData() const;
+    bool checkMatrix() const;
+    bool checkLocation() const;
+
     
     std::vector<Location> const &getLocations() const;
-    Location const getDepot() const;
+    Location const &getLocation(int id) const;
+    Location const &getDepot() const;
+    Matrix const &getMatrix() const;
 
     unsigned int getSize();
     int getCapacity();
-
 
     void print() const;
 };
