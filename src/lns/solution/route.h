@@ -5,6 +5,7 @@
 
 /**
  * Represent a route for the PDPTW
+ * A route does not include the depot at the begining and the end !
  */
 class Route
 {
@@ -22,9 +23,25 @@ private:
    
 public:
 
+    Route();
     Route(std::vector<int> route, int cost);
     int getCost() const;
-    const std::vector<int>& getRoute() const;
+    const std::vector<int> & getRoute() const;
+
+    // get Location
+    int getLocation(int index) const;    
+
     void print() const;
-   
+
+    /*
+    * Add a location index in the route (does not update the route cost)
+    */
+    void insertAt(int locationIndex, int position);
+
+    /*
+    * Remove the element at "position" 
+    */
+    void deleteAt(int position);
+
+    int getSize() const;
 };

@@ -20,17 +20,18 @@ find_package(spdlog REQUIRED)
 
 
 add_executable(pdptw src/main.cpp 
+                src/input/data.cpp
                 src/input/location.cpp
                 src/input/pdptw_data.cpp
                 src/input/time_window.cpp
                 src/input/json_parser.cpp
                 src/lns/solution/route.cpp 
                 src/lns/solution/solution.cpp
-                src/lns/modification/insert_pair.cpp 
-                src/lns/modification/insert_route_with_pair.cpp
-                src/lns/modification/insert_route.cpp
-                src/lns/modification/remove_pair.cpp
-                src/lns/modification/remove_route.cpp
+                src/lns/modification/pair/insert_pair.cpp 
+                src/lns/modification/pair/remove_pair.cpp
+                src/lns/modification/route/insert_route_with_pair.cpp
+                src/lns/modification/route/insert_route.cpp
+                src/lns/modification/route/remove_route.cpp
                 )
 
 target_link_libraries(pdptw PRIVATE CLI11::CLI11 nlohmann_json::nlohmann_json spdlog::spdlog)

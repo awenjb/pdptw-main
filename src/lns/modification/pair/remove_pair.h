@@ -1,0 +1,62 @@
+#pragma once
+
+#include "./../atomic_destruction.h"
+#include "./../../solution/solution.h"
+#include "./../../../input/location.h"
+#include <functional>
+
+class Route;
+
+/**
+ * A modification that will remove a pair (pickup/delivery) of location from the solution.
+ */
+class RemovePair : public AtomicDestruction
+{
+    /**
+     * The route index on which the deletion will be made
+     */
+    int routeIndex;
+
+    /**
+     * Index at which the deletion must be made
+     */
+    int pickupDeletion;
+    /**
+     * Index at which the deletion must be made
+     */
+    int deliveryDeletion;
+   
+    /**
+     * The pickup location to remove
+     */
+    Location const & pickupLocation;
+    /**
+     * The delivery location to remove
+     */
+    Location const & deliveryLocation;
+
+
+    /**
+     * Removed Location ID (empty before ModifySolution is called)
+     */
+    std::vector<int> removedLocationID;
+
+public:
+    
+    RemovePair(int routeIndex, int pickupDeletion, int deliveryDeletion, Location const &pickupLocation, Location const &deliveryLocation);
+
+    void modifySolution(Solution &solution) override;
+    double evaluate(Solution const &solution) const override;
+
+    int getPickupDeletion() const;
+    int getDeliveryDeletion() const;
+    int getRouteIndex() const;
+    Location const &getPickupLocation() const;
+    Location const &getDeliveryLocation() const;
+
+    /**
+     *  Return the location ID of location that has been deleted
+     */
+    std::vector<int> const &getDeletedRequests() const override;
+};  
+
