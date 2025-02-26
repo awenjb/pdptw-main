@@ -3,6 +3,7 @@
 #include "./../atomic_recreation.h"
 #include "./../../solution/solution.h"
 #include "./../../../input/location.h"
+#include "./../../../input/pair.h"
 #include <functional>
 
 class Route;
@@ -37,8 +38,11 @@ class InsertPair : public AtomicRecreation
      */
     Location const & deliveryLocation;
 
+    Pair const & pair;
+
 public:
     InsertPair(int routeIndex, int pickupInsertion, int deliveryInsertion, Location const &pickupLocation, Location const &deliveryLocation);
+    InsertPair(int routeIndex, int pickupInsertion, int deliveryInsertion, Pair const &pair);
 
     void modifySolution(Solution &solution) override;
     double evaluate(Solution const &solution) const override;
@@ -48,6 +52,7 @@ public:
     int getRouteIndex() const;
     Location const &getPickupLocation() const;
     Location const &getDeliveryLocation() const;
+    Pair const &getPair() const;
 
     Location const *getAddedLocation() const override;
     

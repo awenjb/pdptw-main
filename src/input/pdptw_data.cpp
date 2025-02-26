@@ -12,7 +12,7 @@ unsigned int PDPTWData::getSize()
     return size;
 }
 
-int PDPTWData::getCapacity()
+int PDPTWData::getCapacity() const
 {
     return capacity;
 }

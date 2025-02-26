@@ -57,7 +57,7 @@ public:
     Matrix const &getMatrix() const;
 
     unsigned int getSize();
-    int getCapacity();
+    int getCapacity() const;
 
     void print() const;
 };

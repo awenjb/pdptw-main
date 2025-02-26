@@ -7,8 +7,18 @@ RemovePair::RemovePair(int routeIndex, int pickupDeletion, int deliveryDeletion,
     routeIndex(routeIndex), 
     pickupDeletion(pickupDeletion), 
     deliveryDeletion(deliveryDeletion), 
-    pickupLocation(pickupLocation),
-    deliveryLocation(deliveryLocation) {}
+    pickupLocation(pickupLocation), 
+    deliveryLocation(deliveryLocation),
+    pair(Pair(pickupLocation, deliveryLocation)) {}
+
+RemovePair::RemovePair(int routeIndex, int pickupDeletion, int deliveryDeletion, 
+    Pair const &pair) :
+    routeIndex(routeIndex), 
+    pickupDeletion(pickupDeletion), 
+    deliveryDeletion(deliveryDeletion), 
+    pickupLocation(pair.getPickup()), 
+    deliveryLocation(pair.getDelivery()),
+    pair(pair) {}
 
 void RemovePair::modifySolution(Solution &solution)
 {
@@ -78,4 +88,9 @@ Location const & RemovePair::getDeliveryLocation() const
 std::vector<int> const & RemovePair::getDeletedRequests() const
 {
     return removedLocationID;
+}
+
+Pair const &RemovePair::getPair() const
+{
+    return pair;
 }

@@ -3,6 +3,7 @@
 #include "./../atomic_destruction.h"
 #include "./../../solution/solution.h"
 #include "./../../../input/location.h"
+#include "./../../../input/pair.h"
 #include <functional>
 
 class Route;
@@ -35,6 +36,7 @@ class RemovePair : public AtomicDestruction
      */
     Location const & deliveryLocation;
 
+    Pair const & pair;
 
     /**
      * Removed Location ID (empty before ModifySolution is called)
@@ -44,6 +46,7 @@ class RemovePair : public AtomicDestruction
 public:
     
     RemovePair(int routeIndex, int pickupDeletion, int deliveryDeletion, Location const &pickupLocation, Location const &deliveryLocation);
+    RemovePair(int routeIndex, int pickupDeletion, int deliveryDeletion, Pair const &pair);
 
     void modifySolution(Solution &solution) override;
     double evaluate(Solution const &solution) const override;
@@ -53,6 +56,8 @@ public:
     int getRouteIndex() const;
     Location const &getPickupLocation() const;
     Location const &getDeliveryLocation() const;
+
+    Pair const &getPair() const;
 
     /**
      *  Return the location ID of location that has been deleted

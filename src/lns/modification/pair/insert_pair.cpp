@@ -8,7 +8,17 @@ InsertPair::InsertPair(int routeIndex, int pickupInsertion, int deliveryInsertio
       pickupInsertion(pickupInsertion), 
       deliveryInsertion(deliveryInsertion), 
       pickupLocation(pickupLocation), 
-      deliveryLocation(deliveryLocation) {}
+      deliveryLocation(deliveryLocation),
+      pair(Pair(pickupLocation, deliveryLocation)) {}
+
+InsertPair::InsertPair(int routeIndex, int pickupInsertion, int deliveryInsertion, 
+    Pair const &pair) 
+    : routeIndex(routeIndex), 
+      pickupInsertion(pickupInsertion), 
+      deliveryInsertion(deliveryInsertion), 
+      pickupLocation(pair.getPickup()), 
+      deliveryLocation(pair.getDelivery()),
+      pair(pair) {}
 
 
 void InsertPair::modifySolution(Solution &solution) 
@@ -78,4 +88,10 @@ const Location *InsertPair::getAddedLocation() const
 {
     return &pickupLocation;
 }
+
+const Pair &InsertPair::getPair() const 
+{
+    return pair;
+}
+
 

@@ -11,8 +11,9 @@ class Route
 {
 
 private:
-    int cost;
     std::vector<int> route;
+    int cost;
+    
 
 
     /* Stocké dans les contraintes

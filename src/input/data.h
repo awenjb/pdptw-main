@@ -39,4 +39,10 @@ namespace data
      * (take location id in parameters)
      */
     double TravelCost(PDPTWData const &data, int index1, int index2);
+
+    /**
+     * Return the travel time between two location
+     * (take location id in parameters)
+     */
+     double TravelTime(PDPTWData const &data, int from, int to);
 }
