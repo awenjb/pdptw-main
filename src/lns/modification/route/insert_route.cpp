@@ -1,12 +1,12 @@
 #include "insert_route.h"
 
 
-InsertRoute::InsertRoute() {}
+InsertRoute::InsertRoute() = default;
 
 void InsertRoute::modifySolution(Solution &solution)
 {
     std::vector<Route> &routes = solution.getRoutes();
-    routes.push_back(Route());
+    routes.emplace_back();
 }
 
 double InsertRoute::evaluate(Solution const &solution) const

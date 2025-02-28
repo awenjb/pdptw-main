@@ -1,5 +1,5 @@
 #include "constraint.h"
-
+#include "lns/solution/solution.h"
 
 Constraint::Constraint(Solution const &solution) : solution(solution) {}
 

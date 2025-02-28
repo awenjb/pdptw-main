@@ -41,9 +41,9 @@ double data::routeCost(PDPTWData const & data, Route const & route)
     return cost;
 }
 
-double data::TravelCost(PDPTWData const &data, int index1, int index2)
+double data::TravelCost(PDPTWData const &data, int from, int to)
 {
-    return data.getMatrix()[index1][index2];
+    return data.getMatrix()[from][to];
 }
 
 double data::TravelTime(PDPTWData const &data, int from, int to)

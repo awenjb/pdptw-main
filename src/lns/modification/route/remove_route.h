@@ -1,10 +1,11 @@
 #pragma once
 
-#include "./../atomic_destruction.h"
-#include "./../../solution/solution.h"
-#include "./../../../input/location.h"
 #include <functional>
 
+#include "input/data.h"
+#include "input/location.h"
+#include "lns/modification/atomic_destruction.h"
+#include "lns/solution/solution.h"
 
 /**
  * A modification that will remove a route from the solution.
@@ -25,16 +26,15 @@ class RemoveRoute : public AtomicDestruction
 public:
 
     RemoveRoute();
-    RemoveRoute(int routeIndex);
+    explicit RemoveRoute(int routeIndex);
     RemoveRoute(int routeIndex, std::vector<int> removedLocationID);
 
     void modifySolution(Solution &solution) override;
     double evaluate(Solution const &solution) const override;
+    /**
+    *  Return the location ID of location that has been deleted
+    */
+    std::vector<int> const &getDeletedRequests() const override;
 
     int getRouteIndex() const;
-
-    /**
-     *  Return the location ID of location that has been deleted
-     */
-    std::vector<int> const &getDeletedRequests() const override;
 };

@@ -1,7 +1,8 @@
 #pragma once
 
 #include <vector>
-#include "./../../input/time_window.h"
+
+#include "input/time_window.h"
 
 /**
  * Represent a route for the PDPTW

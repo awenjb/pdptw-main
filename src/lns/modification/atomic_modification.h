@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>
+
+#include "lns/constraints/constraint.h"
 class Solution;
 
 /**
@@ -10,6 +13,8 @@ class Solution;
 class AtomicModification
 {
 public:
+    virtual ~AtomicModification() = default;
+
     /**
      * Return the cost of the operation.
      * @return a positive number if the solution cost is bigger after the modification.

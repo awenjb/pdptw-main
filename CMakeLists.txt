@@ -19,7 +19,8 @@ find_package(spdlog REQUIRED)
 
 
 
-add_executable(pdptw src/main.cpp 
+add_executable(pdptw src/mains/main.cpp
+                src/mains/main_interface.cpp
                 src/input/data.cpp
                 src/input/location.cpp
                 src/input/pair.cpp

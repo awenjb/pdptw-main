@@ -31,10 +31,3 @@ void TimeWindow::print() const
 {
     std::cout << "Time Window : [" << start << ", " << end << "] \n";
 }
-/*
-TimeInteger TimeWindow::waitingTimeBefore(TimeInteger t) const
-{
-    return std::max<TimeInteger>(0, t - start);
-}
-*/
-

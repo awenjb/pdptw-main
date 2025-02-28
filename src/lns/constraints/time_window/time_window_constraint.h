@@ -3,6 +3,7 @@
 #include "lns/constraints/constraint.h"
 #include "input/pair.h"
 #include "input/time_window.h"
+#include "lns/solution/route.h"
 #include <vector>
 
 /**
@@ -14,15 +15,22 @@
 class TimeWindowConstraint : public Constraint
 {
 public:
+    using ReachTimeVector = std::vector<TimeInteger>;
+
     explicit TimeWindowConstraint(Solution const &);
     TimeWindowConstraint(TimeWindowConstraint const &) = default;
+    ~TimeWindowConstraint() override;
+
+    // Given the solution, calculate the reachTimes of each location.
+    // Modify the routeCapacities vector !
+    void initReachTimes();
 
     std::unique_ptr<Constraint> clone(Solution const &newOwningSolution) const override;
     
-private:
-    using ReachTimeVector = std::vector<TimeInteger>;
-    
+    const std::vector<ReachTimeVector> & getallRouteReachTimes() const;
 
+    void print() const;
+private:
 
     /**
     *   For each route, store the reach time of each location

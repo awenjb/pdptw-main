@@ -1,9 +1,9 @@
 #include "location.h"
 
 
-Location::Location(unsigned int id, double lon, double lat, int dem, TimeWindow tw, double service, unsigned int pairId, LocType type)
-    : id(id), longitude(lon), latitude(lat), demand(dem), timeWindow(tw), serviceDuration(service), pairedLocation(pairId), locType(type) {}
-
+Location::Location(int id, double lon, double lat, int dem, TimeWindow tw, double service, int pairId, LocType type)
+    : id(id), longitude(lon), latitude(lat), demand(dem), timeWindow(tw), serviceDuration(service), pairedLocationID(pairId), locType(type) 
+{}
 
 double Location::getLongitude() const {
     return longitude;
@@ -17,12 +17,12 @@ double Location::getServiceDuration() const {
     return serviceDuration;
 }
 
-unsigned int Location::getId() const {
+int Location::getId() const {
     return id;
 }
 
-unsigned int Location::getPair() const {
-    return pairedLocation;
+int Location::getPair() const {
+    return pairedLocationID;
 }
 
 int Location::getDemand() const {
@@ -37,7 +37,7 @@ TimeWindow Location::getTimeWindow() const {
     return timeWindow;
 }
 
-std::string Location::LocTypeToString(LocType type) const
+std::string Location::LocTypeToString(LocType type)
 {
     switch (type) {
         case LocType::DEPOT: return "Depot";
@@ -47,11 +47,10 @@ std::string Location::LocTypeToString(LocType type) const
     }
 }
 
-
 void Location::print() const
 {
     std::cout << "Location ID: " << id << ", Coordinates: (" << longitude << ", " << latitude << ")\n";
-    std::cout << "Location Type : " <<  Location::LocTypeToString(locType) << ", Associated location : " << pairedLocation << "\n";
+    std::cout << "Location Type : " <<  Location::LocTypeToString(locType) << ", Associated location : " << pairedLocationID << "\n";
     std::cout << "Demand : " <<  demand << "\n";
     timeWindow.print();
 }

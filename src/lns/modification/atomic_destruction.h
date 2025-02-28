@@ -1,7 +1,7 @@
 #pragma once
 
 #include "atomic_modification.h"
-#include <vector>
+
 
 class Location;
 
@@ -11,6 +11,7 @@ class Location;
 class AtomicDestruction : public AtomicModification
 {
 public:
+    ~AtomicDestruction() override = default;
     /**
      * @return the location ID removed from the solution.
      */

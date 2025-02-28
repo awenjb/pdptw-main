@@ -2,12 +2,10 @@
 
 #include <iostream>
 #include <fstream>
-#include <vector>
-#include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
 
 
-unsigned int PDPTWData::getSize()
+int PDPTWData::getSize() const
 {
     return size;
 }
@@ -22,6 +20,11 @@ std::vector<Location> const &PDPTWData::getLocations() const
     return locations;
 }
 
+std::vector<Pair> const &PDPTWData::getPairs() const 
+{
+    return pairs;
+}
+
 Location const &PDPTWData::getDepot() const
 {
     return depot;
@@ -29,7 +32,12 @@ Location const &PDPTWData::getDepot() const
 
 Location const &PDPTWData::getLocation(int id) const
 {
-    return locations[id];
+    if (id==0)
+    {
+        return getDepot();
+    }
+    // location index from 0 to n-1
+    return locations.at(id -1);
 }
 
 Matrix const &PDPTWData::getMatrix() const
@@ -37,8 +45,20 @@ Matrix const &PDPTWData::getMatrix() const
     return distanceMatrix;
 }
 
-PDPTWData::PDPTWData(unsigned int size, int capacity, Location depot, std::vector<Location> location, Matrix distanceMatrix)
-    : size(size), capacity(capacity), depot(depot), locations(std::move(location)), distanceMatrix(std::move(distanceMatrix)) {}
+PDPTWData::PDPTWData(int size, int capacity, Location depot, std::vector<Location> locations, Matrix distanceMatrix)
+    : size(size), capacity(capacity), depot(depot), locations(std::move(locations)), distanceMatrix(std::move(distanceMatrix)) 
+{
+    // Associate pair of locations
+    pairs.clear();
+    for (const Location & loc : this->locations)
+    {
+        if( loc.getLocType() == LocType::PICKUP )
+        {
+            // vector indexed from 0 / Location indexed from 1
+            pairs.emplace_back(loc, locations[loc.getPair()-1], loc.getId());
+        }
+    }
+}
 
 
 void PDPTWData::print() const 
@@ -60,6 +80,13 @@ void PDPTWData::print() const
         }
         std::cout << "\n";
     }
+
+    std::cout << "Pair IDs:\n";
+    for (const auto& pair : pairs)
+    {;
+        std::cout << pair.getID() << " "; 
+    }
+    std::cout << " \n";
 }
 
 void PDPTWData::checkData() const

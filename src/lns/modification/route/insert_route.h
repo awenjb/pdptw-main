@@ -1,11 +1,8 @@
 #pragma once
 
-#include "./../atomic_recreation.h"
-#include "./../../solution/solution.h"
-#include "./../../../input/location.h"
-#include <functional>
-
-class Route;
+#include "lns/modification/atomic_recreation.h"
+#include "lns/solution/solution.h"
+#include "input/location.h"
 
 /**
  * Insert a new empty route in the solution
@@ -20,5 +17,4 @@ public:
     void modifySolution(Solution &solution) override;
     double evaluate(Solution const &solution) const override;
     Location const *getAddedLocation() const override;
-    
 };  

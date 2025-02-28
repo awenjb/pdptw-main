@@ -1,12 +1,13 @@
 #pragma once
 
-#include "location.h"
-#include <functional>
 #include <nlohmann/json_fwd.hpp>
 #include <vector>
 
+#include "pair.h"
+#include "location.h"
+#include "types.h"
+
 using json = nlohmann::json;
-using Matrix = std::vector<std::vector<double>>; 
 
 /**
  * Throw this exception after errors in the input has been found.
@@ -20,16 +21,14 @@ public:
     char const *what() const noexcept override;
 };
 
-
-
 class PDPTWData
 {
-    unsigned int size;
+    int size;
     int capacity;
     Location depot;
     std::vector<Location> locations;
+    std::vector<Pair> pairs; // std::unordered_map<int, Pair> pair; if getPair(index) is needed ?
     Matrix distanceMatrix;
-
 
 public:
     PDPTWData();
@@ -37,12 +36,13 @@ public:
     PDPTWData(PDPTWData &&rhs) noexcept;
     PDPTWData &operator=(PDPTWData &&rhs) noexcept;
     PDPTWData &operator=(PDPTWData const &rhs) = delete;
+    ~PDPTWData() = default;
 
     /**
      * Constructs an empty PDPTWData.
      * @see parsing::parseJson
      */
-    PDPTWData(unsigned int size, int capacity, Location depot, std::vector<Location> requests, Matrix distanceMatrix);
+    PDPTWData(int size, int capacity, Location depot, std::vector<Location> locations, Matrix distanceMatrix);
     /**
      * Checks some data coherence
      */
@@ -50,13 +50,20 @@ public:
     bool checkMatrix() const;
     bool checkLocation() const;
 
-    
+
     std::vector<Location> const &getLocations() const;
+    std::vector<Pair> const &getPairs() const;
+
+    /** 
+    *   0 return the depot.
+    *   Other numbers return the associated location.
+    */
     Location const &getLocation(int id) const;
     Location const &getDepot() const;
+
     Matrix const &getMatrix() const;
 
-    unsigned int getSize();
+    int getSize() const;
     int getCapacity() const;
 
     void print() const;

@@ -23,31 +23,46 @@ enum class LocType
  */
 class Location
 {
-    unsigned int id;
+    /*
+    *   The location ID 
+    */
+    int id;
     double longitude;
     double latitude;
+    /*
+    *   Represent the capacity used by that location.
+    *   The location demand must be positive if it is a PICKUP, negative if it is a DELIVERY and 0 for a DEPOT.
+    */
     int demand;
     double serviceDuration;
-    unsigned int pairedLocation;
+    /*
+    *   The location ID associated to form a pickup and delivery pair.
+    *   (the same ID if the location is a depot)
+    */
+    int pairedLocationID;
+    /*
+    *   The type of the location (PICKUP, DELIVERY, DEPOT).
+    */
     LocType locType;
     TimeWindow timeWindow;
 
 public:
 
-    Location(unsigned int id, double lon, double lat, int dem, TimeWindow tw, double service, unsigned int pairId,  LocType type);
+    Location(int id, double lon, double lat, int dem, TimeWindow tw, double service, int pairId,  LocType type);
 
     double getLongitude() const;
     double getLatitude() const;
     double getServiceDuration() const;
-    unsigned getId() const;
-    unsigned int getPair() const;
+    int getId() const;
+    int getPair() const;
     int getDemand() const;
     LocType getLocType() const;
     TimeWindow getTimeWindow() const;
 
     void print() const;
-    std::string LocTypeToString(LocType type) const;
 
+    static std::string LocTypeToString(LocType type);
+    
     // Json parsing
     friend void from_json(nlohmann::json const &json, Location &location);
 };

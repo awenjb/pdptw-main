@@ -1,7 +1,13 @@
 #pragma once
+#include <vector>
 
-#include "./../constraint.h"
-#include "./../../../input/pair.h"
+#include "lns/constraints/constraint.h"
+
+#include "lns/solution/solution.h"
+#include "lns/modification/pair/insert_pair.h"
+#include "lns/modification/pair/remove_pair.h"
+#include "lns/modification/route/insert_route.h"
+#include "lns/modification/route/remove_route.h"
 
 /**
  * Capacity constraint.

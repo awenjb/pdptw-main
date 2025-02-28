@@ -1,9 +1,13 @@
 #include "remove_route.h"
-#include "../../../input/data.h"
+
+#include <utility>
+
 
 RemoveRoute::RemoveRoute() : routeIndex(-1), removedLocationID({}) {}
 RemoveRoute::RemoveRoute(int routeIndex) : routeIndex(routeIndex), removedLocationID({}) {}
-RemoveRoute::RemoveRoute(int routeIndex, std::vector<int> removedLocationID) : routeIndex(routeIndex), removedLocationID(removedLocationID) {}
+RemoveRoute::RemoveRoute(int routeIndex, std::vector<int> removedLocationID) : 
+    routeIndex(routeIndex), 
+    removedLocationID(std::move(removedLocationID)) {}
 
 void RemoveRoute::modifySolution(Solution &solution)
 {
@@ -26,7 +30,6 @@ int RemoveRoute::getRouteIndex() const
 {
     return routeIndex;
 }
-
 
 std::vector<int> const &RemoveRoute::getDeletedRequests() const
 {

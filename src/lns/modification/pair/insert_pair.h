@@ -1,12 +1,14 @@
 #pragma once
 
-#include "./../atomic_recreation.h"
-#include "./../../solution/solution.h"
-#include "./../../../input/location.h"
-#include "./../../../input/pair.h"
 #include <functional>
+#include <tuple>
 
-class Route;
+#include "lns/modification/atomic_recreation.h"
+#include "lns/solution/solution.h"
+#include "input/location.h"
+#include "input/pair.h"
+#include "types.h"
+
 
 /**
  * A modification that will insert a pair (pickup/delivery) of location in a route at the given index.
@@ -24,6 +26,7 @@ class InsertPair : public AtomicRecreation
      * Index at which the insertion must be made
      */
     int pickupInsertion;
+
     /**
      * Index at which the insertion must be made
      */
@@ -33,6 +36,7 @@ class InsertPair : public AtomicRecreation
      * The pickup location to insert
      */
     Location const & pickupLocation;
+
     /**
      * The delivery location to insert
      */
@@ -41,11 +45,15 @@ class InsertPair : public AtomicRecreation
     Pair const & pair;
 
 public:
-    InsertPair(int routeIndex, int pickupInsertion, int deliveryInsertion, Location const &pickupLocation, Location const &deliveryLocation);
+    
     InsertPair(int routeIndex, int pickupInsertion, int deliveryInsertion, Pair const &pair);
+    InsertPair(Index position, Pair const &pair);
+
+    ~InsertPair() override = default;
 
     void modifySolution(Solution &solution) override;
     double evaluate(Solution const &solution) const override;
+    Location const *getAddedLocation() const override;
 
     int getPickupInsertion() const;
     int getDeliveryInsertion() const;
@@ -53,7 +61,6 @@ public:
     Location const &getPickupLocation() const;
     Location const &getDeliveryLocation() const;
     Pair const &getPair() const;
+    Index getIndex() const;
 
-    Location const *getAddedLocation() const override;
-    
 };  

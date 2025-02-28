@@ -1,0 +1,3 @@
+
+
+const int EXCLUSION_PENALTY = 100;

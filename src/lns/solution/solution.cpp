@@ -1,22 +1,91 @@
 #include "solution.h"
-#include <iostream>
-#include <spdlog/spdlog.h>
 
+#include <utility>
 
-Solution::Solution(const PDPTWData &data) 
-    : data(data), totalCost(0) {
+#include "input/data.h"
+#include "input/time_window.h"
+#include "lns/constraints/capacity/capacity_constraint.h"
+#include "lns/constraints/time_window/time_window_constraint.h"
 
-    bank = RequestBank();
-    routes = std::vector<Route>();
+#include "config.h"
+#include "lns/solution/route.h"
+
+void Solution::initPairBank()
+{   
+    pairBank.clear();
+    for (const Pair & pair : getData().getPairs())
+    {
+        pairBank.push_back(pair.getID());
+    }
+}
+
+void Solution::initRoutes()
+{
+    routes.clear();
+}
+
+void Solution::initConstraints()
+{
+    constraints.clear();
+    constraints.push_back(std::make_unique<CapacityConstraint>(*this));
+    constraints.push_back(std::make_unique<TimeWindowConstraint>(*this));
+}
+
+void Solution::computeAndStoreSolutionCost()
+{
+    routeCost = computeSolutionCost();
+
+    // add penalty for solution in the pairBank ? 
+    totalCost = routeCost + computePenalization();
+}
+
+double Solution::computeSolutionCost() const
+{
+    double cost = 0;
+    for (const Route & route : getRoutes())
+    {
+        cost += data::routeCost(data, route);
+    }
+    std::cout << "le cout " << cost << " \n";
+    return cost;
+}
+
+double Solution::computePenalization() const
+{
+    return getBank().size() * EXCLUSION_PENALTY;
 }
 
 
-Solution::Solution(const PDPTWData &data, RequestBank bank, std::vector<Route> routes, int totalCost)
-    : data(data), bank(bank), routes(routes), totalCost(totalCost) {}
-
-const std::vector<int> & Solution::getBank() const
+void Solution::init()
 {
-    return bank;
+    initPairBank();
+    initRoutes();
+    initConstraints();
+    computeAndStoreSolutionCost();
+}
+
+
+Solution::Solution(const PDPTWData &data, Solution::PairBank pairbank, std::vector<Route> routes, double routeCost, double totalCost) :
+    data(data), 
+    pairBank(std::move(pairbank)), 
+    routes(std::move(routes)), 
+    routeCost(routeCost),
+    totalCost(totalCost) {}
+
+Solution::Solution(const PDPTWData &data) : data(data)
+{
+    init();
+}
+
+Solution Solution::emptySolution(const PDPTWData &data)
+{
+    Solution s = Solution(data);
+    return s;
+}
+
+const Solution::PairBank & Solution::getBank() const
+{
+    return pairBank;
 }
 
 const std::vector<Route> & Solution::getRoutes() const
@@ -49,7 +118,7 @@ const Route & Solution::getRoute(int routeIndex) const
     return routes[routeIndex];
 }
 
-int Solution::getCost()
+double Solution::getCost() const
 {
     return totalCost;
 }

@@ -3,7 +3,8 @@
 #include "time_window.h"
 #include "pdptw_data.h"
 #include "location.h"
-#include "../lns/solution/route.h"
+#include "lns/solution/solution.h"
+
 
 /**
  * Functions for PDPTWData
@@ -38,7 +39,7 @@ namespace data
      * Return the travel cost between two location
      * (take location id in parameters)
      */
-    double TravelCost(PDPTWData const &data, int index1, int index2);
+    double TravelCost(PDPTWData const &data, int from, int to);
 
     /**
      * Return the travel time between two location

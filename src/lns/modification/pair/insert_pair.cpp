@@ -1,24 +1,22 @@
 #include "insert_pair.h"
-#include "./../../../input/data.h"
+#include "input/data.h"
 
 
-InsertPair::InsertPair(int routeIndex, int pickupInsertion, int deliveryInsertion,
-    Location const &pickupLocation, Location const &deliveryLocation)
-    : routeIndex(routeIndex), 
-      pickupInsertion(pickupInsertion), 
-      deliveryInsertion(deliveryInsertion), 
-      pickupLocation(pickupLocation), 
-      deliveryLocation(deliveryLocation),
-      pair(Pair(pickupLocation, deliveryLocation)) {}
+InsertPair::InsertPair(int routeIndex, int pickupInsertion, int deliveryInsertion, Pair const &pair) : 
+    routeIndex(routeIndex), 
+    pickupInsertion(pickupInsertion), 
+    deliveryInsertion(deliveryInsertion), 
+    pickupLocation(pair.getPickup()), 
+    deliveryLocation(pair.getDelivery()),
+    pair(pair) {}
 
-InsertPair::InsertPair(int routeIndex, int pickupInsertion, int deliveryInsertion, 
-    Pair const &pair) 
-    : routeIndex(routeIndex), 
-      pickupInsertion(pickupInsertion), 
-      deliveryInsertion(deliveryInsertion), 
-      pickupLocation(pair.getPickup()), 
-      deliveryLocation(pair.getDelivery()),
-      pair(pair) {}
+InsertPair::InsertPair(Index position, Pair const &pair) :
+    routeIndex(std::get<0>(position)), 
+    pickupInsertion(std::get<1>(position)), 
+    deliveryInsertion(std::get<2>(position)), 
+    pickupLocation(pair.getPickup()), 
+    deliveryLocation(pair.getDelivery()),
+    pair(pair) {}
 
 
 void InsertPair::modifySolution(Solution &solution) 
@@ -94,4 +92,7 @@ const Pair &InsertPair::getPair() const
     return pair;
 }
 
-
+Index InsertPair::getIndex() const 
+{
+    return std::make_tuple(routeIndex, pickupInsertion, deliveryInsertion);
+}

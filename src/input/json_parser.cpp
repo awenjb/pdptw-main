@@ -51,7 +51,7 @@ PDPTWData parsing::parseJson(std::string filepath)
 PDPTWData json_to_data(const json& j)
 {
    
-    unsigned int size = j.at("size").get<unsigned int>();
+    int size = j.at("size").get<int>();
     int capacity = j.at("capacity").get<int>();
     
     auto depot_json = j.at("depot");
@@ -68,7 +68,6 @@ PDPTWData json_to_data(const json& j)
         LocType::DEPOT
     );
     
-
     std::vector<Location> locations;
 
     for (const auto& loc : j.at("locations")) 
@@ -90,5 +89,5 @@ PDPTWData json_to_data(const json& j)
 
     Matrix distance_matrix = j.at("distance_matrix").get<Matrix>();
 
-    return PDPTWData(size, capacity, depot, locations, distance_matrix);
+    return {size, capacity, depot, locations, distance_matrix};
 }

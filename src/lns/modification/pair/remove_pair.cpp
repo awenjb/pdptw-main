@@ -1,24 +1,24 @@
 #include "remove_pair.h"
-#include "../../../input/data.h"
+#include "input/data.h"
 
 
-RemovePair::RemovePair(int routeIndex, int pickupDeletion, int deliveryDeletion, 
-    Location const &pickupLocation, Location const &deliveryLocation) :
-    routeIndex(routeIndex), 
-    pickupDeletion(pickupDeletion), 
-    deliveryDeletion(deliveryDeletion), 
-    pickupLocation(pickupLocation), 
-    deliveryLocation(deliveryLocation),
-    pair(Pair(pickupLocation, deliveryLocation)) {}
-
-RemovePair::RemovePair(int routeIndex, int pickupDeletion, int deliveryDeletion, 
-    Pair const &pair) :
+RemovePair::RemovePair(int routeIndex, int pickupDeletion, int deliveryDeletion, Pair const &pair) :
     routeIndex(routeIndex), 
     pickupDeletion(pickupDeletion), 
     deliveryDeletion(deliveryDeletion), 
     pickupLocation(pair.getPickup()), 
     deliveryLocation(pair.getDelivery()),
     pair(pair) {}
+
+
+RemovePair::RemovePair(Index position, Pair const &pair) :
+    routeIndex(std::get<0>(position)), 
+    pickupDeletion(std::get<1>(position)), 
+    deliveryDeletion(std::get<2>(position)), 
+    pickupLocation(pair.getPickup()), 
+    deliveryLocation(pair.getDelivery()),
+    pair(pair) {}
+
 
 void RemovePair::modifySolution(Solution &solution)
 {
@@ -93,4 +93,9 @@ std::vector<int> const & RemovePair::getDeletedRequests() const
 Pair const &RemovePair::getPair() const
 {
     return pair;
+}
+
+Index RemovePair::getIndex() const 
+{
+    return std::make_tuple(routeIndex, pickupDeletion, deliveryDeletion);
 }

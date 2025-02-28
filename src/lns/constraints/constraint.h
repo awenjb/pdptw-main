@@ -1,12 +1,16 @@
 #pragma once
-#include <variant>
-#include "./../solution/solution.h"
 
-// all modifications
-#include "./../modification/pair/insert_pair.h"
-#include "./../modification/pair/remove_pair.h"
-#include "./../modification/route/insert_route.h"
-#include "./../modification/route/remove_route.h"
+#include <memory>
+#include <stdexcept>
+#include <variant>
+
+// forward declaration of all modifications
+class InsertPair;
+class RemovePair;
+class InsertRoute;
+class RemoveRoute;
+class Solution;
+class PDPTWData;
 
 
 using ModificationApplyVariant =

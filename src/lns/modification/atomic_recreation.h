@@ -10,6 +10,7 @@ class Location;
 class AtomicRecreation : public AtomicModification
 {
 public:
+    ~AtomicRecreation() override = default;
 
     /**
      * @return the pickup location added to the solution, nullptr if none were added
