@@ -83,6 +83,16 @@ Solution::PairBank const &Solution::getBank() const
     return pairBank;
 }
 
+Solution::PairBank const &Solution::getPairBank() const
+{
+    return pairBank;
+}
+
+Solution::PairBank &Solution::getPairBank()
+{
+    return pairBank;
+}
+
 std::vector<Route> const &Solution::getRoutes() const
 {
     return routes;

@@ -5,9 +5,7 @@
 class RandomDestroy : public DestructionOperator
 {
 public:
-    explicit RandomDestroy(int numberOfPairsToDestroy)
-        : numberOfPairsToDestroy(numberOfPairsToDestroy)
-    {}
+    explicit RandomDestroy(int numberOfPairsToDestroy) : numberOfPairsToDestroy(numberOfPairsToDestroy) {}
 
     /**
      * This operator removes numberOfPairsToDestroy pairs randomly in the solution.

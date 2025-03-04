@@ -54,6 +54,8 @@ public:
 
 
     PairBank const &getBank() const;
+    PairBank const &getPairBank() const;
+    PairBank &getPairBank();
     std::vector<Route> const &getRoutes() const;
     Route const &getRoute(int routeIndex) const;
     PDPTWData const &getData() const;

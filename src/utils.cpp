@@ -1,4 +1,5 @@
 #include "utils.h"
+
 #include "config.h"
 
 #include <random>
@@ -9,7 +10,6 @@ namespace// anonymous namespace
     bool seedSet = false;
     std::uniform_real_distribution<> distribution(0, 1);
 }// namespace
-
 
 double util::getRandom()
 {
@@ -29,4 +29,14 @@ unsigned int util::getRandomInt(unsigned int min, unsigned int max)
         seedSet = true;
     }
     return std::uniform_int_distribution<>(min, max)(randomGenerator);
+}
+
+std::mt19937_64 &util::getRawRandom()
+{
+    if (!seedSet) [[unlikely]]
+    {
+        randomGenerator.seed(RANDOM_SEED);
+        seedSet = true;
+    }
+    return randomGenerator;
 }

@@ -19,6 +19,9 @@ namespace util
      * @return a random integer number between min (included) and max (included)
      */
     unsigned int getRandomInt(unsigned int min, unsigned int max);
-
+    /**
+     * @return the random generator directly, it is a deterministic random
+     */
+    std::mt19937_64 &getRawRandom();
 
 }// namespace util
