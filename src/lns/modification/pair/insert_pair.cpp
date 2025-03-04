@@ -96,3 +96,8 @@ Index InsertPair::getIndex() const
 {
     return std::make_tuple(routeIndex, pickupInsertion, deliveryInsertion);
 }
+
+ModificationApplyVariant InsertPair::asApplyVariant() const
+{
+    return (*this);
+}

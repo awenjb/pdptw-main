@@ -134,21 +134,6 @@ void TimeWindowConstraint::ApplyModif(const PDPTWData& data, const Pair & pair, 
         allRouteReachTimes[routeIndex][i] = std::max(allRouteReachTimes[routeIndex][i - 1], startTW) + serviceTime + travelTime;
     }
 }
-/*
-    // Adjust the size of reachTimes vector
-    reachTimes.resize(routeIDs.size(), 0);
-    // Time to the first location
-    reachTimes[0] = data.getDepot().getTimeWindow().getStart() + data::TravelTime(data, 0, routeIDs.at(0));
-    // Compute other reachTimes (max between arrival and start of the time window + previous service time + travel time)
-    for (int i = 1; i < routeIDs.size(); ++i) {
-        TimeInteger travelTime = data::TravelTime(data, routeIDs[i - 1], routeIDs[i]);
-        // locations are indexed from 0 to n-1,
-        TimeInteger serviceTime = data.getLocation(routeIDs[i - 1]).getServiceDuration();
-        TimeInteger startTW = data.getLocation(routeIDs[i - 1]).getTimeWindow().getStart();
-
-        reachTimes[i] = std::max(reachTimes[i - 1], startTW) + serviceTime + travelTime;
-    }
-*/
 
 bool TimeWindowConstraint::check(InsertPair const &op) const
 {

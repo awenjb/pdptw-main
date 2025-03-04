@@ -60,6 +60,18 @@ PDPTWData::PDPTWData(int size, int capacity, Location depot, std::vector<Locatio
     }
 }
 
+const Pair &PDPTWData::getPair(int id) const
+{
+    for (const Pair &pair : pairs)
+    {
+        if (id == pair.getID())
+        {
+            return pair;
+        }
+    }
+    spdlog::error("Pair not found for ID {}", id);
+    throw std::runtime_error("Pair not found");
+}
 
 void PDPTWData::print() const 
 {

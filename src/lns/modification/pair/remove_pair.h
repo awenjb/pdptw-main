@@ -41,9 +41,9 @@ class RemovePair : public AtomicDestruction
     Pair const & pair;
 
     /**
-     * Removed Location ID (empty before ModifySolution is called)
+     * Removed PairID (= pickupID) (empty before ModifySolution is called)
      */
-    std::vector<int> removedLocationID;
+    std::vector<int> removedPairID;
 
 public:
     
@@ -51,12 +51,14 @@ public:
     RemovePair(Index position, Pair const &pair);
     ~RemovePair() override = default;
 
+    ModificationApplyVariant asApplyVariant() const override;
+    
     void modifySolution(Solution &solution) override;
     double evaluate(Solution const &solution) const override;
     /**
      *  Return the location ID of location that has been deleted
      */
-    std::vector<int> const &getDeletedRequests() const override;
+    std::vector<int> const &getDeletedPairs() const override;
 
     int getPickupDeletion() const;
     int getDeliveryDeletion() const;

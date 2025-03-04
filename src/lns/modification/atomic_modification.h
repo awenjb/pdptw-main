@@ -1,8 +1,8 @@
 #pragma once
 
-#include <vector>
-
 #include "lns/constraints/constraint.h"
+
+#include <vector>
 class Solution;
 
 /**
@@ -21,11 +21,15 @@ public:
      */
     virtual double evaluate(Solution const &solution) const = 0;
 
-     /**
+    /**
      * Apply of the modification to the solution.
      * @note does not check the validity of the modification, does not update solution cost nor constraints
      */
     virtual void modifySolution(Solution &solution) = 0;
+
+    /**
+     * Visitor pattern double dispatch.
+     * Only need to be implemented with `return *this;`, update ModificationApplyVariant typedef when adding new modification.
+     */
+    virtual ModificationApplyVariant asApplyVariant() const = 0;
 };
-
-

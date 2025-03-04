@@ -54,6 +54,8 @@ public:
     std::vector<Location> const &getLocations() const;
     std::vector<Pair> const &getPairs() const;
 
+    const Pair &getPair(int id) const;
+
     /** 
     *   0 return the depot.
     *   Other numbers return the associated location.

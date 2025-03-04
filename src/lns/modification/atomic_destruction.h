@@ -15,5 +15,5 @@ public:
     /**
      * @return the location ID removed from the solution.
      */
-    virtual std::vector<int> const &getDeletedRequests() const = 0;
+    virtual std::vector<int> const &getDeletedPairs() const = 0;
 };

@@ -1,23 +1,35 @@
 #include "remove_route.h"
 
+#include "input/location.h"
+
+#include <algorithm>
+#include <ranges>
 #include <utility>
+#include <vector>
 
+RemoveRoute::RemoveRoute() : routeIndex(-1), removedPairID({}) {}
 
-RemoveRoute::RemoveRoute() : routeIndex(-1), removedLocationID({}) {}
-RemoveRoute::RemoveRoute(int routeIndex) : routeIndex(routeIndex), removedLocationID({}) {}
-RemoveRoute::RemoveRoute(int routeIndex, std::vector<int> removedLocationID) : 
-    routeIndex(routeIndex), 
-    removedLocationID(std::move(removedLocationID)) {}
+RemoveRoute::RemoveRoute(int routeIndex) : routeIndex(routeIndex), removedPairID({}) {}
+
+RemoveRoute::RemoveRoute(int routeIndex, std::vector<int> &&removedPairID)
+    : routeIndex(routeIndex), removedPairID(std::move(removedPairID))
+{}
 
 void RemoveRoute::modifySolution(Solution &solution)
 {
     std::vector<Route> &routes = solution.getRoutes();
+    std::vector<int> const &locationIDs = routes.at(routeIndex).getRoute();
 
-    // update removedLocationID
-    removedLocationID.insert(removedLocationID.end(), 
-    std::make_move_iterator(routes[routeIndex].getRoute().begin()), 
-    std::make_move_iterator(routes[routeIndex].getRoute().end()));
+    // update removedPairID
+    removedPairID.reserve(routes.at(routeIndex).getSize());
 
+    for (int id : locationIDs)
+    {
+        if (solution.getData().getLocation(id).getLocType() == LocType::PICKUP)
+        {
+            removedPairID.push_back(id);
+        }
+    }
     routes.erase(routes.begin() + routeIndex);
 }
 
@@ -31,7 +43,7 @@ int RemoveRoute::getRouteIndex() const
     return routeIndex;
 }
 
-std::vector<int> const &RemoveRoute::getDeletedRequests() const
+std::vector<int> const &RemoveRoute::getDeletedPairs() const
 {
-    return removedLocationID;
+    return removedPairID;
 }

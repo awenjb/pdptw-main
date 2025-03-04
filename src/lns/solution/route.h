@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "input/pdptw_data.h"
 #include "input/time_window.h"
 
 /**
@@ -15,13 +16,6 @@ private:
     std::vector<int> route;
     int cost;
     
-
-
-    /* Stocké dans les contraintes
-    std::vector<TimeInteger> reach_time; // debut d'arrivee
-    std::vector<double> FTS; // forward time slack
-    std::vector<std::vector<double>> acc_cap; // inscreasing capacity allowed between two positions
-    */
    
 public:
 
@@ -33,11 +27,20 @@ public:
     // get Location
     int getLocation(int index) const;    
 
+    
+    /**
+     *  Given the position of a location in a route, return the paired location position.
+     *  Example, a pair of location ID 3 and 4 are in a route at position 7 and 18, 
+     *  getPairLocationPosition(7) must return 18 and vice versa.
+     */
+    int getPairLocationPosition(int position, const PDPTWData &data) const;
+
+
     void print() const;
 
-    /*
-    * Add a location index in the route (does not update the route cost)
-    */
+    /**
+     *  Add a location index in the route (does not update the route cost)
+     */
     void insertAt(int locationIndex, int position);
 
     /*

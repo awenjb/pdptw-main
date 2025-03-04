@@ -15,10 +15,6 @@ find_package(CLI11 REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(spdlog REQUIRED)
 
-
-
-
-
 add_executable(pdptw src/mains/main.cpp
                 src/mains/main_interface.cpp
                 src/input/data.cpp
@@ -37,6 +33,10 @@ add_executable(pdptw src/mains/main.cpp
                 src/lns/modification/route/insert_route_with_pair.cpp
                 src/lns/modification/route/insert_route.cpp
                 src/lns/modification/route/remove_route.cpp
+                src/output/solution_checker.cpp
+                src/lns/operators/destruction/random_destroy.cpp
+                src/lns/operators/selector/operator_selection.cpp
+                src/utils.cpp
                 )
 
 target_link_libraries(pdptw PRIVATE CLI11::CLI11 nlohmann_json::nlohmann_json spdlog::spdlog)

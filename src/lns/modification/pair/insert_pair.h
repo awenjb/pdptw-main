@@ -51,6 +51,8 @@ public:
 
     ~InsertPair() override = default;
 
+    ModificationApplyVariant asApplyVariant() const override;
+    
     void modifySolution(Solution &solution) override;
     double evaluate(Solution const &solution) const override;
     Location const *getAddedLocation() const override;

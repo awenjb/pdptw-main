@@ -60,3 +60,21 @@ int Route::getSize() const
 {
     return route.size();
 }
+
+
+int Route::getPairLocationPosition(int position, const PDPTWData &data) const
+{
+    int firstID = getRoute().at(position);
+    int secondID = data.getLocation(firstID).getPair();
+
+    for (int i=0; i < getSize(); i++)
+    {
+        if (getRoute().at(i) == secondID)
+        {
+            return i;
+        }
+    }
+    
+    spdlog::error("Paired location not found for ID {}", firstID);
+    throw std::runtime_error("Paired location not found in the route");
+}
