@@ -57,6 +57,11 @@ double InsertPair::evaluate(Solution const &solution) const {
 }
 
 
+ModificationCheckVariant InsertPair::asCheckVariant() const
+{
+    return *this;
+}
+
 int InsertPair::getPickupInsertion() const
 {
     return pickupInsertion;

@@ -36,6 +36,8 @@ add_executable(pdptw src/mains/main.cpp
                 src/output/solution_checker.cpp
                 src/lns/operators/sorting_strategy.cpp
                 src/lns/operators/destruction/random_destroy.cpp
+                src/lns/operators/generation/enumerate.cpp 
+                src/lns/operators/generation/modification_generator.cpp 
                 src/lns/operators/selector/operator_selection.cpp
                 src/utils.cpp
                 )

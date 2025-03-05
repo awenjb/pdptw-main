@@ -14,7 +14,7 @@ namespace sorting_strategy
 
         Solution &getSolution() const { return solution; }
 
-        virtual std::vector<int> const &sortRequests() const = 0;
+        virtual std::vector<int> const &sortPairs() const = 0;
         virtual ~SortingStrategy() = default;
 
     private:
@@ -30,7 +30,7 @@ namespace sorting_strategy
         using SortingStrategy::SortingStrategy;
 
     public:
-        std::vector<int> const &sortRequests() const override;
+        std::vector<int> const &sortPairs() const override;
     };
 
 

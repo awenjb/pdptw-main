@@ -143,6 +143,21 @@ int Solution::requestsFulFilledCount() const
     return count;
 }
 
+bool Solution::checkModification(AtomicRecreation const &modification) const 
+{
+    ModificationCheckVariant const &checkVariant = modification.asCheckVariant();
+    // visitor pattern
+    for (std::unique_ptr<Constraint> const &constraint: constraints)
+    {
+        if (!constraint->checkVariant(checkVariant))
+        {
+            return false;
+        }
+    }
+    return true; 
+}
+
+
 void Solution::beforeApplyModification(AtomicModification &modification)
 {
     // pre check to do ?

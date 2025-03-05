@@ -68,6 +68,12 @@ public:
      */
     int requestsFulFilledCount() const;
 
+    /**
+     * Check that the modification is valid regarding all the constraints
+     * @param modification
+     * @return true if the modification is valid
+     */
+    bool checkModification(AtomicRecreation const &modification) const;
 
     /**
      *  Pre modification check.

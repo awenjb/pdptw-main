@@ -19,3 +19,7 @@ Location const *InsertRoute::getAddedLocation() const
     return nullptr;
 }
 
+ModificationCheckVariant InsertRoute::asCheckVariant() const
+{
+    return *this;
+}

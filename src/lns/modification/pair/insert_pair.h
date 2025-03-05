@@ -65,4 +65,5 @@ public:
     Pair const &getPair() const;
     Index getIndex() const;
 
+    ModificationCheckVariant asCheckVariant() const override;
 };  

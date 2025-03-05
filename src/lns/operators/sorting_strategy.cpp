@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <ranges>
 
-std::vector<int> const &sorting_strategy::Shuffle::sortRequests() const
+std::vector<int> const &sorting_strategy::Shuffle::sortPairs() const
 {
     auto &bank = getSolution().getPairBank();
     std::ranges::shuffle(bank, util::getRawRandom());
