@@ -55,7 +55,7 @@ PDPTWData::PDPTWData(int size, int capacity, Location depot, std::vector<Locatio
         if( loc.getLocType() == LocType::PICKUP )
         {
             // vector indexed from 0 / Location indexed from 1
-            pairs.emplace_back(loc, locations[loc.getPair()-1], loc.getId());
+            pairs.emplace_back(loc, this->locations[loc.getPair()-1], loc.getId());
         }
     }
 }

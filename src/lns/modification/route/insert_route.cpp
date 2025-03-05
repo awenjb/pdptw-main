@@ -14,7 +14,7 @@ double InsertRoute::evaluate(Solution const &solution) const
     return 0;
 }
 
-Location const *InsertRoute::getAddedLocation() const
+Pair const *InsertRoute::getAddedPairs() const
 {
     return nullptr;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "atomic_modification.h"
+#include "input/pair.h"
 
 class Location;
 
@@ -20,7 +21,8 @@ public:
     virtual ModificationCheckVariant asCheckVariant() const = 0;
     
     /**
-     * @return the pickup location added to the solution, nullptr if none were added
+     * @return the pair added to the solution, nullptr if none were added
+     * (why return pointer and not juste a int ?)
      */
-    virtual Location const *getAddedLocation() const = 0;
+    virtual Pair const *getAddedPairs() const = 0;
 };

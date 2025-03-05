@@ -26,8 +26,12 @@ double data::routeCost(PDPTWData const & data, Route const & route)
     const std::vector<int> & routeIDs = route.getRoute();
     double cost = 0;
 
+    if (routeIDs.empty())
+    {
+        return 0;
+    }
     // cost from and to the depot
-    cost +=  matrix[0][routeIDs[0]];
+    cost +=  matrix[0][routeIDs.at(0)];
     //std::cout << "\n route cost : " << matrix[0][routeIDs[0]] << " ";
     cost +=  matrix[routeIDs.back()][0];
     

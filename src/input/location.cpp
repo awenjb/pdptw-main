@@ -51,6 +51,6 @@ void Location::print() const
 {
     std::cout << "Location ID: " << id << ", Coordinates: (" << longitude << ", " << latitude << ")\n";
     std::cout << "Location Type : " <<  Location::LocTypeToString(locType) << ", Associated location : " << pairedLocationID << "\n";
-    std::cout << "Demand : " <<  demand << "\n";
+    std::cout << "Demand : " <<  demand << ", Service Duration :" << serviceDuration << "\n";
     timeWindow.print();
 }

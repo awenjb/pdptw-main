@@ -1,5 +1,6 @@
 #include "insert_pair.h"
 #include "input/data.h"
+#include "lns/constraints/constraint.h"
 
 
 InsertPair::InsertPair(int routeIndex, int pickupInsertion, int deliveryInsertion, Pair const &pair) : 
@@ -87,9 +88,9 @@ const Location &InsertPair::getDeliveryLocation() const
     return deliveryLocation;
 }
 
-const Location *InsertPair::getAddedLocation() const 
+const Pair *InsertPair::getAddedPairs() const 
 {
-    return &pickupLocation;
+    return &pair;
 }
 
 const Pair &InsertPair::getPair() const 

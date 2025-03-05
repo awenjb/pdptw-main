@@ -17,7 +17,7 @@ template<std::derived_from<sorting_strategy::SortingStrategy> Strategy,
          std::derived_from<generator::ModificationGenerator> Generator>
 void ListHeuristicInsertion<Strategy, Generator>::reconstructSolution(Solution &solution, double blinkRate) const
 {
-    std::vector<int> sortedPairs = Strategy(solution).sortRequests();
+    std::vector<int> sortedPairs = Strategy(solution).sortPairs();
     AtomicRecreationPtr recreation;
     for (int pairID: sortedPairs)
     {
@@ -25,6 +25,7 @@ void ListHeuristicInsertion<Strategy, Generator>::reconstructSolution(Solution &
         recreation = ListHeuristicInsertion::choosingStrategy(solution, pair, blinkRate);
         if (recreation)
         {
+            std::cout << "\n apply recreation "<< " " << "\n \n";
             solution.applyRecreateSolution(*recreation);
         }
     }
@@ -43,7 +44,7 @@ std::unique_ptr<AtomicRecreation> ListHeuristicInsertion<Strategy, Generator>::c
     Generator().populate(solution, pair, modifications);
     for (AtomicRecreationPtr &possibleRecreation: modifications)
     {
-        if (util::getRandom() < 1 - blinkRate)
+        if (util::getRandom() <= 1 - blinkRate)
         {
             double newInsertionCost = possibleRecreation->evaluate(solution);
             if (newInsertionCost < bestKnownInsertionCost)

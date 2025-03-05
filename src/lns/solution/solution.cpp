@@ -21,6 +21,7 @@ void Solution::initPairBank()
 void Solution::initRoutes()
 {
     routes.clear();
+    routes.emplace_back();
 }
 
 void Solution::initConstraints()
@@ -45,7 +46,6 @@ double Solution::computeSolutionCost() const
     {
         cost += data::routeCost(data, route);
     }
-    std::cout << "le cout " << cost << " \n";
     return cost;
 }
 
@@ -130,7 +130,7 @@ double Solution::getCost() const
 
 PDPTWData const &Solution::getData() const
 {
-    return data;
+    return data.get();
 }
 
 int Solution::requestsFulFilledCount() const
@@ -149,12 +149,15 @@ bool Solution::checkModification(AtomicRecreation const &modification) const
     // visitor pattern
     for (std::unique_ptr<Constraint> const &constraint: constraints)
     {
+        std::cout << "in check modif \n";
         if (!constraint->checkVariant(checkVariant))
         {
+            std::cout << "return false \n";
             return false;
         }
     }
     return true; 
+    std::cout << "return true \n";
 }
 
 
@@ -175,7 +178,7 @@ void Solution::afterApplyModification(AtomicModification &modification)
 void Solution::applyRecreateSolution(AtomicRecreation &modification)
 {
     // apply the modification to the solution
-    
+    std::cout << "not fonctionnal yet \n";
 }
 
 void Solution::applyDestructSolution(AtomicDestruction &modification)

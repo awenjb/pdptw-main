@@ -1,6 +1,7 @@
 #pragma once
 
 #include "input/pair.h"
+#include "input/pdptw_data.h"
 #include "lns/constraints/constraint.h"
 #include "route.h"
 
@@ -23,8 +24,8 @@ public:
     using PairBank = std::vector<int>;
 
 private:
-    // ref_wrapper
-    PDPTWData const &data;
+    std::reference_wrapper<PDPTWData const> data;
+    //PDPTWData const &data;
     /*
      *  Store IDs of a pairs (Pickup & Delivery) that are not assigned yet to a route.
      */
@@ -40,6 +41,7 @@ private:
 public:
     /**
      *  Expected way to construct a solution.
+     *  Generate an empty solution with all pairs in the pairBank and one empty route.
      */
     static Solution emptySolution(PDPTWData const &data);
 

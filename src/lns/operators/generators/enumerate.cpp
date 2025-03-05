@@ -11,22 +11,22 @@ namespace enumeration
      * @param consumeModification called when a modification is created
      */
     void enumerateAllInsertPair(Solution const &solution, Pair const &pair,
-                                    std::function<void(InsertPair &&)> const &consumeModification)
-    {   
+                                std::function<void(InsertPair &&)> const &consumeModification)
+    {
         int routeIndex = 0;
-        for (const Route &route : solution.getRoutes())
+        // Insert into existing routes
+        for (Route const &route: solution.getRoutes())
         {
-            for (int p=0; p <= route.getSize(); p++)
+            for (int p = 0; p <= route.getSize(); p++)
             {
-                for (int d=p; d <= route.getSize(); d++)
+                for (int d = p; d <= route.getSize(); d++)
                 {
-                    Index index = std::make_tuple(routeIndex, p,d);
+                    Index index = std::make_tuple(routeIndex, p, d);
+                    //std::cout << std::get<0>(index) << " " <<  std::get<1>(index) << " " << std::get<2>(index) << "\n";
                     consumeModification(InsertPair(index, pair));
                 }
             }
             ++routeIndex;
         }
     }
-
-
 }// namespace enumeration

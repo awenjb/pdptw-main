@@ -63,6 +63,7 @@ void TimeWindowConstraint::initReachTimes()
 // refait l'ordo sur le nouveau vecteur
 bool TimeWindowConstraint::checkInsertion(const PDPTWData& data, const Pair & pair, int routeIndex, int pickupPos, int deliveryPos) const
 {
+
     ReachTimeVector const &reachTimes = allRouteReachTimes.at(routeIndex);
 
     // COPY route vector
@@ -75,22 +76,22 @@ bool TimeWindowConstraint::checkInsertion(const PDPTWData& data, const Pair & pa
     route.insert(route.begin() + pickupPos, pair.getPickup().getId());
     
 
-    std::cout << "\n";
-    for (auto pos : route)
-    {
-        std::cout << pos << " ";
-    }
-    std::cout << "\n";
+    // std::cout << "\n";
+    // for (auto pos : route)
+    // {
+    //     std::cout << pos << " ";
+    // }
+    // std::cout << "\n";
 
     // Compute new reach time
     computeReachTimes(data, route, newReachTimes);
 
-    std::cout << "\n";
-    for (auto pos : newReachTimes)
-    {
-        std::cout << pos << " ";
-    }
-    std::cout << "\n";
+    // std::cout << "\n";
+    // for (auto pos : newReachTimes)
+    // {
+    //     std::cout << pos << " ";
+    // }
+    // std::cout << "\n";
 
     // Check Time Windows
     for (int i = 0; i < newReachTimes.size(); ++i) 
@@ -137,6 +138,7 @@ void TimeWindowConstraint::ApplyModif(const PDPTWData& data, const Pair & pair, 
 
 bool TimeWindowConstraint::check(InsertPair const &op) const
 {
+    std::cout << "tw constraint \n";
     return checkInsertion(getSolution().getData(), op.getPair(), op.getRouteIndex(), op.getPickupInsertion(), op.getDeliveryInsertion()); 
 }
 void TimeWindowConstraint::apply(InsertPair const &op)
