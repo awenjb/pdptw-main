@@ -6,7 +6,9 @@
 #include "lns/constraints/capacity/capacity_constraint.h"
 #include "lns/constraints/time_window/time_window_constraint.h"
 #include "lns/solution/route.h"
+#include "output/solution_checker.h"
 
+#include <bits/ranges_util.h>
 #include <utility>
 
 void Solution::initPairBank()
@@ -145,25 +147,26 @@ int Solution::requestsFulFilledCount() const
 
 bool Solution::checkModification(AtomicRecreation const &modification) const 
 {
+    std::cout << "--- Check Modification Validity : ";
     ModificationCheckVariant const &checkVariant = modification.asCheckVariant();
     // visitor pattern
     for (std::unique_ptr<Constraint> const &constraint: constraints)
     {
-        std::cout << "in check modif \n";
         if (!constraint->checkVariant(checkVariant))
         {
-            std::cout << "return false \n";
+            std::cout << "\n";
             return false;
         }
     }
+    std::cout << "\n";
     return true; 
-    std::cout << "return true \n";
 }
 
 
 void Solution::beforeApplyModification(AtomicModification &modification)
 {
-    // pre check to do ?
+    // pre modification check
+    check();
 }
 
 void Solution::afterApplyModification(AtomicModification &modification)
@@ -177,8 +180,16 @@ void Solution::afterApplyModification(AtomicModification &modification)
 
 void Solution::applyRecreateSolution(AtomicRecreation &modification)
 {
-    // apply the modification to the solution
-    std::cout << "not fonctionnal yet \n";
+    beforeApplyModification(modification);
+
+    modification.modifySolution(*this);
+    // we update the request bank
+    if (int pairID = modification.getAddedPairs())
+    {
+        pairBank.erase(std::ranges::find(pairBank, pairID));
+    }
+
+    afterApplyModification(modification);
 }
 
 void Solution::applyDestructSolution(AtomicDestruction &modification)
@@ -193,6 +204,11 @@ void Solution::applyDestructSolution(AtomicDestruction &modification)
     pairBank.insert(pairBank.end(), deletedPair.begin(), deletedPair.end());
 
     afterApplyModification(modification);
+}
+
+void Solution::check() const
+{
+   checker::checkSolutionCoherence(*this, getData());
 }
 
 void Solution::print() const

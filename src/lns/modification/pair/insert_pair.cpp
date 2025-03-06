@@ -88,9 +88,9 @@ const Location &InsertPair::getDeliveryLocation() const
     return deliveryLocation;
 }
 
-const Pair *InsertPair::getAddedPairs() const 
+int InsertPair::getAddedPairs() const 
 {
-    return &pair;
+    return pair.getID();
 }
 
 const Pair &InsertPair::getPair() const 

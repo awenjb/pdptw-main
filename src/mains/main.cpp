@@ -33,10 +33,10 @@ void printForwardList(const std::forward_list<std::unique_ptr<AtomicRecreation>>
     for (const auto& item : list) {
         std::cout << cpt << "{ \n";
         // Affichage de l'emplacement ajouté à la solution
-        const Pair* pair = item->getAddedPairs();
-        if (pair != nullptr) {
+        int pair = item->getAddedPairs();
+        if (pair > 0) {
             std::cout << "Added Location ID: \n";
-            pair->print();
+            std::cout << pair << "\n";
         } else {
             std::cout << "No location added.\n";
         }
@@ -68,46 +68,17 @@ int main(int argc, char const *argv[])
     std::cout << "--- Empty Solution --- \n";
     solution.print();
 
-    sorting_strategy::Shuffle shuffleStrategy(solution);  // Créer une instance de la stratégie de tri
-    auto sortedPairs = shuffleStrategy.sortPairs();
-
-    for (auto id : sortedPairs)
-    {
-        std::cout << id << " ";
-    }
-    std::cout << "\n";
-    // ListHeuristicInsertion<sorting_strategy::SortingStrategy, generator::ModificationGenerator> operator;
-
-    // double blinkRate = 0.1; // Par exemple, 10% de probabilité d'ignorer l'insertion
-    // operator.reconstructSolution(emptySol, blinkRate);
-
-    std::cout << "---- \n";
-
     generator::AllTypedModifications<InsertPair> generator;
     generator::ModificationContainer modificationList;
     
-   
-    std::cout << "---- \n";
-
-    int pairID = solution.getBank().front();
-    Pair pair = solution.getData().getPair(pairID);
-
-    pair.print();
-
-    std::cout << "---- \n";
-    generator.populate(solution, pair, modificationList); 
-
-    // print the pair associated to each modif
-    printForwardList(modificationList);
     
-    std::cout << "\n ---- \n \n";
     //ListHeuristicInsertion<std::derived_from<sorting_strategy::SortingStrategy> Strategy, std::derived_from<generator::ModificationGenerator> Generator>
 
     double blinkRate = 0;
 
-    //operator.reconstructSolution(solution, blinkRate);
-    ListHeuristicInsertion<sorting_strategy::Shuffle, generator::AllTypedModifications<InsertPair>> operatorInstance;
+    std::cout << "\n --- Operator <SHUFFLE - ALL_INSERTPAIR> -> reconstruction (NO COST UPDATE)\n";
 
+    ListHeuristicInsertion<sorting_strategy::Shuffle, generator::AllTypedModifications<InsertPair>> operatorInstance;
     operatorInstance.reconstructSolution(solution, blinkRate);
 
     solution.print();

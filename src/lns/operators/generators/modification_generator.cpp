@@ -15,21 +15,20 @@ namespace generator
     std::function<void(ModificationType &&)> addToListIfValidTemplate(Solution const &solution,
                                                                       ModificationContainer &list)
     {
-        std::cout << "avant error \n";
         return [&](ModificationType &&modification) {
-            std::cout << "Check Modif \n";
             if (solution.checkModification(modification))
             {
-                std::cout << "insert modif to list \n";
+                std::cout << " => Insert Modification" << "\n";
                 list.push_front(std::make_unique<ModificationType>(modification));
             }
         };
+        std::cout << " => Insert Modification" << "\n";
     }
 
     void AllTypedModifications<InsertPair>::populate(Solution const &solution, Pair const &pair,
                                                      std::forward_list<std::unique_ptr<AtomicRecreation>> &list)
     {
-        std::cout << "dans modif_generator \n";
+        std::cout << "\n MODIFICATION GENERATOR : \n";
         enumeration::enumerateAllInsertPair(
                 solution, pair, addToListIfValidTemplate<InsertPair>(solution, list));
     }

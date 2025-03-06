@@ -24,5 +24,5 @@ public:
      * @return the pair added to the solution, nullptr if none were added
      * (why return pointer and not juste a int ?)
      */
-    virtual Pair const *getAddedPairs() const = 0;
+    virtual int getAddedPairs() const = 0;
 };

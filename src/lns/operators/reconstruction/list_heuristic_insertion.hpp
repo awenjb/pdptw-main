@@ -25,7 +25,7 @@ void ListHeuristicInsertion<Strategy, Generator>::reconstructSolution(Solution &
         recreation = ListHeuristicInsertion::choosingStrategy(solution, pair, blinkRate);
         if (recreation)
         {
-            std::cout << "\n apply recreation "<< " " << "\n \n";
+            std::cout << "\n --- Apply recreation --- \n";
             solution.applyRecreateSolution(*recreation);
         }
     }

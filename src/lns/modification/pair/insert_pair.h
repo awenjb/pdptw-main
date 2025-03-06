@@ -55,7 +55,7 @@ public:
     
     void modifySolution(Solution &solution) override;
     double evaluate(Solution const &solution) const override;
-    Pair const *getAddedPairs() const override;
+    int getAddedPairs() const override;
 
     int getPickupInsertion() const;
     int getDeliveryInsertion() const;

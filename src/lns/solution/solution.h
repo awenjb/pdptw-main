@@ -77,6 +77,9 @@ public:
      */
     bool checkModification(AtomicRecreation const &modification) const;
 
+    // using solution checker to verify that the solution is correct. Most used for debug as it is correctness oriented and not performance oriented
+    void check() const;
+
     /**
      *  Pre modification check.
      *  @param modification Must be a valid modification.

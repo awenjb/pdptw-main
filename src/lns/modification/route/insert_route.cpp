@@ -14,9 +14,9 @@ double InsertRoute::evaluate(Solution const &solution) const
     return 0;
 }
 
-Pair const *InsertRoute::getAddedPairs() const
+int InsertRoute::getAddedPairs() const
 {
-    return nullptr;
+    return -1;
 }
 
 ModificationCheckVariant InsertRoute::asCheckVariant() const

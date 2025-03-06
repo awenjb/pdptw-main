@@ -43,7 +43,6 @@ std::vector<int> const & CapacityConstraint::getRouteCapacities(int routeIndex) 
 // not ideal
 bool CapacityConstraint::checkModif(Pair const &pair, int routeIndex, int PickupPosition, int DeliveryPosition) const
 {
-    std::cout << "\n";
     int max_capacity = getSolution().getData().getCapacity();
 
     // guardrail
@@ -67,9 +66,8 @@ bool CapacityConstraint::checkModif(Pair const &pair, int routeIndex, int Pickup
 // not ideal
 void CapacityConstraint::applyModif(Pair const &pair, int routeIndex, int PickupPosition,  int DeliveryPosition, bool addPair)
 {
-    std::cout << "ApplyModif (capa constraint) \n";
     if (addPair)
-    {   
+    { 
         // Insert new values
         routeCapacities[routeIndex].insert(routeCapacities[routeIndex].begin()+DeliveryPosition, 0);
         if (DeliveryPosition != 0)
@@ -104,11 +102,12 @@ void CapacityConstraint::applyModif(Pair const &pair, int routeIndex, int Pickup
 
 bool CapacityConstraint::check(InsertPair const &op) const
 {
-    std::cout << "capa constraint \n";
+    std::cout << " #Capa Check";
     return checkModif(op.getPair(), op.getRouteIndex(), op.getPickupInsertion(), op.getDeliveryInsertion());
 }
 void CapacityConstraint::apply(InsertPair const &op)
 {
+    std::cout << "-> Apply Modification on Capacity \n";
     applyModif(op.getPair(), op.getRouteIndex(), op.getPickupInsertion(), op.getDeliveryInsertion(), true);
 }
 
