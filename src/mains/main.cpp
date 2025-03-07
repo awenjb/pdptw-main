@@ -25,6 +25,7 @@
 #include "lns/operators/generators/modification_generator.h"
 #include "lns/operators/sorting_strategy.h"
 
+#include "output/solution_exporter.h"
 
 using json = nlohmann::json;
 
@@ -82,5 +83,7 @@ int main(int argc, char const *argv[])
     operatorInstance.reconstructSolution(solution, blinkRate);
 
     solution.print();
+
+    output::exportToJson(solution);
     return 0;
 }

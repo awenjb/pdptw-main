@@ -23,6 +23,7 @@ public:
 
 class PDPTWData
 {
+    std::string dataName;
     int size;
     int capacity;
     Location depot;
@@ -42,7 +43,7 @@ public:
      * Constructs an empty PDPTWData.
      * @see parsing::parseJson
      */
-    PDPTWData(int size, int capacity, Location depot, std::vector<Location> locations, Matrix distanceMatrix);
+    PDPTWData(std::string dataName, int size, int capacity, Location depot, std::vector<Location> locations, Matrix distanceMatrix);
     /**
      * Checks some data coherence
      */
@@ -67,6 +68,6 @@ public:
 
     int getSize() const;
     int getCapacity() const;
-
+    std::string getDataName() const;
     void print() const;
 };

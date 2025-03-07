@@ -10,4 +10,4 @@ namespace parsing
     PDPTWData parseJson(std::string filepath);
 }
 
-PDPTWData json_to_data(const json& j);
+PDPTWData json_to_data(std::string dataName, const json& j);

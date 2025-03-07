@@ -30,6 +30,11 @@ Location const &PDPTWData::getDepot() const
     return depot;
 }
 
+std::string PDPTWData::getDataName() const
+{
+    return dataName;
+}
+
 Location const &PDPTWData::getLocation(int id) const
 {
     if (id==0)
@@ -45,8 +50,8 @@ Matrix const &PDPTWData::getMatrix() const
     return distanceMatrix;
 }
 
-PDPTWData::PDPTWData(int size, int capacity, Location depot, std::vector<Location> locations, Matrix distanceMatrix)
-    : size(size), capacity(capacity), depot(depot), locations(std::move(locations)), distanceMatrix(std::move(distanceMatrix)) 
+PDPTWData::PDPTWData(std::string dataName, int size, int capacity, Location depot, std::vector<Location> locations, Matrix distanceMatrix)
+    : dataName(dataName), size(size), capacity(capacity), depot(depot), locations(std::move(locations)), distanceMatrix(std::move(distanceMatrix)) 
 {
     // Associate pair of locations
     pairs.clear();
@@ -75,6 +80,7 @@ const Pair &PDPTWData::getPair(int id) const
 
 void PDPTWData::print() const 
 {
+    std::cout << "Instance name : " << dataName << "\n";
     std::cout << "Instance size: " << size << "\n";
     std::cout << "Capacity: " << capacity << "\n";
     std::cout << "Depot:\n";
