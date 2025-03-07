@@ -34,8 +34,8 @@ double InsertPair::evaluate(Solution const &solution) const {
     const std::vector<int> & routeIDs = route.getRoute();
     const PDPTWData &data = solution.getData();
 
-    int prevPickup = (pickupInsertion == 0) ? 0 : routeIDs[pickupInsertion - 1];
-    int nextPickup = (pickupInsertion >= routeIDs.size()) ? 0 : routeIDs[pickupInsertion];
+    int prevPickup = (pickupInsertion == 0) ? 0 : routeIDs.at(pickupInsertion - 1);
+    int nextPickup = (pickupInsertion >= routeIDs.size()) ? 0 : routeIDs.at(pickupInsertion);
     double pickupCost = data::addedCostForInsertion(data, prevPickup, pickupLocation.getId(), nextPickup);
 
 
@@ -43,12 +43,12 @@ double InsertPair::evaluate(Solution const &solution) const {
     // the insertion of the delivery is done just after the pickup without intermediate location
     // otherwise, the pickup and the delivery insertion are independant and the pickup insertion does not affect the delivery insertion cost
 
-    int prevDelivery = (deliveryInsertion == 0) ? 0 : routeIDs[deliveryInsertion - 1]; 
+    int prevDelivery = (deliveryInsertion == 0) ? 0 : routeIDs.at(deliveryInsertion - 1); 
     if (pickupInsertion == deliveryInsertion)
     {
         prevDelivery = pickupLocation.getId();
     }
-    int nextDelivery = (deliveryInsertion >= routeIDs.size()) ? 0 : routeIDs[deliveryInsertion];
+    int nextDelivery = (deliveryInsertion >= routeIDs.size()) ? 0 : routeIDs.at(deliveryInsertion);
 
     //std::cout << "insert " << prevDelivery << " + " << deliveryLocation.getId() << " + " << nextDelivery << "\n";
     double deliveryCost = data::addedCostForInsertion(data, prevDelivery, deliveryLocation.getId(), nextDelivery);

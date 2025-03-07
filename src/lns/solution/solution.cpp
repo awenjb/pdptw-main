@@ -112,7 +112,7 @@ Route &Solution::getRoute(int routeIndex)
         spdlog::error("Invalid route index: {}", routeIndex);
         throw std::out_of_range("Invalid route index.");
     }
-    return routes[routeIndex];
+    return routes.at(routeIndex);
 }
 
 Route const &Solution::getRoute(int routeIndex) const
@@ -122,7 +122,7 @@ Route const &Solution::getRoute(int routeIndex) const
         spdlog::error("Invalid route index: {}", routeIndex);
         throw std::out_of_range("Invalid route index.");
     }
-    return routes[routeIndex];
+    return routes.at(routeIndex);
 }
 
 double Solution::getCost() const

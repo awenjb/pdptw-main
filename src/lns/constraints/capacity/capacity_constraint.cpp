@@ -36,7 +36,7 @@ void CapacityConstraint::initCapacities()
 
 std::vector<int> const & CapacityConstraint::getRouteCapacities(int routeIndex) const
 {
-    return routeCapacities[routeIndex];
+    return routeCapacities.at(routeIndex);
 }
 
 // check for every location between the pickupPosition and the deliveryPosition
@@ -69,33 +69,33 @@ void CapacityConstraint::applyModif(Pair const &pair, int routeIndex, int Pickup
     if (addPair)
     { 
         // Insert new values
-        routeCapacities[routeIndex].insert(routeCapacities[routeIndex].begin()+DeliveryPosition, 0);
+        routeCapacities.at(routeIndex).insert(routeCapacities.at(routeIndex).begin()+DeliveryPosition, 0);
         if (DeliveryPosition != 0)
         {
-            routeCapacities[routeIndex][DeliveryPosition] += routeCapacities[routeIndex][DeliveryPosition-1];
+            routeCapacities.at(routeIndex).at(DeliveryPosition) += routeCapacities.at(routeIndex).at(DeliveryPosition-1);
         }
-        routeCapacities[routeIndex].insert(routeCapacities[routeIndex].begin()+PickupPosition, pair.getPickup().getDemand());
+        routeCapacities.at(routeIndex).insert(routeCapacities.at(routeIndex).begin()+PickupPosition, pair.getPickup().getDemand());
         if (PickupPosition != 0)
         {
-            routeCapacities[routeIndex][PickupPosition] += routeCapacities[routeIndex][PickupPosition-1];
+            routeCapacities.at(routeIndex).at(PickupPosition) += routeCapacities.at(routeIndex).at(PickupPosition-1);
         }
 
         // Update value
         for (int i = PickupPosition + 1; i < DeliveryPosition + 1; ++i) 
         {
-            routeCapacities[routeIndex][i] += pair.getPickup().getDemand();
+            routeCapacities.at(routeIndex).at(i) += pair.getPickup().getDemand();
         } 
     }
     else 
     {
         for (int i = PickupPosition + 1; i < DeliveryPosition; ++i) 
         {
-            routeCapacities[routeIndex][i] += pair.getDelivery().getDemand();
+            routeCapacities.at(routeIndex).at(i) += pair.getDelivery().getDemand();
         }
 
         // remove pair
-        routeCapacities[routeIndex].erase(routeCapacities[routeIndex].begin() + DeliveryPosition);
-        routeCapacities[routeIndex].erase(routeCapacities[routeIndex].begin() + PickupPosition);
+        routeCapacities.at(routeIndex).erase(routeCapacities.at(routeIndex).begin() + DeliveryPosition);
+        routeCapacities.at(routeIndex).erase(routeCapacities.at(routeIndex).begin() + PickupPosition);
     }    
 }
 

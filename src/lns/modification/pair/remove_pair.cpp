@@ -18,7 +18,7 @@ void RemovePair::modifySolution(Solution &solution)
 
     // update removedPairID
 
-    removedPairID.push_back(route.getRoute()[pickupDeletion]);
+    removedPairID.push_back(route.getRoute().at(pickupDeletion));
 
     // remove the delivery before (to not have to update the index)
     route.deleteAt(deliveryDeletion);
@@ -31,14 +31,14 @@ double RemovePair::evaluate(Solution const &solution) const
     std::vector<int> const &routeIDs = route.getRoute();
     PDPTWData const &data = solution.getData();
 
-    int prevPickup = (pickupDeletion == 0) ? 0 : routeIDs[pickupDeletion - 1];
+    int prevPickup = (pickupDeletion == 0) ? 0 : routeIDs.at(pickupDeletion - 1);
     // pickup location should not be at the end of a route anyway
-    int nextPickup = (pickupDeletion >= routeIDs.size()) ? 0 : routeIDs[pickupDeletion + 1];
+    int nextPickup = (pickupDeletion >= routeIDs.size()) ? 0 : routeIDs.at(pickupDeletion + 1);
 
     double pickupCost = data::removedCostForSuppression(data, prevPickup, pickupLocation.getId(), nextPickup);
 
-    int prevDelivery = (deliveryDeletion == 0) ? 0 : routeIDs[deliveryDeletion - 1];
-    int nextDelivery = (deliveryDeletion >= routeIDs.size()) ? 0 : routeIDs[deliveryDeletion + 1];
+    int prevDelivery = (deliveryDeletion == 0) ? 0 : routeIDs.at(deliveryDeletion - 1);
+    int nextDelivery = (deliveryDeletion >= routeIDs.size()) ? 0 : routeIDs.at(deliveryDeletion + 1);
     if (deliveryDeletion == pickupDeletion + 1)
     {
         prevDelivery = prevPickup;

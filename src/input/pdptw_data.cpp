@@ -55,7 +55,7 @@ PDPTWData::PDPTWData(int size, int capacity, Location depot, std::vector<Locatio
         if( loc.getLocType() == LocType::PICKUP )
         {
             // vector indexed from 0 / Location indexed from 1
-            pairs.emplace_back(loc, this->locations[loc.getPair()-1], loc.getId());
+            pairs.emplace_back(loc, this->locations.at(loc.getPair()-1), loc.getId());
         }
     }
 }
@@ -135,7 +135,7 @@ bool PDPTWData::checkMatrix() const
         {
             for (int k = 0; k < size; k++) 
             {
-                if (getMatrix()[i][j] > getMatrix()[i][k] + getMatrix()[k][j]) 
+                if (getMatrix().at(i).at(j) > getMatrix().at(i).at(k) + getMatrix().at(k).at(j)) 
                 {
                     return true;
                 }
@@ -152,7 +152,7 @@ bool PDPTWData::checkLocation() const
 
     // check if location id equals the position in the location vector
     for (size_t i = 0; i < size-1; ++i) {
-        if (locations[i].getId() != static_cast<int>(i)+1) {
+        if (locations.at(i).getId() != static_cast<int>(i)+1) {
             return true;
         }
     }
@@ -162,9 +162,9 @@ bool PDPTWData::checkLocation() const
     {
         if (loc.getLocType() == LocType::PICKUP)
         {   
-            if ( (getLocations()[loc.getPair()-1].getLocType() != LocType::DELIVERY) 
-            || (loc.getDemand() != - getLocations()[loc.getPair()-1].getDemand()) 
-            || (loc.getId() != getLocations()[loc.getPair()-1].getPair()) )
+            if ( (getLocations().at(loc.getPair()-1).getLocType() != LocType::DELIVERY) 
+            || (loc.getDemand() != - getLocations().at(loc.getPair()-1).getDemand()) 
+            || (loc.getId() != getLocations().at(loc.getPair()-1).getPair()) )
             {
                 return true;
             }

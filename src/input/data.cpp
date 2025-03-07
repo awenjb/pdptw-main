@@ -6,7 +6,7 @@ double data::addedCostForInsertion(PDPTWData const &data, int before, int toInse
 {
     const Matrix & matrix = data.getMatrix();
     double cost = 0;
-    cost = matrix[before][toInsert] + matrix[toInsert][after] - matrix[before][after];
+    cost = matrix.at(before).at(toInsert) + matrix.at(toInsert).at(after) - matrix.at(before).at(after);
     return cost;
 }
 
@@ -15,7 +15,7 @@ double data::removedCostForSuppression(PDPTWData const &data, int before, int to
     const Matrix & matrix = data.getMatrix();
     double cost = 0;
 
-    cost = matrix[before][after] - matrix[before][toRemove] - matrix[toRemove][after];
+    cost = matrix.at(before).at(after) - matrix.at(before).at(toRemove) - matrix.at(toRemove).at(after);
     return cost;
 }
 
@@ -31,28 +31,28 @@ double data::routeCost(PDPTWData const & data, Route const & route)
         return 0;
     }
     // cost from and to the depot
-    cost +=  matrix[0][routeIDs.at(0)];
-    //std::cout << "\n route cost : " << matrix[0][routeIDs[0]] << " ";
-    cost +=  matrix[routeIDs.back()][0];
+    cost +=  matrix.at(0).at(routeIDs.at(0));
+    //std::cout << "\n route cost : " << matrix.at(0).at(routeIDs.at(0) << " ";
+    cost +=  matrix.at(routeIDs.back()).at(0);
     
     // cost in the route
     for (size_t i = 0; i < routeIDs.size() - 1; ++i) {
-        cost += matrix[routeIDs[i]][routeIDs[i+1]];
-        //std::cout << matrix[routeIDs[i]][routeIDs[i+1]] << " ";
+        cost += matrix.at(routeIDs.at(i)).at(routeIDs.at(i+1));
+        //std::cout << matrix.at(routeIDs.at(i).at(routeIDs.at(i+1) << " ";
     }
-    //std::cout << matrix[routeIDs.back()][0] << " : " << cost << "\n";
+    //std::cout << matrix.at(routeIDs.back()).at(0) << " : " << cost << "\n";
 
     return cost;
 }
 
 double data::TravelCost(PDPTWData const &data, int from, int to)
 {
-    return data.getMatrix()[from][to];
+    return data.getMatrix().at(from).at(to);
 }
 
 double data::TravelTime(PDPTWData const &data, int from, int to)
 {
-    return data.getMatrix()[from][to];
+    return data.getMatrix().at(from).at(to);
 }
 
 

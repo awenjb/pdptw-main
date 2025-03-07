@@ -31,15 +31,15 @@ void TimeWindowConstraint::computeReachTimes(const PDPTWData& data, const std::v
     // Adjust the size of reachTimes vector
     reachTimes.resize(routeIDs.size(), 0);
     // Time to the first location
-    reachTimes[0] = data.getDepot().getTimeWindow().getStart() + data::TravelTime(data, 0, routeIDs.at(0));
+    reachTimes.at(0) = data.getDepot().getTimeWindow().getStart() + data::TravelTime(data, 0, routeIDs.at(0));
     // Compute other reachTimes (max between arrival and start of the time window + previous service time + travel time)
     for (int i = 1; i < routeIDs.size(); ++i) {
-        TimeInteger travelTime = data::TravelTime(data, routeIDs[i - 1], routeIDs[i]);
+        TimeInteger travelTime = data::TravelTime(data, routeIDs.at(i - 1), routeIDs.at(i));
         // locations are indexed from 0 to n-1,
-        TimeInteger serviceTime = data.getLocation(routeIDs[i - 1]).getServiceDuration();
-        TimeInteger startTW = data.getLocation(routeIDs[i - 1]).getTimeWindow().getStart();
+        TimeInteger serviceTime = data.getLocation(routeIDs.at(i - 1)).getServiceDuration();
+        TimeInteger startTW = data.getLocation(routeIDs.at(i - 1)).getTimeWindow().getStart();
 
-        reachTimes[i] = std::max(reachTimes[i - 1], startTW) + serviceTime + travelTime;
+        reachTimes.at(i) = std::max(reachTimes.at(i - 1), startTW) + serviceTime + travelTime;
     }
 }
 
@@ -96,7 +96,7 @@ bool TimeWindowConstraint::checkInsertion(const PDPTWData& data, const Pair & pa
     // Check Time Windows
     for (int i = 0; i < newReachTimes.size(); ++i) 
     {
-        if (! data.getLocation(route[i]).getTimeWindow().isValid(newReachTimes.at(i)) )
+        if (! data.getLocation(route.at(i)).getTimeWindow().isValid(newReachTimes.at(i)) )
         {
             return false;
         }
@@ -124,15 +124,15 @@ void TimeWindowConstraint::ApplyModif(const PDPTWData& data, const Pair & pair, 
     }
 
     // Adjust the size of reachTimes vector
-    allRouteReachTimes[routeIndex].resize(routeIDs.size(), 0);
+    allRouteReachTimes.at(routeIndex).resize(routeIDs.size(), 0);
     // Time to the first location
-    allRouteReachTimes[routeIndex][0] = data.getDepot().getTimeWindow().getStart() + data::TravelTime(data, 0, routeIDs.at(0));
+    allRouteReachTimes.at(routeIndex).at(0) = data.getDepot().getTimeWindow().getStart() + data::TravelTime(data, 0, routeIDs.at(0));
     // Compute other reachTimes (max between arrival and start of the time window)
     for (int i = 1; i < routeIDs.size(); ++i) {
-        TimeInteger travelTime = data::TravelTime(data, routeIDs[i - 1], routeIDs[i]);
-        TimeInteger serviceTime = data.getLocation(routeIDs[i - 1]).getServiceDuration();
-        TimeInteger startTW = data.getLocation(routeIDs[i - 1]).getTimeWindow().getStart();
-        allRouteReachTimes[routeIndex][i] = std::max(allRouteReachTimes[routeIndex][i - 1], startTW) + serviceTime + travelTime;
+        TimeInteger travelTime = data::TravelTime(data, routeIDs.at(i - 1), routeIDs.at(i));
+        TimeInteger serviceTime = data.getLocation(routeIDs.at(i - 1)).getServiceDuration();
+        TimeInteger startTW = data.getLocation(routeIDs.at(i - 1)).getTimeWindow().getStart();
+        allRouteReachTimes.at(routeIndex).at(i) = std::max(allRouteReachTimes.at(routeIndex).at(i - 1), startTW) + serviceTime + travelTime;
     }
 }
 

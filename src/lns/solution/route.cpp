@@ -52,7 +52,7 @@ int Route::getLocation(int index) const
         spdlog::error("Invalid index when reading route: {}", index);
         throw std::out_of_range("Invalid index when reading route");
     }
-    return route[index];
+    return route.at(index);
 }
 
 
