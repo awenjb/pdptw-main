@@ -2,6 +2,13 @@
 
 #include "lns/solution/solution.h"
 
+/**
+ * A type of sorting strategy for the bank of pairs
+ */
+enum class SortingStrategyType {
+    SHUFFLE
+};
+
 namespace sorting_strategy
 {
     /**

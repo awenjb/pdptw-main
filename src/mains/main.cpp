@@ -22,8 +22,9 @@
 
 #include "lns/operators/reconstruction/list_heuristic_insertion.h"
 #include "lns/operators/reconstruction/list_heuristic_insertion.hpp"
-#include "lns/operators/generators/modification_generator.h"
 #include "lns/operators/sorting_strategy.h"
+
+#include "lns/operators/reconstruction/enumerate.h"
 
 #include "output/solution_exporter.h"
 
@@ -69,18 +70,14 @@ int main(int argc, char const *argv[])
     std::cout << "--- Empty Solution --- \n";
     solution.print();
 
-    generator::AllTypedModifications<InsertPair> generator;
-    generator::ModificationContainer modificationList;
-    
-    
-    //ListHeuristicInsertion<std::derived_from<sorting_strategy::SortingStrategy> Strategy, std::derived_from<generator::ModificationGenerator> Generator>
-
     double blinkRate = 0;
+    SortingStrategyType strategy = SortingStrategyType::SHUFFLE;
+    EnumerationType enumeration = EnumerationType::ALL_INSERT_PAIR;
 
-    std::cout << "\n --- Operator <SHUFFLE - ALL_INSERTPAIR> -> reconstruction (NO COST UPDATE)\n";
+    std::cout << "\n --- Operator - SHUFFLE - ALL_INSERTPAIR  -> reconstruction (NO COST UPDATE)\n";
 
-    ListHeuristicInsertion<sorting_strategy::Shuffle, generator::AllTypedModifications<InsertPair>> operatorInstance;
-    operatorInstance.reconstructSolution(solution, blinkRate);
+    ListHeuristicInsertion heuristicInsertion;
+    heuristicInsertion.reconstructSolution(solution, blinkRate, strategy, enumeration);
 
     solution.print();
 

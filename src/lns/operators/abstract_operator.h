@@ -1,5 +1,8 @@
 #pragma once
 
+#include "lns/operators/reconstruction/enumerate.h"
+#include "sorting_strategy.h"
+
 class Solution;
 
 class DestructionOperator
@@ -12,6 +15,6 @@ public:
 class ReconstructionOperator
 {
 public:
-    virtual void reconstructSolution(Solution &solution, double blinkRate) const = 0;
+    virtual void reconstructSolution(Solution &solution, double blinkRate, SortingStrategyType strategy, EnumerationType enumeration) const = 0;
     virtual ~ReconstructionOperator() = default;
 };
