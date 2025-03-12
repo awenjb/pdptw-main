@@ -14,6 +14,7 @@
 #include "input/data.h"
 #include "lns/constraints/capacity/capacity_constraint.h"
 #include "lns/constraints/time_window/time_window_constraint.h"
+#include "lns/operators/reconstruction/list_heuristic_cost_oriented.h"
 #include "lns/solution/solution.h"
 #include "lns/modification/pair/insert_pair.h"
 #include "lns/modification/route/insert_route.h"
@@ -21,7 +22,6 @@
 #include "lns/modification/route/remove_route.h"
 
 #include "lns/operators/reconstruction/list_heuristic_insertion.h"
-#include "lns/operators/reconstruction/list_heuristic_insertion.hpp"
 #include "lns/operators/sorting_strategy.h"
 
 #include "lns/operators/reconstruction/enumerate.h"
@@ -76,8 +76,11 @@ int main(int argc, char const *argv[])
 
     std::cout << "\n --- Operator - SHUFFLE - ALL_INSERTPAIR  -> reconstruction (NO COST UPDATE)\n";
 
-    ListHeuristicInsertion heuristicInsertion;
-    heuristicInsertion.reconstructSolution(solution, blinkRate, strategy, enumeration);
+    //ListHeuristicInsertion heuristicInsertion;
+    //heuristicInsertion.reconstructSolution(solution, blinkRate, strategy, enumeration);
+
+    ListHeuristicCostOriented heuristic;
+    heuristic.reconstructSolution(solution, blinkRate, strategy, enumeration);
 
     solution.print();
 

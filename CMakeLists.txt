@@ -38,7 +38,8 @@ add_executable(pdptw src/mains/main.cpp
                 src/lns/operators/sorting_strategy.cpp
                 src/lns/operators/destruction/random_destroy.cpp
                 src/lns/operators/reconstruction/enumerate.cpp
-                src/lns/operators/reconstruction/list_heuristic_insertion.hpp
+                src/lns/operators/reconstruction/list_heuristic_insertion.cpp
+                src/lns/operators/reconstruction/list_heuristic_cost_oriented.cpp
                 src/lns/operators/selector/operator_selection.cpp
                 src/utils.cpp
                 )

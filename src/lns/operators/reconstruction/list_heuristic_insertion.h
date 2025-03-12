@@ -24,13 +24,36 @@ private:
 public:
     explicit ListHeuristicInsertion();
 
-    void reconstructSolution(Solution &solution, double blinkRate, SortingStrategyType strategy, EnumerationType enumeration) const override;
+    void reconstructSolution(Solution &solution, double blinkRate, SortingStrategyType strategy,
+                             EnumerationType enumeration) const override;
 
 private:
     /**
      * @param blinkRate probability to ignore the request insertion
      * @return the best insertion found
      */
-    static std::unique_ptr<AtomicRecreation> choosingStrategy(Solution &solution, Pair const &pair,
-                                                              double blinkRate, EnumerationType enumeration);
+    static std::unique_ptr<AtomicRecreation> selectRecreation(Solution &solution, Pair const &pair, double blinkRate,
+                                                              EnumerationType enumeration);
 };
+
+/**
+ * Used in enumerate.cpp functions to evaluate modification
+ * Do not evaluate cost (see list_heuristic_cost_oriented that evaluate cost before feasability)
+ * @tparam ModificationType the type of modification to be checked
+ * @param solution the solution to check the modification validity
+ * @param list the modification will be added to this list if valid
+ * @return a function that takes a ModificationType and add it to list iff it is valid
+ */
+template<std::derived_from<AtomicRecreation> ModificationType>
+std::function<void(ModificationType &&)> addToListIfValidTemplate(Solution const &solution,
+                                                                  enumeration::ModificationContainer &list)
+{
+    return [&](ModificationType &&modification) {
+        if (solution.checkModification(modification))
+        {
+            std::cout << " => Insert Modification"
+                      << "\n";
+            list.push_front(std::make_unique<ModificationType>(modification));
+        }
+    };
+}

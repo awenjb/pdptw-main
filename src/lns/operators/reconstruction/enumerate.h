@@ -24,7 +24,7 @@ namespace enumeration
      * @param Pair
      * @param list
      */
-    void enumerateAllInsertPair(Solution const &solution, Pair const &Pair, ModificationContainer &list);
+    void enumerateAllInsertPair(Solution const &solution, Pair const &pair, std::function<void(InsertPair &&)> const &consumeModification);
 
 
 }// namespace enumeration
