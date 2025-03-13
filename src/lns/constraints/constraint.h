@@ -99,4 +99,6 @@ public:
      * Defaults to no op
     */
     virtual void endOfDestructionCallback() {}
+   
+    virtual void print() const = 0;
 };

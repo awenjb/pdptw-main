@@ -14,6 +14,7 @@
 #include "input/data.h"
 #include "lns/constraints/capacity/capacity_constraint.h"
 #include "lns/constraints/time_window/time_window_constraint.h"
+#include "lns/operators/destruction/random_destroy.h"
 #include "lns/operators/reconstruction/list_heuristic_cost_oriented.h"
 #include "lns/solution/solution.h"
 #include "lns/modification/pair/insert_pair.h"
@@ -83,7 +84,20 @@ int main(int argc, char const *argv[])
     heuristic.reconstructSolution(solution, blinkRate, strategy, enumeration);
 
     solution.print();
+    
+    solution.print();
 
-    output::exportToJson(solution);
+
+    std::cout << " --- supr !!! --- \n ";
+
+    RandomDestroy randomdestroy = RandomDestroy(5);
+    randomdestroy.destroySolution(solution);
+
+    //Index index = std::make_tuple(0,7,9);
+    //RemovePair remPair = RemovePair(index, solution.getData().getPair(2));
+    //solution.applyDestructSolution(remPair);
+
+    //solution.print();
+    //output::exportToJson(solution);
     return 0;
 }

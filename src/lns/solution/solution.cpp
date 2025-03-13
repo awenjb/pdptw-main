@@ -190,6 +190,8 @@ void Solution::applyRecreateSolution(AtomicRecreation &modification)
     }
 
     afterApplyModification(modification);
+    std::cout << "\n --- \n";
+    this->print();
 }
 
 void Solution::applyDestructSolution(AtomicDestruction &modification)
@@ -204,6 +206,7 @@ void Solution::applyDestructSolution(AtomicDestruction &modification)
     pairBank.insert(pairBank.end(), deletedPair.begin(), deletedPair.end());
 
     afterApplyModification(modification);
+    this->print();
 }
 
 void Solution::check() const
@@ -226,6 +229,12 @@ void Solution::print() const
     for (int const id: getBank())
     {
         std::cout << id << ", ";
+    }
+
+    std::cout << "\nConstraints : \n";
+    for (const std::unique_ptr<Constraint> &constraint: constraints)
+    {
+        constraint->print();
     }
     std::cout << "\n";
 }

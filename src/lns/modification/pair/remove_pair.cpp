@@ -91,5 +91,5 @@ Index RemovePair::getIndex() const
 
 ModificationApplyVariant RemovePair::asApplyVariant() const
 {
-    return (*this);
+    return *this;
 }

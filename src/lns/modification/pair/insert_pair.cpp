@@ -105,5 +105,5 @@ Index InsertPair::getIndex() const
 
 ModificationApplyVariant InsertPair::asApplyVariant() const
 {
-    return (*this);
+    return *this;
 }
