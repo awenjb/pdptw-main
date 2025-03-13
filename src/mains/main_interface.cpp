@@ -36,6 +36,6 @@ int mainInterface(int argc, char **argv, std::function<void(PDPTWData &, Solutio
         return 1;
     }
 
-    spdlog::info("Fin");
+    spdlog::info("End");
     return 0;
 }

@@ -55,49 +55,40 @@ int main(int argc, char const *argv[])
     std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes_1.json";
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n5000/bar-n5000-1.json";
 
-    std::cout << filepath << "\n";
-
-    PDPTWData data = parsing::parseJson(filepath);
-    data.checkData();
-
-    data.print();
     
-    std::cout << " \n";
-    /* 
-    * test 
-    */
-    Solution solution = Solution::emptySolution(data);
 
-    std::cout << "--- Empty Solution --- \n";
-    solution.print();
 
-    double blinkRate = 0;
-    SortingStrategyType strategy = SortingStrategyType::SHUFFLE;
-    EnumerationType enumeration = EnumerationType::ALL_INSERT_PAIR;
+    ///////////////////////////////////////////////////////////////////////::
 
-    std::cout << "\n --- Operator - SHUFFLE - ALL_INSERTPAIR  -> reconstruction (NO COST UPDATE)\n";
+    // std::cout << filepath << "\n";
 
-    //ListHeuristicInsertion heuristicInsertion;
-    //heuristicInsertion.reconstructSolution(solution, blinkRate, strategy, enumeration);
+    // PDPTWData data = parsing::parseJson(filepath);
+    // data.checkData();
 
-    ListHeuristicCostOriented heuristic;
-    heuristic.reconstructSolution(solution, blinkRate, strategy, enumeration);
-
-    solution.print();
+    // data.print();
     
-    solution.print();
+    // std::cout << " \n";
+    // /* 
+    // * test 
+    // */
+    // Solution solution = Solution::emptySolution(data);
+
+    // std::cout << "--- Empty Solution --- \n";
+    // solution.print();
+
+    // double blinkRate = 0;
+    // SortingStrategyType strategy = SortingStrategyType::SHUFFLE;
+    // EnumerationType enumeration = EnumerationType::ALL_INSERT_PAIR;
+
+    // std::cout << "\n --- Operator - SHUFFLE - ALL_INSERTPAIR  -> reconstruction (NO COST UPDATE)\n";
+
+    // ListHeuristicCostOriented heuristic;
+    // heuristic.reconstructSolution(solution, blinkRate, strategy, enumeration);
+
+    // RandomDestroy randomdestroy = RandomDestroy(4);
+    // randomdestroy.destroySolution(solution);
 
 
-    std::cout << " --- supr !!! --- \n ";
-
-    RandomDestroy randomdestroy = RandomDestroy(5);
-    randomdestroy.destroySolution(solution);
-
-    //Index index = std::make_tuple(0,7,9);
-    //RemovePair remPair = RemovePair(index, solution.getData().getPair(2));
-    //solution.applyDestructSolution(remPair);
-
-    //solution.print();
-    //output::exportToJson(solution);
+    //output::exportToJson(solution);   
     return 0;
 }
