@@ -57,7 +57,6 @@ void checker::checkSolutionCoherence(Solution const &sol, PDPTWData const &data)
     std::cout << "#";
 
     // checking PairBank coherence (given the routes)
-    std::vector<int> testbank = sol.getBank();
     for (int pairID: sol.getBank())
     {
         // check goes from 0 et n-1

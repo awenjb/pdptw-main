@@ -1,11 +1,11 @@
 #pragma once
 
+#include "location.h"
+#include "pair.h"
+#include "types.h"
+
 #include <nlohmann/json_fwd.hpp>
 #include <vector>
-
-#include "pair.h"
-#include "location.h"
-#include "types.h"
 
 using json = nlohmann::json;
 
@@ -28,7 +28,7 @@ class PDPTWData
     int capacity;
     Location depot;
     std::vector<Location> locations;
-    std::vector<Pair> pairs; // std::unordered_map<int, Pair> pair; if getPair(index) is needed ?
+    std::vector<Pair> pairs;// std::unordered_map<int, Pair> pair; if getPair(index) is needed ?
     Matrix distanceMatrix;
 
 public:
@@ -43,7 +43,8 @@ public:
      * Constructs an empty PDPTWData.
      * @see parsing::parseJson
      */
-    PDPTWData(std::string dataName, int size, int capacity, Location depot, std::vector<Location> locations, Matrix distanceMatrix);
+    PDPTWData(std::string dataName, int size, int capacity, Location depot, std::vector<Location> locations,
+              Matrix distanceMatrix);
     /**
      * Checks some data coherence
      */
@@ -54,8 +55,8 @@ public:
 
     std::vector<Location> const &getLocations() const;
     std::vector<Pair> const &getPairs() const;
-
-    const Pair &getPair(int id) const;
+    int getPairCount() const;
+    Pair const &getPair(int id) const;
 
     /** 
     *   0 return the depot.

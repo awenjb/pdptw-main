@@ -22,10 +22,11 @@ private:
     using AtomicRecreationPtr = std::unique_ptr<AtomicRecreation>;
 
 public:
-    explicit ListHeuristicInsertion();
+    explicit ListHeuristicInsertion(SortingStrategyType strategy, EnumerationType enumeration);
 
-    void reconstructSolution(Solution &solution, double blinkRate, SortingStrategyType strategy,
-                             EnumerationType enumeration) const override;
+    SortingStrategyType strategy; 
+    EnumerationType enumeration;
+    void reconstructSolution(Solution &solution, double blinkRate) const override;
 
 private:
     /**

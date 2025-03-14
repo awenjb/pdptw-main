@@ -1,7 +1,10 @@
 #include "list_heuristic_cost_oriented.h"
 
-void ListHeuristicCostOriented::reconstructSolution(Solution &solution, double blinkRate, SortingStrategyType strategy,
-                                                    EnumerationType enumeration) const
+ListHeuristicCostOriented::ListHeuristicCostOriented(SortingStrategyType strategy, EnumerationType enumeration)
+    : strategy(strategy), enumeration(enumeration)
+{}
+
+void ListHeuristicCostOriented::reconstructSolution(Solution &solution, double blinkRate) const
 {
     std::vector<int> sortedPairs;
     // selection strategy

@@ -6,6 +6,11 @@
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
 
+void addAllReconstructor(SimpleOperatorSelector &selector)
+{
+    selector.addReconstructor(ListHeuristicCostOriented(SortingStrategyType::SHUFFLE, EnumerationType::ALL_INSERT_PAIR));
+}
+
 int mainInterface(int argc, char **argv, std::function<void(PDPTWData &, Solution &)> function)
 {
 

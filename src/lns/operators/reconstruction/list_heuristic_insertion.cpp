@@ -7,9 +7,11 @@
 #include <concepts>
 
 
-ListHeuristicInsertion::ListHeuristicInsertion() = default;
+ListHeuristicInsertion::ListHeuristicInsertion(SortingStrategyType strategy, EnumerationType enumeration)
+    : strategy(strategy), enumeration(enumeration)
+{}
 
-void ListHeuristicInsertion::reconstructSolution(Solution &solution, double blinkRate, SortingStrategyType strategy, EnumerationType enumeration) const
+void ListHeuristicInsertion::reconstructSolution(Solution &solution, double blinkRate) const
 {
     std::vector<int> sortedPairs;
     // selection strategy

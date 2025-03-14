@@ -11,10 +11,15 @@
  */
 class ListHeuristicCostOriented : public ReconstructionOperator
 {
+private:
+SortingStrategyType strategy;
+EnumerationType enumeration;
+
 public:
     using AtomicRecreationPtr = std::unique_ptr<AtomicRecreation>;
-    void reconstructSolution(Solution &solution, double blinkRate, SortingStrategyType strategy,
-                             EnumerationType enumeration) const override;
+
+    ListHeuristicCostOriented(SortingStrategyType strategy, EnumerationType enumeration);
+    void reconstructSolution(Solution &solution, double blinkRate) const override;
 };
 
 /**

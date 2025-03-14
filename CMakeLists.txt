@@ -33,6 +33,7 @@ add_executable(pdptw src/mains/main.cpp
                 src/lns/modification/route/insert_route_with_pair.cpp
                 src/lns/modification/route/insert_route.cpp
                 src/lns/modification/route/remove_route.cpp
+                src/output/lns_output.cpp
                 src/output/solution_checker.cpp
                 src/output/solution_exporter.cpp
                 src/lns/operators/sorting_strategy.cpp
@@ -42,6 +43,7 @@ add_executable(pdptw src/mains/main.cpp
                 src/lns/operators/reconstruction/list_heuristic_cost_oriented.cpp
                 src/lns/operators/selector/operator_selector.cpp
                 src/lns/operators/selector/small_large_selector.cpp
+                src/lns/lns.cpp
                 src/utils.cpp
                 )
 

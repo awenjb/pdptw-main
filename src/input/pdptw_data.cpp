@@ -78,6 +78,12 @@ const Pair &PDPTWData::getPair(int id) const
     throw std::runtime_error("Pair not found");
 }
 
+int PDPTWData::getPairCount() const
+{
+    return getPairs().size();
+}
+
+
 void PDPTWData::print() const 
 {
     std::cout << "Instance name : " << dataName << "\n";
