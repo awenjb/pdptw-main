@@ -11,8 +11,6 @@
 
 void checker::checkSolutionCoherence(Solution const &sol, PDPTWData const &data)
 {
-    std::cout << " --- Solution Coherence checker : ";
-
     bool errorFlag = false;
 
     // Vector that will store the route ID serving the location, (-1 if no routes)
@@ -23,7 +21,6 @@ void checker::checkSolutionCoherence(Solution const &sol, PDPTWData const &data)
     int routeID = 0;
     for (Route const &route: sol.getRoutes())
     {   
-        std::cout << "#";
         // skip if it is an empty route
         if (!route.getRoute().empty())
         {
@@ -31,8 +28,6 @@ void checker::checkSolutionCoherence(Solution const &sol, PDPTWData const &data)
             {
                 if (check.at(LocID -1) != -1)
                 {
-                    std::cout << "#";
-
                     // Error the location is already attributed (doublon)
                     spdlog::error("Location {} has already been visited.", LocID);
                     errorFlag = true;
@@ -54,7 +49,6 @@ void checker::checkSolutionCoherence(Solution const &sol, PDPTWData const &data)
         ++routeID;
     }
 
-    std::cout << "#";
 
     // checking PairBank coherence (given the routes)
     for (int pairID: sol.getBank())
@@ -73,8 +67,6 @@ void checker::checkSolutionCoherence(Solution const &sol, PDPTWData const &data)
         sol.print();
         throw SolutionConstraintError("Error in the consistency of the solution.", sol);
     }
-
-    std::cout << " : checker end ---\n";
 }
 
 void checker::checkCapacity(Solution const &sol, PDPTWData const &data)

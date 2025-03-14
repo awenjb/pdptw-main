@@ -12,6 +12,7 @@
 #include "lns/modification/pair/remove_pair.h"
 #include "lns/modification/route/insert_route.h"
 #include "lns/modification/route/remove_route.h"
+#include "lns/operators/abstract_operator.h"
 #include "lns/operators/destruction/random_destroy.h"
 #include "lns/operators/reconstruction/enumerate.h"
 #include "lns/operators/reconstruction/list_heuristic_cost_oriented.h"
@@ -45,9 +46,9 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
     ThresholdAcceptance acceptor(0.05);
 
     // lns operators
-    SimpleOperatorSelector smallSelector;
-    addAllReconstructor(smallSelector);
-    smallSelector.addDestructor(RandomDestroy(pairs));
+    SimpleOperatorSelector RandomDestroy_ShuffleBestInsert;
+    addAllReconstructor(RandomDestroy_ShuffleBestInsert);
+    RandomDestroy_ShuffleBestInsert.addDestructor(RandomDestroy(pairs));
 
     SimpleOperatorSelector largeSelector;
     addAllReconstructor(largeSelector);
@@ -66,15 +67,16 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
     // lastSelector.addDestructor(RandomDestroy(manyPairs));
 
     std::vector<SmallLargeOperatorSelector::StepSelector> selectors;
-    selectors.emplace_back(2, std::move(smallSelector));
-    selectors.emplace_back(2, std::move(largeSelector));
+    selectors.emplace_back(10, std::move(RandomDestroy_ShuffleBestInsert));
+    // selectors.emplace_back(100, std::move(largeSelector));
     // selectors.emplace_back(2, std::move(veryLargeSelector));
     // selectors.emplace_back(2, std::move(hugeSelector));
     // selectors.emplace_back(2, std::move(lastSelector));
     SmallLargeOperatorSelector smallLargeSelector(std::move(selectors));
 
     // run lns
-    lns::runLns(startingSolution, smallLargeSelector, acceptor);
+    output::LnsOutput result = lns::runLns(startingSolution, smallLargeSelector, acceptor);
+    result.getBestSolution().print();
 }
 
 int main(int argc, char **argv)
@@ -91,7 +93,22 @@ int main(int argc, char **argv)
     PDPTWData data = parsing::parseJson(filepath);
     Solution startingSolution = Solution::emptySolution(data);
 
-    simpleLNS(data, startingSolution);
+    //simpleLNS(data, startingSolution);
+
+    ///
+    std::cout << "===== TEST ===== \n";
+    Solution testSolution = Solution::emptySolution(data);
+    //ListHeuristicCostOriented reconstruction = ListHeuristicCostOriented(SortingStrategyType::SHUFFLE, EnumerationType::ALL_INSERT_PAIR);
+    //reconstruction.reconstructSolution(testSolution, 0.01);
+
+    testSolution.print();
+    sorting_strategy::Shuffle(testSolution).sortPairs();
+
+    testSolution.print();
+    
+    sorting_strategy::TimeWindowStart(testSolution).sortPairs();
+
+    testSolution.print();
 
     return 0;
 }

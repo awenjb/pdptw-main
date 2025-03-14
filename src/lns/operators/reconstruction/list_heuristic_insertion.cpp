@@ -18,7 +18,6 @@ void ListHeuristicInsertion::reconstructSolution(Solution &solution, double blin
     switch (strategy) {
         case SortingStrategyType::SHUFFLE: 
         {
-            std::cout << " \n(Shuffle)\n";
             // copy
             sortedPairs = sorting_strategy::Shuffle(solution).sortPairs();
             break;
@@ -54,7 +53,6 @@ std::unique_ptr<AtomicRecreation> ListHeuristicInsertion::selectRecreation(Solut
     switch (enumeration) {
         case EnumerationType::ALL_INSERT_PAIR: 
         {
-            std::cout << " \n(All insert pair) \n";
             enumeration::enumerateAllInsertPair(solution, pair, addToListIfValidTemplate<InsertPair>(solution, modifications));
             
             break;

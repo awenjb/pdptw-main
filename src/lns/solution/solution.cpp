@@ -211,18 +211,18 @@ int Solution::requestsFulFilledCount() const
 
 bool Solution::checkModification(AtomicRecreation const &modification) const
 {
-    std::cout << "--- Check Modification Validity : ";
+    //std::cout << "--- Check Modification Validity : ";
     ModificationCheckVariant const &checkVariant = modification.asCheckVariant();
     // visitor pattern
     for (std::unique_ptr<Constraint> const &constraint: constraints)
     {
         if (!constraint->checkVariant(checkVariant))
         {
-            std::cout << "\n";
+            //std::cout << "\n";
             return false;
         }
     }
-    std::cout << "\n";
+    //std::cout << "\n";
     return true;
 }
 
@@ -253,8 +253,6 @@ void Solution::applyRecreateSolution(AtomicRecreation &modification)
     }
 
     afterApplyModification(modification);
-    std::cout << "\n --- \n";
-    this->print();
 }
 
 void Solution::applyDestructSolution(AtomicDestruction &modification)
@@ -269,7 +267,6 @@ void Solution::applyDestructSolution(AtomicDestruction &modification)
     pairBank.insert(pairBank.end(), deletedPair.begin(), deletedPair.end());
 
     afterApplyModification(modification);
-    this->print();
 }
 
 void Solution::check() const

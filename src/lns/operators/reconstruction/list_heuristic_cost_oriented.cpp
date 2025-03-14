@@ -11,8 +11,8 @@ void ListHeuristicCostOriented::reconstructSolution(Solution &solution, double b
     switch (strategy)
     {
         case SortingStrategyType::SHUFFLE: {
-            std::cout << " \n(Shuffle)\n";
             // copy
+            std::cout << "S";
             sortedPairs = sorting_strategy::Shuffle(solution).sortPairs();
             break;
         }
@@ -21,6 +21,19 @@ void ListHeuristicCostOriented::reconstructSolution(Solution &solution, double b
             throw std::invalid_argument("Invalid sorting strategy selected.");
             break;
     }
+
+    // just for print (no use)
+
+    switch (enumeration)
+    {
+        case EnumerationType::ALL_INSERT_PAIR: {
+            // copy
+            std::cout << "_AIP ";
+        }
+        default:
+            break;
+    }
+
 
     for (int pairID: sortedPairs)
     {
@@ -33,7 +46,6 @@ void ListHeuristicCostOriented::reconstructSolution(Solution &solution, double b
         switch (enumeration)
         {
             case EnumerationType::ALL_INSERT_PAIR: {
-                std::cout << " \n(All insert pair) \n";
                 enumeration::enumerateAllInsertPair(
                         solution,
                         pair,
@@ -49,7 +61,6 @@ void ListHeuristicCostOriented::reconstructSolution(Solution &solution, double b
 
         if (bestRecreation)
         {
-            std::cout << "\n --- Apply recreation --- \n";
             solution.applyRecreateSolution(*bestRecreation);
         }
     }

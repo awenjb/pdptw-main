@@ -102,12 +102,12 @@ void CapacityConstraint::applyModif(Pair const &pair, int routeIndex, int Pickup
 
 bool CapacityConstraint::check(InsertPair const &op) const
 {
-    std::cout << " #Capa Check";
+    //std::cout << " #Capa Check";
     return checkModif(op.getPair(), op.getRouteIndex(), op.getPickupInsertion(), op.getDeliveryInsertion());
 }
 void CapacityConstraint::apply(InsertPair const &op)
 {
-    std::cout << "-> Apply Modification on Capacity \n";
+    //std::cout << "-> Apply Modification on Capacity \n";
     applyModif(op.getPair(), op.getRouteIndex(), op.getPickupInsertion(), op.getDeliveryInsertion(), true);
 }
 

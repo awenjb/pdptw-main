@@ -52,8 +52,6 @@ std::function<void(ModificationType &&)> addToListIfValidTemplate(Solution const
     return [&](ModificationType &&modification) {
         if (solution.checkModification(modification))
         {
-            std::cout << " => Insert Modification"
-                      << "\n";
             list.push_front(std::make_unique<ModificationType>(modification));
         }
     };

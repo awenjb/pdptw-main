@@ -1,12 +1,20 @@
 #pragma once
 
+#include "input/time_window.h"
 #include "lns/solution/solution.h"
 
 /**
  * A type of sorting strategy for the bank of pairs
  */
-enum class SortingStrategyType {
-    SHUFFLE
+enum class SortingStrategyType
+{
+    SHUFFLE,
+    DEMAND,
+    CLOSE,
+    FAR,
+    TWWIDTH,
+    TWSTART,
+    TWEND,
 };
 
 namespace sorting_strategy
@@ -34,11 +42,69 @@ namespace sorting_strategy
      */
     class Shuffle : public SortingStrategy
     {
-        using SortingStrategy::SortingStrategy;
-
     public:
+        using SortingStrategy::SortingStrategy;
         std::vector<int> const &sortPairs() const override;
     };
 
+    /**
+     *  Sort the bank by decreasing order of demand
+     */
+    class Demand : public SortingStrategy
+    {
+    public:
+        using SortingStrategy::SortingStrategy;
+        std::vector<int> const &sortPairs() const override;
+    };
+
+    /**
+     *  Sort the bank by increasing distance from the depot
+     */
+    class Close : public SortingStrategy
+    {
+    public:
+        using SortingStrategy::SortingStrategy;
+        std::vector<int> const &sortPairs() const override;
+    };
+
+    /**
+     *  Sort the bank by decreasing distance from the depot
+     */
+    class Far : public SortingStrategy
+    {
+    public:
+        using SortingStrategy::SortingStrategy;
+        std::vector<int> const &sortPairs() const override;
+    };
+
+    /**
+     *  Sort the bank by increasing time window width
+     */
+    class TimeWindowWidth : public SortingStrategy
+    {
+    public:
+        using SortingStrategy::SortingStrategy;
+        std::vector<int> const &sortPairs() const override;
+    };
+
+    /**
+     *  Sort the bank by inscreasing time window start
+     */
+    class TimeWindowStart : public SortingStrategy
+    {
+    public:
+        using SortingStrategy::SortingStrategy;
+        std::vector<int> const &sortPairs() const override;
+    };
+
+    /**
+     *  Sort the bank by decreasing time window end
+     */
+    class TimeWindowEnd : public SortingStrategy
+    {
+    public:
+        using SortingStrategy::SortingStrategy;
+        std::vector<int> const &sortPairs() const override;
+    };
 
 }// namespace sorting_strategy

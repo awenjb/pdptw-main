@@ -179,7 +179,7 @@ void TimeWindowConstraint::ApplyModif(PDPTWData const &data, Pair const &pair, i
 
 bool TimeWindowConstraint::check(InsertPair const &op) const
 {
-    std::cout << " #TW Check";
+    //std::cout << " #TW Check";
     return checkInsertion(getSolution().getData(),
                           op.getPair(),
                           op.getRouteIndex(),
@@ -189,7 +189,7 @@ bool TimeWindowConstraint::check(InsertPair const &op) const
 
 void TimeWindowConstraint::apply(InsertPair const &op)
 {
-    std::cout << "-> Apply Modification on Time Windows \n";
+    //std::cout << "-> Apply Modification on Time Windows \n";
     ApplyModif(getSolution().getData(),
                op.getPair(),
                op.getRouteIndex(),

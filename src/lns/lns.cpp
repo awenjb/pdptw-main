@@ -23,15 +23,15 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
     Solution actualSolution = initialSolution;
     Solution bestSolution = initialSolution;
 
-    int it = 10;
+    int it = 100;
     while (it > 0)
-    {
+    {   
+        std::cout << "\n" << 101-it << " : ";
         /**
          * The solution on which we apply the operators.
          * It is discarded at the end of each loop if it is not accepted by the Acceptance Function.
          */
         Solution candidateSolution = actualSolution;
-
 
         // Chose operator pair
         auto destructReconstructPair = opSelector.getOperatorPair();
@@ -42,6 +42,7 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
         // Update best solution
         if (isBetterSolution(candidateSolution, bestSolution))
         {
+            std::cout << "\n > new Best Solution \n";
             checker::checkAll(candidateSolution, candidateSolution.getData(), false);
 
             bestSolution = candidateSolution;

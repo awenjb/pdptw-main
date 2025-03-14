@@ -9,7 +9,7 @@
 
 void RandomDestroy::destroySolution(Solution &solution) const
 {
-    std::cout << " --- Random Destroy --- \n";
+    std::cout << "RD ";
 
     int nbRequests = solution.requestsFulFilledCount();
     int actualNumberOfPairsToDestroy = std::min(nbRequests, numberOfPairsToDestroy);
@@ -23,11 +23,6 @@ void RandomDestroy::destroySolution(Solution &solution) const
         // choose a random location
         int locationNumber = util::getRandomInt(0, remainingPairToDelete * 2 - 1);
 
-        // test
-        // locationNumber = nbRequests * 2 - 1;
-        // std::cout << " " << locationNumber << " \n";
-        //
-        
         int pairID = 0;
         int routeID = 0;
         int position = 0;

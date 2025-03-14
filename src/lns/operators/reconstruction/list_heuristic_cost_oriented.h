@@ -42,8 +42,6 @@ std::function<void(ModificationType &&)> keepBestSolution(Solution const &soluti
         // then store the best cost and the modification to the pointer
         if (cost < bestCost && util::getRandom() >= blinkRate && solution.checkModification(modification))
         {
-            std::cout << " => Better Modification, update pointer"
-                      << "\n";
             bestModificationPtr = std::make_unique<ModificationType>(modification);
             bestCost = cost;
         }

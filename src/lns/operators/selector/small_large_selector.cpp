@@ -20,8 +20,10 @@ OperatorPair SmallLargeOperatorSelector::getOperatorPair()
         }
         iterationForNextStep = selectorPerSize.at(selectorStep).first;
     }
+
     SimpleOperatorSelector &selector = selectorPerSize.at(selectorStep).second;
     OperatorPair pair = selector.getOperatorPair();
+    
     // when we arrive at the last iteration of the last selector, we force the acceptance
     if (iterationAtCurrentStep == iterationForNextStep - 1 && selectorStep == selectorPerSize.size()) [[unlikely]]
     {
