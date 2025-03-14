@@ -34,16 +34,29 @@ private:
      *  Vector of routes representing the solution
      */
     std::vector<Route> routes;
-    double routeCost;
+    double rawCost;
     double totalCost;
     std::vector<std::unique_ptr<Constraint>> constraints;
 
 public:
+    //========CONSTRUCTORS, COPY, MOVE, DESTRUCTORS===========
     /**
      *  Expected way to construct a solution.
      *  Generate an empty solution with all pairs in the pairBank and one empty route.
      */
     static Solution emptySolution(PDPTWData const &data);
+    /**
+     * In depth copy of the solution
+     */
+    Solution(Solution const &);
+    /**
+     * In depth copy of the solution
+     */
+    Solution &operator=(Solution const &);
+    Solution(Solution &&) noexcept;
+    Solution &operator=(Solution &&) noexcept;
+    ~Solution() noexcept;
+
 
     explicit Solution(PDPTWData const &data);
 
@@ -61,6 +74,7 @@ public:
     std::vector<Route> const &getRoutes() const;
     Route const &getRoute(int routeIndex) const;
     PDPTWData const &getData() const;
+    double getRawCost() const;
     double getCost() const;
 
     /**
@@ -104,6 +118,7 @@ public:
      */
     void applyDestructSolution(AtomicDestruction &modification);
 
+    double computePenalisation() const;
 
     // For route modification
     std::vector<Route> &getRoutes();
@@ -131,6 +146,4 @@ private:
      *  Compute the cost of the solution (routes cost)
      */
     double computeSolutionCost() const;
-
-    double computePenalization() const;
 };

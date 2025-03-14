@@ -8,6 +8,7 @@
 #include "lns/solution/route.h"
 #include "output/solution_checker.h"
 
+#include <bits/ranges_algo.h>
 #include <bits/ranges_util.h>
 #include <utility>
 
@@ -35,10 +36,10 @@ void Solution::initConstraints()
 
 void Solution::computeAndStoreSolutionCost()
 {
-    routeCost = computeSolutionCost();
+    rawCost = computeSolutionCost();
 
     // add penalty for solution in the pairBank ?
-    totalCost = routeCost + computePenalization();
+    totalCost = rawCost + computePenalisation();
 }
 
 double Solution::computeSolutionCost() const
@@ -51,7 +52,7 @@ double Solution::computeSolutionCost() const
     return cost;
 }
 
-double Solution::computePenalization() const
+double Solution::computePenalisation() const
 {
     return getBank().size() * EXCLUSION_PENALTY;
 }
@@ -64,9 +65,9 @@ void Solution::init()
     computeAndStoreSolutionCost();
 }
 
-Solution::Solution(PDPTWData const &data, Solution::PairBank pairbank, std::vector<Route> routes, double routeCost,
+Solution::Solution(PDPTWData const &data, Solution::PairBank pairbank, std::vector<Route> routes, double rawCost,
                    double totalCost)
-    : data(data), pairBank(std::move(pairbank)), routes(std::move(routes)), routeCost(routeCost), totalCost(totalCost)
+    : data(data), pairBank(std::move(pairbank)), routes(std::move(routes)), rawCost(rawCost), totalCost(totalCost)
 {}
 
 Solution::Solution(PDPTWData const &data) : data(data)
@@ -78,6 +79,64 @@ Solution Solution::emptySolution(PDPTWData const &data)
 {
     Solution s = Solution(data);
     return s;
+}
+
+Solution::~Solution() noexcept = default;
+
+Solution::Solution(Solution const &rhs) : Solution(rhs.getData())
+{
+    *this = rhs;
+}
+
+Solution &Solution::operator=(Solution const &rhs)
+{
+    if (&rhs == this)
+    {
+        return *this;
+    }
+
+    data = rhs.data;
+    rawCost = rhs.rawCost;
+    totalCost = rhs.totalCost;
+    pairBank = rhs.pairBank;
+
+    routes.clear();
+    routes = rhs.routes;
+
+    constraints.clear();
+    std::ranges::transform(rhs.constraints, std::back_inserter(constraints), [this](auto const &constraintPtr) {
+        return constraintPtr->clone(*this);
+    });
+
+    return *this;
+}
+
+Solution::Solution(Solution &&sol) noexcept : data(sol.data)
+{
+    *this = std::move(sol);
+}
+
+Solution &Solution::operator=(Solution &&sol) noexcept
+{
+    if (&sol == this)
+    {
+        return *this;
+    }
+
+    data = sol.data;
+    rawCost = sol.rawCost;
+    totalCost = sol.totalCost;
+
+    pairBank = std::move(sol.pairBank);
+    routes = std::move(sol.routes);
+    constraints = std::move(sol.constraints);
+
+    for (auto &constraint: constraints)
+    {
+        constraint->setSolution(*this);
+    }
+
+    return *this;
 }
 
 Solution::PairBank const &Solution::getBank() const
@@ -127,7 +186,12 @@ Route const &Solution::getRoute(int routeIndex) const
 
 double Solution::getCost() const
 {
-    return totalCost;
+    return rawCost + computePenalisation();
+}
+
+double Solution::getRawCost() const
+{
+    return rawCost;
 }
 
 PDPTWData const &Solution::getData() const
@@ -145,7 +209,7 @@ int Solution::requestsFulFilledCount() const
     return count;
 }
 
-bool Solution::checkModification(AtomicRecreation const &modification) const 
+bool Solution::checkModification(AtomicRecreation const &modification) const
 {
     std::cout << "--- Check Modification Validity : ";
     ModificationCheckVariant const &checkVariant = modification.asCheckVariant();
@@ -159,9 +223,8 @@ bool Solution::checkModification(AtomicRecreation const &modification) const
         }
     }
     std::cout << "\n";
-    return true; 
+    return true;
 }
-
 
 void Solution::beforeApplyModification(AtomicModification &modification)
 {
@@ -201,8 +264,8 @@ void Solution::applyDestructSolution(AtomicDestruction &modification)
     modification.modifySolution(*this);
     // updating request bank
     std::vector<int> const &deletedPair = modification.getDeletedPairs();
-    
-    //pairBank.reserve(pairBank.size() + deletedPair.size()); 
+
+    //pairBank.reserve(pairBank.size() + deletedPair.size());
     pairBank.insert(pairBank.end(), deletedPair.begin(), deletedPair.end());
 
     afterApplyModification(modification);
@@ -211,7 +274,7 @@ void Solution::applyDestructSolution(AtomicDestruction &modification)
 
 void Solution::check() const
 {
-   checker::checkSolutionCoherence(*this, getData());
+    checker::checkSolutionCoherence(*this, getData());
 }
 
 void Solution::print() const
@@ -232,7 +295,7 @@ void Solution::print() const
     }
 
     std::cout << "\nConstraints : \n";
-    for (const std::unique_ptr<Constraint> &constraint: constraints)
+    for (std::unique_ptr<Constraint> const &constraint: constraints)
     {
         constraint->print();
     }

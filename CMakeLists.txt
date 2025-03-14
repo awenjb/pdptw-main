@@ -23,6 +23,7 @@ add_executable(pdptw src/mains/main.cpp
                 src/input/pdptw_data.cpp
                 src/input/time_window.cpp
                 src/input/json_parser.cpp
+                src/lns/acceptance/threshold_acceptance.cpp
                 src/lns/solution/route.cpp 
                 src/lns/solution/solution.cpp
                 src/lns/constraints/constraint.cpp
