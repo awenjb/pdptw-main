@@ -4,7 +4,7 @@
 #include "lns/solution/solution.h"
 
 /**
- * A type of sorting strategy for the bank of pairs
+ * A type of sorting strategy for the bank of pairs.
  */
 enum class SortingStrategyType
 {
@@ -20,7 +20,7 @@ enum class SortingStrategyType
 namespace sorting_strategy
 {
     /**
-     * Interface for sorting the requests in the request bank. Does modify directly the solution request bank
+     * Interface for sorting the requests in the request bank. Does modify directly the solution request bank.
      */
     class SortingStrategy
     {
@@ -33,12 +33,12 @@ namespace sorting_strategy
         virtual ~SortingStrategy() = default;
 
     private:
-        // non const to sort in place
+        // non const to sort in place.
         Solution &solution;
     };
 
     /**
-     * Shuffle the requests
+     * Shuffle the requests.
      */
     class Shuffle : public SortingStrategy
     {
@@ -48,7 +48,7 @@ namespace sorting_strategy
     };
 
     /**
-     *  Sort the bank by decreasing order of demand
+     *  Sort the bank by decreasing order of demand.
      */
     class Demand : public SortingStrategy
     {
@@ -58,7 +58,7 @@ namespace sorting_strategy
     };
 
     /**
-     *  Sort the bank by increasing distance from the depot
+     *  Sort the bank by increasing distance from the depot.
      */
     class Close : public SortingStrategy
     {
@@ -68,7 +68,7 @@ namespace sorting_strategy
     };
 
     /**
-     *  Sort the bank by decreasing distance from the depot
+     *  Sort the bank by decreasing distance from the depot.
      */
     class Far : public SortingStrategy
     {
@@ -78,7 +78,7 @@ namespace sorting_strategy
     };
 
     /**
-     *  Sort the bank by increasing time window width
+     *  Sort the bank by increasing time window width.
      */
     class TimeWindowWidth : public SortingStrategy
     {
@@ -88,7 +88,7 @@ namespace sorting_strategy
     };
 
     /**
-     *  Sort the bank by inscreasing time window start
+     *  Sort the bank by inscreasing time window start (compare the pickup time window).
      */
     class TimeWindowStart : public SortingStrategy
     {
@@ -98,7 +98,7 @@ namespace sorting_strategy
     };
 
     /**
-     *  Sort the bank by decreasing time window end
+     *  Sort the bank by decreasing time window end (compare the delivery time window).
      */
     class TimeWindowEnd : public SortingStrategy
     {
