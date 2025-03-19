@@ -14,6 +14,7 @@
 #include "lns/modification/route/remove_route.h"
 #include "lns/operators/abstract_operator.h"
 #include "lns/operators/destruction/random_destroy.h"
+#include "lns/operators/destruction/string_removal.h"
 #include "lns/operators/reconstruction/enumerate.h"
 #include "lns/operators/reconstruction/list_heuristic_cost_oriented.h"
 #include "lns/operators/reconstruction/list_heuristic_insertion.h"
@@ -83,30 +84,31 @@ int main(int argc, char **argv)
 {
     //return mainInterface(argc, argv, &simpleLNS);
 
+    ///////////////////////////////////////////////////////////////////////
 
-    ///////////////////////////////////////////////////////////////////////::
-
-    //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n100/bar-n100-1.json";
-    std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes_1.json";
+    std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n100/bar-n100-1.json";
+    //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes_1.json";
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n5000/bar-n5000-1.json";
 
     PDPTWData data = parsing::parseJson(filepath);
-    Solution startingSolution = Solution::emptySolution(data);
+    //Solution startingSolution = Solution::emptySolution(data);
+
+    //data.print();
 
     //simpleLNS(data, startingSolution);
 
     ///
     std::cout << "===== TEST ===== \n";
     Solution testSolution = Solution::emptySolution(data);
-    //ListHeuristicCostOriented reconstruction = ListHeuristicCostOriented(SortingStrategyType::SHUFFLE, EnumerationType::ALL_INSERT_PAIR);
-    //reconstruction.reconstructSolution(testSolution, 0.01);
+    ListHeuristicCostOriented reconstruction = ListHeuristicCostOriented(SortingStrategyType::SHUFFLE, EnumerationType::ALL_INSERT_PAIR);
+    reconstruction.reconstructSolution(testSolution, 0.01);
 
     testSolution.print();
-    sorting_strategy::Shuffle(testSolution).sortPairs();
 
-    testSolution.print();
-    
-    sorting_strategy::TimeWindowStart(testSolution).sortPairs();
+    std::cout << "============ \n";
+
+    StringRemoval StringRemoval(10,10);
+    StringRemoval.destroySolution(testSolution);
 
     testSolution.print();
 

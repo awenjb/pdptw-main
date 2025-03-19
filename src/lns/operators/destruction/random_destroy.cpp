@@ -18,7 +18,7 @@ void RandomDestroy::destroySolution(Solution &solution) const
     while (remainingPairToDelete > 0)
     {
         // too complicated
-        // Other (simpler) option -> choose random route then choose random pair ?
+        // Other (simpler) option -> choose random route then choose random pair ? (does not respect equiprobability)
      
         // choose a random location
         int locationNumber = util::getRandomInt(0, remainingPairToDelete * 2 - 1);

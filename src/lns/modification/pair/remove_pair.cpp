@@ -1,6 +1,7 @@
 #include "remove_pair.h"
 
 #include "input/data.h"
+#include "lns/solution/solution.h"
 
 RemovePair::RemovePair(int routeIndex, int pickupDeletion, int deliveryDeletion, Pair const &pair)
     : routeIndex(routeIndex), pickupDeletion(pickupDeletion), deliveryDeletion(deliveryDeletion),

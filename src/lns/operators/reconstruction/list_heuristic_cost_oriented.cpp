@@ -16,6 +16,36 @@ void ListHeuristicCostOriented::reconstructSolution(Solution &solution, double b
             sortedPairs = sorting_strategy::Shuffle(solution).sortPairs();
             break;
         }
+        case SortingStrategyType::DEMAND: {
+            std::cout << "D";
+            sortedPairs = sorting_strategy::Demand(solution).sortPairs();
+            break;
+        }
+        case SortingStrategyType::CLOSE: {
+            std::cout << "C";
+            sortedPairs = sorting_strategy::Close(solution).sortPairs();
+            break;
+        }
+        case SortingStrategyType::FAR: {
+            std::cout << "F";
+            sortedPairs = sorting_strategy::Far(solution).sortPairs();
+            break;
+        }
+        case SortingStrategyType::TWWIDTH: {
+            std::cout << "TWW";
+            sortedPairs = sorting_strategy::TimeWindowWidth(solution).sortPairs();
+            break;
+        }
+        case SortingStrategyType::TWSTART: {
+            std::cout << "TWS";
+            sortedPairs = sorting_strategy::TimeWindowStart(solution).sortPairs();
+            break;
+        }
+        case SortingStrategyType::TWEND: {
+            std::cout << "TWE";
+            sortedPairs = sorting_strategy::TimeWindowEnd(solution).sortPairs();
+            break;
+        }
         default:
             spdlog::error("Error, invalid strategy selected.");
             throw std::invalid_argument("Invalid sorting strategy selected.");

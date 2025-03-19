@@ -76,6 +76,12 @@ public:
     PDPTWData const &getData() const;
     double getRawCost() const;
     double getCost() const;
+    
+    /**
+     *  Return the route index associated to the given location ID.
+     *  -1 if the location is not in a route.
+     */
+    int getRouteIDOf(int locationID) const;
 
     /**
      *  Return the number of fullfilled requests.

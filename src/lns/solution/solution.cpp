@@ -8,9 +8,12 @@
 #include "lns/solution/route.h"
 #include "output/solution_checker.h"
 
+#include <algorithm>
 #include <bits/ranges_algo.h>
 #include <bits/ranges_util.h>
+#include <ranges>
 #include <utility>
+#include <vector>
 
 void Solution::initPairBank()
 {
@@ -207,6 +210,22 @@ int Solution::requestsFulFilledCount() const
         count += route.getRoute().size() / 2;
     }
     return count;
+}
+
+int Solution::getRouteIDOf(int locationID) const
+{
+    int routeIndex = 0;
+    for (Route const &route: getRoutes())
+    {
+        std::vector<int> const &routeLocationIDs = route.getRoute();
+        if (std::ranges::find(routeLocationIDs, locationID) != routeLocationIDs.end())
+        {
+            return routeIndex;
+        }
+        ++routeIndex;
+    }
+    // no routes contain the location
+    return -1;
 }
 
 bool Solution::checkModification(AtomicRecreation const &modification) const

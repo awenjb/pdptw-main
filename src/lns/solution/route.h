@@ -27,6 +27,11 @@ public:
     // get Location
     int getLocation(int index) const;    
 
+    /**
+     *  Given a locationID, return the Index in the route.
+     *  return -1 if no such location.
+     */
+    int getIndex(int locationID) const;
     
     /**
      *  Given the position of a location in a route, return the paired location position.

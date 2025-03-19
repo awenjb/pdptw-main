@@ -61,6 +61,14 @@ int Route::getSize() const
     return route.size();
 }
 
+int Route::getIndex(int locationID) const 
+{
+    auto it = std::find(route.begin(), route.end(), locationID);
+    if (it != route.end()) {
+        return std::distance(route.begin(), it);
+    }
+    return -1;
+}
 
 int Route::getPairLocationPosition(int position, const PDPTWData &data) const
 {

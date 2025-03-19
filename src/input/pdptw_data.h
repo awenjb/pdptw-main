@@ -30,6 +30,11 @@ class PDPTWData
     std::vector<Location> locations;
     std::vector<Pair> pairs;// std::unordered_map<int, Pair> pair; if getPair(index) is needed ?
     Matrix distanceMatrix;
+    // stores the list of locations ID from closest to furthest for every location (no depot).
+    std::vector<std::vector<int>> closestLocations;
+
+    void initClosestLocations();
+
 
 public:
     PDPTWData();
@@ -54,18 +59,24 @@ public:
 
 
     std::vector<Location> const &getLocations() const;
+    int getLocationCount() const;
     std::vector<Pair> const &getPairs() const;
     int getPairCount() const;
     Pair const &getPair(int id) const;
 
     /** 
-    *   0 return the depot.
-    *   Other numbers return the associated location.
-    */
+     *  0 return the depot.
+     *  Other numbers return the associated location.
+     */
     Location const &getLocation(int id) const;
     Location const &getDepot() const;
 
     Matrix const &getMatrix() const;
+
+    /** 
+     *  Given a location ID, return a list of location id sorted by proximity.
+     */
+    std::vector<int> const &getClosestLocationsID(int id) const;
 
     int getSize() const;
     int getCapacity() const;

@@ -1,9 +1,12 @@
 #include "pdptw_data.h"
 
-#include <iostream>
-#include <fstream>
-#include <spdlog/spdlog.h>
+#include "data.h"
 
+#include <algorithm>
+#include <fstream>
+#include <iostream>
+#include <numeric>
+#include <spdlog/spdlog.h>
 
 int PDPTWData::getSize() const
 {
@@ -15,12 +18,12 @@ int PDPTWData::getCapacity() const
     return capacity;
 }
 
-std::vector<Location> const &PDPTWData::getLocations() const 
+std::vector<Location> const &PDPTWData::getLocations() const
 {
     return locations;
 }
 
-std::vector<Pair> const &PDPTWData::getPairs() const 
+std::vector<Pair> const &PDPTWData::getPairs() const
 {
     return pairs;
 }
@@ -37,12 +40,12 @@ std::string PDPTWData::getDataName() const
 
 Location const &PDPTWData::getLocation(int id) const
 {
-    if (id==0)
+    if (id == 0)
     {
         return getDepot();
     }
     // location index from 0 to n-1
-    return locations.at(id -1);
+    return locations.at(id - 1);
 }
 
 Matrix const &PDPTWData::getMatrix() const
@@ -50,24 +53,28 @@ Matrix const &PDPTWData::getMatrix() const
     return distanceMatrix;
 }
 
-PDPTWData::PDPTWData(std::string dataName, int size, int capacity, Location depot, std::vector<Location> locations, Matrix distanceMatrix)
-    : dataName(dataName), size(size), capacity(capacity), depot(depot), locations(std::move(locations)), distanceMatrix(std::move(distanceMatrix)) 
+PDPTWData::PDPTWData(std::string dataName, int size, int capacity, Location depot, std::vector<Location> locations,
+                     Matrix distanceMatrix)
+    : dataName(dataName), size(size), capacity(capacity), depot(depot), locations(std::move(locations)),
+      distanceMatrix(std::move(distanceMatrix))
 {
     // Associate pair of locations
     pairs.clear();
-    for (const Location & loc : this->locations)
+    for (Location const &loc: this->locations)
     {
-        if( loc.getLocType() == LocType::PICKUP )
+        if (loc.getLocType() == LocType::PICKUP)
         {
             // vector indexed from 0 / Location indexed from 1
-            pairs.emplace_back(loc, this->locations.at(loc.getPair()-1), loc.getId());
+            pairs.emplace_back(loc, this->locations.at(loc.getPair() - 1), loc.getId());
         }
     }
+    // Compute closest location matrix
+    initClosestLocations();
 }
 
-const Pair &PDPTWData::getPair(int id) const
+Pair const &PDPTWData::getPair(int id) const
 {
-    for (const Pair &pair : pairs)
+    for (Pair const &pair: pairs)
     {
         if (id == pair.getID())
         {
@@ -83,8 +90,12 @@ int PDPTWData::getPairCount() const
     return getPairs().size();
 }
 
+int PDPTWData::getLocationCount() const
+{
+    return getLocations().size();
+}
 
-void PDPTWData::print() const 
+void PDPTWData::print() const
 {
     std::cout << "Instance name : " << dataName << "\n";
     std::cout << "Instance size: " << size << "\n";
@@ -93,22 +104,36 @@ void PDPTWData::print() const
     depot.print();
 
     std::cout << "Locations:\n";
-    for (const auto& loc : locations) {
+    for (auto const &loc: locations)
+    {
         loc.print();
     }
 
     std::cout << "Distance Matrix:\n";
-    for (const auto& row : distanceMatrix) {
-        for (const auto& dist : row) {
+    for (auto const &row: distanceMatrix)
+    {
+        for (auto const &dist: row)
+        {
             std::cout << dist << " ";
         }
         std::cout << "\n";
     }
 
+    std::cout << "Closest Matrix (no depot):\n";
+    for (auto const &row: closestLocations)
+    {
+        for (auto const &ID: row)
+        {
+            std::cout << ID << " ";
+        }
+        std::cout << "\n";
+    }
+
     std::cout << "Pair IDs:\n";
-    for (const auto& pair : pairs)
-    {;
-        std::cout << pair.getID() << " "; 
+    for (auto const &pair: pairs)
+    {
+        ;
+        std::cout << pair.getID() << " ";
     }
     std::cout << " \n";
 }
@@ -127,14 +152,13 @@ void PDPTWData::checkData() const
     }
 }
 
-
 bool PDPTWData::checkMatrix() const
 {
     // square matrix
-    
-    for (const auto& row : getMatrix()) 
+
+    for (auto const &row: getMatrix())
     {
-        if (row.size() != size) 
+        if (row.size() != size)
         {
             return true;
         }
@@ -161,22 +185,23 @@ bool PDPTWData::checkMatrix() const
 
 bool PDPTWData::checkLocation() const
 {
-
     // check if location id equals the position in the location vector
-    for (size_t i = 0; i < size-1; ++i) {
-        if (locations.at(i).getId() != static_cast<int>(i)+1) {
+    for (size_t i = 0; i < size - 1; ++i)
+    {
+        if (locations.at(i).getId() != static_cast<int>(i) + 1)
+        {
             return true;
         }
     }
-    
+
     // check if pair of location are well made (type, id, demand, timeWindow)
-    for(const Location& loc : getLocations()) 
+    for (Location const &loc: getLocations())
     {
         if (loc.getLocType() == LocType::PICKUP)
-        {   
-            if ( (getLocations().at(loc.getPair()-1).getLocType() != LocType::DELIVERY) 
-            || (loc.getDemand() != - getLocations().at(loc.getPair()-1).getDemand()) 
-            || (loc.getId() != getLocations().at(loc.getPair()-1).getPair()) )
+        {
+            if ((getLocations().at(loc.getPair() - 1).getLocType() != LocType::DELIVERY) ||
+                (loc.getDemand() != -getLocations().at(loc.getPair() - 1).getDemand()) ||
+                (loc.getId() != getLocations().at(loc.getPair() - 1).getPair()))
             {
                 return true;
             }
@@ -191,6 +216,40 @@ bool PDPTWData::checkLocation() const
     return false;
 }
 
+void PDPTWData::initClosestLocations()
+{
+    closestLocations.reserve(getLocationCount());
+    for (Location const &location: locations)
+    {
+        // sorting from closest to furthest using indexes
+        std::vector<int> closestLocationsIndexes(getLocationCount());
+        std::iota(closestLocationsIndexes.begin(), closestLocationsIndexes.end(), 0);
+
+        // Do the sorting
+        std::ranges::sort(closestLocationsIndexes, {}, [this, &location](int index) {
+            return data::TravelTime(*this, location.getId(), locations.at(index).getId());
+        });
+
+        // we store the indexes in the final container
+        closestLocations.emplace_back();
+        closestLocations.back().reserve(getLocationCount());
+        std::ranges::transform(closestLocationsIndexes, std::back_inserter(closestLocations.back()), [this](int index) {
+            return std::cref(locations.at(index)).get().getId();
+        });
+    }
+}
+
+std::vector<int> const &PDPTWData::getClosestLocationsID(int id) const
+{
+    // sanity check
+    if (id < 1 || id > getLocationCount())
+    {
+        spdlog::error("getClosestLocationsID: Location ID {} is out of valid range [1, {}]", id, getLocationCount());
+        throw std::out_of_range("Error: Location ID is out of valid range [1, " + std::to_string(getLocationCount()) +
+                                "]");
+    }
+    return closestLocations.at(id - 1);// vector indexed from 0
+}
 
 InputJsonException::InputJsonException(std::string_view reason)
     : reason(fmt::format("Input JSON file is incorrect : {}", reason))
