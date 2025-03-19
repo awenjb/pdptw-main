@@ -32,15 +32,15 @@ double data::routeCost(PDPTWData const & data, Route const & route)
     }
     // cost from and to the depot
     cost +=  matrix.at(0).at(routeIDs.at(0));
-    //std::cout << "\n route cost : " << matrix.at(0).at(routeIDs.at(0) << " ";
+    // std::cout << "\n route cost : " << matrix.at(0).at(routeIDs.at(0)) << " ";
     cost +=  matrix.at(routeIDs.back()).at(0);
     
     // cost in the route
     for (size_t i = 0; i < routeIDs.size() - 1; ++i) {
         cost += matrix.at(routeIDs.at(i)).at(routeIDs.at(i+1));
-        //std::cout << matrix.at(routeIDs.at(i).at(routeIDs.at(i+1) << " ";
+        // std::cout << matrix.at(routeIDs.at(i)).at(routeIDs.at(i+1)) << " ";
     }
-    //std::cout << matrix.at(routeIDs.back()).at(0) << " : " << cost << "\n";
+    // std::cout << matrix.at(routeIDs.back()).at(0) << " : " << cost << "\n";
 
     return cost;
 }

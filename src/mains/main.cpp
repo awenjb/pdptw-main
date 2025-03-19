@@ -91,26 +91,28 @@ int main(int argc, char **argv)
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n5000/bar-n5000-1.json";
 
     PDPTWData data = parsing::parseJson(filepath);
-    //Solution startingSolution = Solution::emptySolution(data);
+    Solution startingSolution = Solution::emptySolution(data);
+
+    startingSolution.print();
 
     //data.print();
 
-    //simpleLNS(data, startingSolution);
+    simpleLNS(data, startingSolution);
 
     ///
-    std::cout << "===== TEST ===== \n";
-    Solution testSolution = Solution::emptySolution(data);
-    ListHeuristicCostOriented reconstruction = ListHeuristicCostOriented(SortingStrategyType::SHUFFLE, EnumerationType::ALL_INSERT_PAIR);
-    reconstruction.reconstructSolution(testSolution, 0.01);
+    // std::cout << "===== TEST ===== \n";
+    // Solution testSolution = Solution::emptySolution(data);
+    // ListHeuristicCostOriented reconstruction = ListHeuristicCostOriented(SortingStrategyType::SHUFFLE, EnumerationType::ALL_INSERT_PAIR);
+    // reconstruction.reconstructSolution(testSolution, 0.01);
 
-    testSolution.print();
+    // testSolution.print();
 
-    std::cout << "============ \n";
+    // std::cout << "============ \n";
 
-    StringRemoval StringRemoval(10,10);
-    StringRemoval.destroySolution(testSolution);
+    // StringRemoval StringRemoval(10,10);
+    // StringRemoval.destroySolution(testSolution);
 
-    testSolution.print();
+    // testSolution.print();
 
     return 0;
 }

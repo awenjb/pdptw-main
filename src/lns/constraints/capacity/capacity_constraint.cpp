@@ -155,9 +155,8 @@ void CapacityConstraint::print() const
         {
             std::cout << capa << ", ";
         }
-        std::cout << "\n ";
+        std::cout << "\n";
         i++;
     }
-    std::cout << "\n";
 }
 

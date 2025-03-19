@@ -10,7 +10,11 @@
 
 TimeWindowConstraint::TimeWindowConstraint(Solution const &solution) : Constraint(solution)
 {
-    allRouteReachTimes.resize(getSolution().getRoutes().size());
+    allRouteReachTimes.clear();
+    for (unsigned int i = 0; i < solution.getRoutes().size(); ++i)
+    {
+        allRouteReachTimes.emplace_back();
+    }
 }
 
 TimeWindowConstraint::~TimeWindowConstraint()
@@ -63,7 +67,9 @@ void TimeWindowConstraint::initReachTimes()
 bool TimeWindowConstraint::checkInsertion(PDPTWData const &data, Pair const &pair, int routeIndex, int pickupPos,
                                           int deliveryPos) const
 {
+
     ReachTimeVector const &reachTimes = allRouteReachTimes.at(routeIndex);
+
 
     // COPY route vector
     std::vector<int> route(getSolution().getRoute(routeIndex).getRoute().begin(),
@@ -108,7 +114,6 @@ bool TimeWindowConstraint::checkInsertion(PDPTWData const &data, Pair const &pai
 void TimeWindowConstraint::ApplyModif(PDPTWData const &data, Pair const &pair, int routeIndex, int pickupPos,
                                       int deliveryPos, bool addPair)
 {
-
     // Check the routeIndex validity
     if (routeIndex < 0 || routeIndex >= getSolution().getRoutes().size())
     {
@@ -251,13 +256,6 @@ void TimeWindowConstraint::print() const
             std::cout << reachTime << ", ";
         }
         std::cout << "\n";
-        std::cout << "#" << i << " : ";
-        for (int locID: getSolution().getRoute(i).getRoute())
-        {
-            std::cout << locID << ", ";
-        }
-        std::cout << "\n ";
         i++;
     }
-    std::cout << "\n";
 }

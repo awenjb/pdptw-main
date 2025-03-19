@@ -27,7 +27,10 @@ void Solution::initPairBank()
 void Solution::initRoutes()
 {
     routes.clear();
-    routes.emplace_back();
+    for (unsigned int i = 0; i < NUMBER_VEHICLE; ++i)
+    {
+        this->routes.emplace_back();
+    }
 }
 
 void Solution::initConstraints()
@@ -80,8 +83,8 @@ Solution::Solution(PDPTWData const &data) : data(data)
 
 Solution Solution::emptySolution(PDPTWData const &data)
 {
-    Solution s = Solution(data);
-    return s;
+    Solution sol = Solution(data);
+    return sol;
 }
 
 Solution::~Solution() noexcept = default;
@@ -295,13 +298,8 @@ void Solution::check() const
 
 void Solution::print() const
 {
-    std::cout << "Cost : " << totalCost << "\n"
-              << "Routes : \n";
-
-    for (Route const &id: getRoutes())
-    {
-        id.print();
-    }
+    std::cout << "\nRawCost : " << rawCost << "\n"
+              << "TotalCost : " << totalCost << "\n";
 
     std::cout << "Pair Bank : \n";
 
@@ -310,7 +308,16 @@ void Solution::print() const
         std::cout << id << ", ";
     }
 
-    std::cout << "\nConstraints : \n";
+    std::cout << "\nRoutes : \n";
+    int i = 0;
+    for (Route const &route: getRoutes())
+    {
+        std::cout << "#" << i << ": ";
+        route.print();
+        ++i;
+    }
+
+    std::cout << "Constraints : \n";
     for (std::unique_ptr<Constraint> const &constraint: constraints)
     {
         constraint->print();

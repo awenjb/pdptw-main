@@ -20,20 +20,20 @@ void checker::checkSolutionCoherence(Solution const &sol, PDPTWData const &data)
     // checking routes coherence
     int routeID = 0;
     for (Route const &route: sol.getRoutes())
-    {   
+    {
         // skip if it is an empty route
         if (!route.getRoute().empty())
         {
             for (int LocID: route.getRoute())
             {
-                if (check.at(LocID -1) != -1)
+                if (check.at(LocID - 1) != -1)
                 {
                     // Error the location is already attributed (doublon)
                     spdlog::error("Location {} has already been visited.", LocID);
                     errorFlag = true;
                 }
 
-                check.at(LocID -1) = routeID;
+                check.at(LocID - 1) = routeID;
 
                 // if the location is a delivery, check if the pickup location has already been visited in the same route
                 if ((data.getLocation(LocID).getLocType() == LocType::DELIVERY) &&
@@ -77,21 +77,24 @@ void checker::checkCapacity(Solution const &sol, PDPTWData const &data)
 
     for (Route const &route: sol.getRoutes())
     {
-        for (int id: route.getRoute())
+        if (!route.getRoute().empty())
         {
-            capa += data.getLocation(id).getDemand();
-            if (capa > data.getCapacity())
+            for (int id: route.getRoute())
             {
-                // Error, max capacity is exceeded
-                spdlog::error("Maximum Capacity is exceeded at {} in the route {}.", id, routeID);
+                capa += data.getLocation(id).getDemand();
+                if (capa > data.getCapacity())
+                {
+                    // Error, max capacity is exceeded
+                    spdlog::error("Maximum Capacity is exceeded at {} in the route {}.", id, routeID);
+                    errorFlag = true;
+                }
+            }
+            if (capa != 0)
+            {
+                // Error, all the capacity is supposed to be free at the end of a route
+                spdlog::error("Some capacity still used at the end of the route {}.", routeID);
                 errorFlag = true;
             }
-        }
-        if (capa != 0)
-        {
-            // Error, all the capacity is supposed to be free at the end of a route
-            spdlog::error("Some capacity still used at the end of the route {}.", routeID);
-            errorFlag = true;
         }
         ++routeID;
     }
@@ -109,38 +112,41 @@ void checker::checkTimeWindows(Solution const &sol, PDPTWData const &data)
     int routeID = 0;
     int locID = 0;
 
+
     for (Route const &route: sol.getRoutes())
     {
-        // travel to the first location
-        reachTime = data.getDepot().getTimeWindow().getStart() + data::TravelTime(data, 0, route.getRoute().at(0));
-
-        for (int i = 0; i < route.getRoute().size() - 1; i++)
+        if (!route.getRoute().empty())
         {
-            locID = route.getRoute().at(i);
-            // check TimeWindow
+            // travel to the first location
+            reachTime = data.getDepot().getTimeWindow().getStart() + data::TravelTime(data, 0, route.getRoute().at(0));
+
+            for (int i = 0; i < route.getRoute().size() - 1; i++)
+            {
+                locID = route.getRoute().at(i);
+                // check TimeWindow
+                if (!(data.getLocation(locID).getTimeWindow().isValid(reachTime)))
+                {
+                    // Error, reach time not valid for the location time window
+                    spdlog::error("Reach time not valid for the location {} time window in route {}.", locID, routeID);
+                    errorFlag = true;
+                }
+
+                TimeInteger travelTime = data::TravelTime(data, locID, route.getRoute().at(i + 1));
+                TimeInteger serviceTime = data.getLocation(locID).getServiceDuration();
+                TimeInteger startTW = data.getLocation(locID).getTimeWindow().getStart();
+
+                reachTime = std::max(reachTime, startTW) + serviceTime + travelTime;
+            }
+
+            // check last timeWindow
+            locID = route.getRoute().back();
             if (!(data.getLocation(locID).getTimeWindow().isValid(reachTime)))
             {
                 // Error, reach time not valid for the location time window
                 spdlog::error("Reach time not valid for the location {} time window in route {}.", locID, routeID);
                 errorFlag = true;
             }
-
-            TimeInteger travelTime = data::TravelTime(data, locID, route.getRoute().at(i + 1));
-            TimeInteger serviceTime = data.getLocation(locID).getServiceDuration();
-            TimeInteger startTW = data.getLocation(locID).getTimeWindow().getStart();
-
-            reachTime = std::max(reachTime, startTW) + serviceTime + travelTime;
         }
-
-        // check last timeWindow
-        locID = route.getRoute().back();
-        if (!(data.getLocation(locID).getTimeWindow().isValid(reachTime)))
-        {
-            // Error, reach time not valid for the location time window
-            spdlog::error("Reach time not valid for the location {} time window in route {}.", locID, routeID);
-            errorFlag = true;
-        }
-
         ++routeID;
     }
 

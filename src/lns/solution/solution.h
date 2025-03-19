@@ -131,7 +131,8 @@ public:
     Route &getRoute(int routeIndex);
 
     void print() const;
-
+    
+    void computeAndStoreSolutionCost();
 
 private:
     /**
@@ -145,11 +146,10 @@ private:
     void initConstraints();
     void initRoutes();
     void initPairBank();
-
-    void computeAndStoreSolutionCost();
-
+    
     /**
      *  Compute the cost of the solution (routes cost)
      */
-    double computeSolutionCost() const;
+     double computeSolutionCost() const;
+    
 };

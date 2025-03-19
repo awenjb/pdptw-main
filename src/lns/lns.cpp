@@ -38,7 +38,7 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
         // Apply operators
         destructReconstructPair.destructor().destroySolution(candidateSolution);
         destructReconstructPair.reconstructor().reconstructSolution(candidateSolution, 0.01);
-
+        candidateSolution.computeAndStoreSolutionCost();
         // Update best solution
         if (isBetterSolution(candidateSolution, bestSolution))
         {
