@@ -13,6 +13,7 @@
 #include "lns/modification/route/insert_route.h"
 #include "lns/modification/route/remove_route.h"
 #include "lns/operators/abstract_operator.h"
+#include "lns/operators/destruction/clean_empty_route.h"
 #include "lns/operators/destruction/random_destroy.h"
 #include "lns/operators/destruction/string_removal.h"
 #include "lns/operators/reconstruction/enumerate.h"
@@ -47,13 +48,17 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
     ThresholdAcceptance acceptor(0.05);
 
     // lns operators
-    SimpleOperatorSelector RandomDestroy_ShuffleBestInsert;
-    addAllReconstructor(RandomDestroy_ShuffleBestInsert);
-    RandomDestroy_ShuffleBestInsert.addDestructor(RandomDestroy(pairs));
+    SimpleOperatorSelector RandomDestroy_BestInsert;
+    addAllReconstructor(RandomDestroy_BestInsert);
+    RandomDestroy_BestInsert.addDestructor(RandomDestroy(pairs));
+    RandomDestroy_BestInsert.addDestructor(StringRemoval(10,10));
+    RandomDestroy_BestInsert.addDestructor(CleanEmptyRoute());
 
     SimpleOperatorSelector largeSelector;
     addAllReconstructor(largeSelector);
-    largeSelector.addDestructor(RandomDestroy(pairs));
+    largeSelector.addDestructor(RandomDestroy(manyPairs));
+    largeSelector.addDestructor(StringRemoval(10,10));
+    largeSelector.addDestructor(CleanEmptyRoute());
 
     // SimpleOperatorSelector veryLargeSelector;
     // addAllReconstructor(veryLargeSelector);
@@ -68,8 +73,8 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
     // lastSelector.addDestructor(RandomDestroy(manyPairs));
 
     std::vector<SmallLargeOperatorSelector::StepSelector> selectors;
-    selectors.emplace_back(10, std::move(RandomDestroy_ShuffleBestInsert));
-    // selectors.emplace_back(100, std::move(largeSelector));
+    selectors.emplace_back(10, std::move(RandomDestroy_BestInsert));
+    selectors.emplace_back(50, std::move(largeSelector));
     // selectors.emplace_back(2, std::move(veryLargeSelector));
     // selectors.emplace_back(2, std::move(hugeSelector));
     // selectors.emplace_back(2, std::move(lastSelector));
@@ -77,7 +82,6 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
 
     // run lns
     output::LnsOutput result = lns::runLns(startingSolution, smallLargeSelector, acceptor);
-    
     
     result.getBestSolution().print();
     std::cout << result.getNumberOfIteration() << " " << result.getTimeSpent() << std::endl;
@@ -90,7 +94,7 @@ int main(int argc, char **argv)
     ///////////////////////////////////////////////////////////////////////
 
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n100/bar-n100-1.json";
-    std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100/lc101.json";
+    std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100/lrc201.json";
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes_1.json";
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n5000/bar-n5000-1.json";
 
@@ -102,6 +106,7 @@ int main(int argc, char **argv)
     //data.print();
 
     simpleLNS(data, startingSolution);
+
 
     ///
     // std::cout << "===== TEST ===== \n";

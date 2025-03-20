@@ -18,16 +18,19 @@ RemoveRoute::RemoveRoute(int routeIndex, std::vector<int> &&removedPairID)
 void RemoveRoute::modifySolution(Solution &solution)
 {
     std::vector<Route> &routes = solution.getRoutes();
-    std::vector<int> const &locationIDs = routes.at(routeIndex).getRoute();
-
-    // update removedPairID
-    removedPairID.reserve(routes.at(routeIndex).getSize());
-
-    for (int id : locationIDs)
+    if (routes.at(routeIndex).getRoute().empty())
     {
-        if (solution.getData().getLocation(id).getLocType() == LocType::PICKUP)
+        std::vector<int> const &locationIDs = routes.at(routeIndex).getRoute();
+
+        // update removedPairID
+        removedPairID.reserve(routes.at(routeIndex).getSize());
+
+        for (int id: locationIDs)
         {
-            removedPairID.push_back(id);
+            if (solution.getData().getLocation(id).getLocType() == LocType::PICKUP)
+            {
+                removedPairID.push_back(id);
+            }
         }
     }
     routes.erase(routes.begin() + routeIndex);
@@ -46,4 +49,9 @@ int RemoveRoute::getRouteIndex() const
 std::vector<int> const &RemoveRoute::getDeletedPairs() const
 {
     return removedPairID;
+}
+
+ModificationApplyVariant RemoveRoute::asApplyVariant() const
+{
+    return *this;
 }

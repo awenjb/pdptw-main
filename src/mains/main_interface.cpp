@@ -8,7 +8,12 @@
 
 void addAllReconstructor(SimpleOperatorSelector &selector)
 {
-    selector.addReconstructor(ListHeuristicCostOriented(SortingStrategyType::SHUFFLE, EnumerationType::ALL_INSERT_PAIR));
+    selector.addReconstructor(ListHeuristicCostOriented(SortingStrategyType::SHUFFLE, EnumerationType::ALL_INSERT_PAIR), 1);
+    selector.addReconstructor(ListHeuristicCostOriented(SortingStrategyType::FAR, EnumerationType::ALL_INSERT_PAIR), 1);
+    selector.addReconstructor(ListHeuristicCostOriented(SortingStrategyType::CLOSE, EnumerationType::ALL_INSERT_PAIR), 1);
+    selector.addReconstructor(ListHeuristicCostOriented(SortingStrategyType::TWWIDTH, EnumerationType::ALL_INSERT_PAIR), 1);
+    selector.addReconstructor(ListHeuristicCostOriented(SortingStrategyType::TWSTART, EnumerationType::ALL_INSERT_PAIR), 1);
+    selector.addReconstructor(ListHeuristicCostOriented(SortingStrategyType::TWEND, EnumerationType::ALL_INSERT_PAIR), 1);
 }
 
 int mainInterface(int argc, char **argv, std::function<void(PDPTWData &, Solution &)> function)

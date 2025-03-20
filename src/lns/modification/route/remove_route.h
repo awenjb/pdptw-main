@@ -36,5 +36,8 @@ public:
     */
     std::vector<int> const &getDeletedPairs() const override;
 
+    ModificationApplyVariant asApplyVariant() const override;
+    
+
     int getRouteIndex() const;
 };

@@ -38,6 +38,7 @@ add_executable(pdptw src/mains/main.cpp
                 src/output/solution_checker.cpp
                 src/output/solution_exporter.cpp
                 src/lns/operators/sorting_strategy.cpp
+                src/lns/operators/destruction/clean_empty_route.cpp
                 src/lns/operators/destruction/random_destroy.cpp
                 src/lns/operators/destruction/string_removal.cpp
                 src/lns/operators/reconstruction/enumerate.cpp
