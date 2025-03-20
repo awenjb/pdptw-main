@@ -231,6 +231,12 @@ int Solution::getRouteIDOf(int locationID) const
     return -1;
 }
 
+unsigned int Solution::missingPairCount() const
+{
+    return pairBank.size();
+}
+
+
 bool Solution::checkModification(AtomicRecreation const &modification) const
 {
     //std::cout << "--- Check Modification Validity : ";

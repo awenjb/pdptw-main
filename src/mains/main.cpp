@@ -77,7 +77,10 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
 
     // run lns
     output::LnsOutput result = lns::runLns(startingSolution, smallLargeSelector, acceptor);
+    
+    
     result.getBestSolution().print();
+    std::cout << result.getNumberOfIteration() << " " << result.getTimeSpent() << std::endl;
 }
 
 int main(int argc, char **argv)
@@ -86,7 +89,8 @@ int main(int argc, char **argv)
 
     ///////////////////////////////////////////////////////////////////////
 
-    std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n100/bar-n100-1.json";
+    //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n100/bar-n100-1.json";
+    std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100/lc101.json";
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes_1.json";
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n5000/bar-n5000-1.json";
 
