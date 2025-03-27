@@ -7,7 +7,7 @@
 namespace// anonymous namespace
 {
     std::mt19937_64 randomGenerator;// NOLINT(*-msc51-cpp) => deterministic random!
-    bool seedSet = false;
+    bool seedSet = SEED_SET;
     std::uniform_real_distribution<> distribution(0, 1);
 }// namespace
 

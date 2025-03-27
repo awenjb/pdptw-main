@@ -6,6 +6,7 @@
 #include "route.h"
 
 #include <iostream>
+#include <memory>
 #include <spdlog/spdlog.h>
 #include <vector>
 
@@ -15,8 +16,8 @@ class AtomicDestruction;
 class TimeWindowConstraint;
 class CapacityConstraint;
 
-/**
- * Represent a solution of PDPTW
+/*
+ * Represents a solution of the PDPTW problem.
  */
 class Solution
 {
@@ -24,135 +25,169 @@ public:
     using PairBank = std::vector<int>;
 
 private:
-    std::reference_wrapper<PDPTWData const> data;
-    //PDPTWData const &data;
-    /*
-     *  Store IDs of a pairs (Pickup & Delivery) that are not assigned yet to a route.
-     */
-    PairBank pairBank;
-    /*
-     *  Vector of routes representing the solution
-     */
-    std::vector<Route> routes;
+    std::reference_wrapper<const PDPTWData> data;// Reference to PDPTW data
+    PairBank pairBank;                           // Unassigned pairs (Pickup & Delivery)
+    std::vector<Route> routes;                   // Routes in the solution
     double rawCost;
     double totalCost;
     std::vector<std::unique_ptr<Constraint>> constraints;
 
 public:
-    //========CONSTRUCTORS, COPY, MOVE, DESTRUCTORS===========
-    /**
-     *  Expected way to construct a solution.
-     *  Generate an empty solution with all pairs in the pairBank and one empty route.
+    /*
+     * Creates an empty solution with all pairs in the pairBank and one empty route.
      */
     static Solution emptySolution(PDPTWData const &data);
-    /**
-     * In depth copy of the solution
+
+    /*
+     * In-depth copy of the solution.
      */
     Solution(Solution const &);
-    /**
-     * In depth copy of the solution
+    /*
+     * Copy assignment.
      */
     Solution &operator=(Solution const &);
+    /*
+     * Move constructor.
+     */
     Solution(Solution &&) noexcept;
+    /*
+     * Move assignment.
+     */
     Solution &operator=(Solution &&) noexcept;
+    /*
+     * Destructor.
+     */
     ~Solution() noexcept;
 
-
-    explicit Solution(PDPTWData const &data);
-
-    /**
-     *  For testing/debugging.
-     *  Use emptySolution(const PDPTWData &data) to create an initial empty solution.
+    /*
+     * Constructs a solution with given data.
      */
-    Solution(PDPTWData const &data, Solution::PairBank pairbank, std::vector<Route> routes, double routeCost,
-             double totalCost);
+    explicit Solution(PDPTWData const &data);
+    /*
+     * Constructs a solution with specified parameters.
+     */
+    Solution(PDPTWData const &data, PairBank pairbank, std::vector<Route> routes, double routeCost, double totalCost);
 
-
+    /*
+     * Returns the pair bank.
+     */
     PairBank const &getBank() const;
+    /*
+     * Returns the pair bank.
+     */
     PairBank const &getPairBank() const;
+    /*
+     * Returns a mutable reference to the pair bank.
+     */
     PairBank &getPairBank();
+    /*
+     * Returns the list of routes.
+     */
     std::vector<Route> const &getRoutes() const;
+    /*
+     * Returns a mutable reference to a specific route.
+     */
+    Route &getRoute(int routeIndex);
+    /*
+     * Returns a constant reference to a specific route.
+     */
     Route const &getRoute(int routeIndex) const;
+    /*
+     * Returns the PDPTW data reference.
+     */
     PDPTWData const &getData() const;
+    /*
+     * Returns the raw cost of the solution.
+     */
     double getRawCost() const;
+    /*
+     * Returns the total cost of the solution.
+     */
     double getCost() const;
+    /*
+     * Returns the number of routes.
+     */
     int getNumberOfRoutes() const;
+    /*
+     * Returns the count of missing pairs.
+     */
     unsigned int missingPairCount() const;
+    /*
+     * Returns the constraints applied to the solution.
+     */
     std::vector<std::unique_ptr<Constraint>> const &getConstraints() const;
 
-    /**
-     *  Return the route index associated to the given location ID.
-     *  -1 if the location is not in a route.
+    /*
+     * Returns the route index associated with a given location ID, or -1 if not in a route.
      */
     int getRouteIDOf(int locationID) const;
-
-    /**
-     *  Return the number of fullfilled requests.
-     *  The solution must be consistent !
-     *  (compute this number by looking at the size of each routes)
+    /*
+     * Returns the number of fulfilled requests.
      */
-    int requestsFulFilledCount() const;
-
-    /**
-     * Check that the modification is valid regarding all the constraints
-     * @param modification
-     * @return true if the modification is valid
+    int requestsFulfilledCount() const;
+    /*
+     * Checks if the modification is valid according to all constraints.
      */
     bool checkModification(AtomicRecreation const &modification) const;
-
-    // using solution checker to verify that the solution is correct. Most used for debug as it is correctness oriented and not performance oriented
+    /*
+     * Verifies the correctness of the solution, mainly for debugging.
+     */
     void check() const;
 
-    /**
-     *  Pre modification check.
-     *  @param modification Must be a valid modification.
+    /*
+     * Pre-modification check. The modification must be valid.
      */
     void beforeApplyModification(AtomicModification &modification);
-
-    /**
-     *  Update constraints, it is expected that the solution has already been modified.
-     *  @param modification Must be a valid modification.
+    /*
+     * Updates constraints after modification is applied.
      */
     void afterApplyModification(AtomicModification &modification);
 
-    /**
-     *  Apply the given the modification on the solution. Does not check validity.
-     *  @param modification Must be a valid recreation.
+    /*
+     * Applies recreation modification to the solution without validity checks.
      */
     void applyRecreateSolution(AtomicRecreation &modification);
-
-    /**
-     *  Apply the given the modification on the solution. Does not check validity.
-     *  @param modification Must be a destruction.
+    /*
+     * Applies destruction modification to the solution without validity checks.
      */
     void applyDestructSolution(AtomicDestruction &modification);
 
+    /*
+     * Computes and returns the penalty value.
+     */
     double computePenalisation() const;
-
-    // For route modification
+    /*
+     * Returns a mutable reference to the routes.
+     */
     std::vector<Route> &getRoutes();
-    Route &getRoute(int routeIndex);
-
+    /*
+     * Prints the solution details.
+     */
     void print() const;
-    
+    /*
+     * Computes and stores the total solution cost.
+     */
     void computeAndStoreSolutionCost();
 
 private:
-    /**
-     *  Does the initialisation of the object, called by the constructor
+    /*
+     * Initializes the object, called by the constructor.
      */
     void init();
-
-    /**
-     *  Init/reset the constraints of the problem
+    /*
+     * Initializes or resets the problem constraints.
      */
     void initConstraints();
-    void initRoutes();
-    void initPairBank();
-    
-    /**
-     *  Compute the cost of the solution (routes cost)
+    /*
+     * Initializes the routes.
      */
-     double computeSolutionCost() const;
-    
+    void initRoutes();
+    /*
+     * Initializes the pair bank.
+     */
+    void initPairBank();
+    /*
+     * Computes the total cost of the solution.
+     */
+    double computeSolutionCost() const;
 };

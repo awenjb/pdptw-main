@@ -49,7 +49,7 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
     int pairs = requests * 2 / 100;
     int manyPairs = requests * 40 / 100;
 
-    // threshold function to do
+    // threshold function
     ThresholdAcceptance acceptor(0.05);
 
     // lns operators
@@ -73,11 +73,7 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
     // run lns
     output::LnsOutput result = lns::runLns(startingSolution, smallLargeSelector, acceptor);
 
-    Solution sol = result.getBestSolution();
-
-    CleanEmptyRoute clean = CleanEmptyRoute();
-    clean.destroySolution(sol);
-    sol.print();
+    result.getBestSolution().print();
 }
 
 int main(int argc, char **argv)
@@ -87,7 +83,7 @@ int main(int argc, char **argv)
     ///////////////////////////////////////////////////////////////////////
 
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n100/bar-n100-1.json";
-    std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100/lc101.json";
+    std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100/lc103.json";
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes_1.json";
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n5000/bar-n5000-1.json";
 

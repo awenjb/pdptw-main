@@ -30,7 +30,7 @@ void Solution::initRoutes()
     routes.clear();
     for (unsigned int i = 0; i < NUMBER_VEHICLE; ++i)
     {
-        this->routes.emplace_back();
+        routes.emplace_back();
     }
 }
 
@@ -44,8 +44,6 @@ void Solution::initConstraints()
 void Solution::computeAndStoreSolutionCost()
 {
     rawCost = computeSolutionCost();
-
-    // add penalty for solution in the pairBank ?
     totalCost = rawCost + computePenalisation();
 }
 
@@ -64,19 +62,18 @@ double Solution::computePenalisation() const
     return getBank().size() * EXCLUSION_PENALTY + getNumberOfRoutes() * ROUTE_PENALTY;
 }
 
-int Solution::getNumberOfRoutes() const 
+int Solution::getNumberOfRoutes() const
 {
-    int cpt = 0;
-    for (Route const &route : getRoutes())
+    int count = 0;
+    for (Route const &route: getRoutes())
     {
-        if (!(route.getRoute().empty()))
+        if (!route.getRoute().empty())
         {
-            cpt++;
+            count++;
         }
     }
-    return cpt;
+    return count;
 }
-
 
 void Solution::init()
 {
@@ -98,7 +95,7 @@ Solution::Solution(PDPTWData const &data) : data(data)
 
 Solution Solution::emptySolution(PDPTWData const &data)
 {
-    Solution sol = Solution(data);
+    Solution sol(data);
     return sol;
 }
 
@@ -111,19 +108,14 @@ Solution::Solution(Solution const &rhs) : Solution(rhs.getData())
 
 Solution &Solution::operator=(Solution const &rhs)
 {
-    if (&rhs == this)
-    {
-        return *this;
-    }
+    if (this == &rhs) return *this;
 
     data = rhs.data;
     rawCost = rhs.rawCost;
     totalCost = rhs.totalCost;
     pairBank = rhs.pairBank;
 
-    routes.clear();
     routes = rhs.routes;
-
     constraints.clear();
     std::ranges::transform(rhs.constraints, std::back_inserter(constraints), [this](auto const &constraintPtr) {
         return constraintPtr->clone(*this);
@@ -132,21 +124,18 @@ Solution &Solution::operator=(Solution const &rhs)
     return *this;
 }
 
-Solution::Solution(Solution &&sol) noexcept : data(sol.data)
+Solution::Solution(Solution &&sol) noexcept : data(std::move(sol.data))
 {
     *this = std::move(sol);
 }
 
 Solution &Solution::operator=(Solution &&sol) noexcept
 {
-    if (&sol == this)
-    {
-        return *this;
-    }
+    if (this == &sol) return *this;
 
-    data = sol.data;
-    rawCost = sol.rawCost;
-    totalCost = sol.totalCost;
+    data = std::move(sol.data);
+    rawCost = std::move(sol.rawCost);
+    totalCost = std::move(sol.totalCost);
 
     pairBank = std::move(sol.pairBank);
     routes = std::move(sol.routes);
@@ -225,7 +214,7 @@ std::vector<std::unique_ptr<Constraint>> const &Solution::getConstraints() const
     return constraints;
 }
 
-int Solution::requestsFulFilledCount() const
+int Solution::requestsFulfilledCount() const
 {
     int count = 0;
     for (Route const &route: getRoutes())
@@ -256,34 +245,30 @@ unsigned int Solution::missingPairCount() const
     return pairBank.size();
 }
 
-
 bool Solution::checkModification(AtomicRecreation const &modification) const
 {
-    //std::cout << "--- Check Modification Validity : ";
     ModificationCheckVariant const &checkVariant = modification.asCheckVariant();
-    // visitor pattern
-    for (std::unique_ptr<Constraint> const &constraint: constraints)
+
+    for (auto const &constraint: constraints)
     {
         if (!constraint->checkVariant(checkVariant))
         {
-            //std::cout << "\n";
             return false;
         }
     }
-    //std::cout << "\n";
     return true;
 }
 
 void Solution::beforeApplyModification(AtomicModification &modification)
 {
-    // pre modification check
+    // Pre-modification check
     check();
 }
 
 void Solution::afterApplyModification(AtomicModification &modification)
 {
-    // constraint status update
-    for (std::unique_ptr<Constraint> &constraint: constraints)
+    // Constraint status update
+    for (auto &constraint: constraints)
     {
         constraint->applyVariant(modification.asApplyVariant());
     }
@@ -292,9 +277,9 @@ void Solution::afterApplyModification(AtomicModification &modification)
 void Solution::applyRecreateSolution(AtomicRecreation &modification)
 {
     beforeApplyModification(modification);
-
     modification.modifySolution(*this);
-    // we update the request bank
+
+    // Update the request bank
     if (int pairID = modification.getAddedPairs())
     {
         pairBank.erase(std::ranges::find(pairBank, pairID));
@@ -306,12 +291,10 @@ void Solution::applyRecreateSolution(AtomicRecreation &modification)
 void Solution::applyDestructSolution(AtomicDestruction &modification)
 {
     beforeApplyModification(modification);
-
     modification.modifySolution(*this);
-    // updating request bank
-    std::vector<int> const &deletedPair = modification.getDeletedPairs();
 
-    //pairBank.reserve(pairBank.size() + deletedPair.size());
+    // Update the request bank
+    std::vector<int> const &deletedPair = modification.getDeletedPairs();
     pairBank.insert(pairBank.end(), deletedPair.begin(), deletedPair.end());
 
     afterApplyModification(modification);
@@ -324,17 +307,16 @@ void Solution::check() const
 
 void Solution::print() const
 {
-    std::cout << "\nRawCost : " << rawCost << "\n"
-              << "TotalCost : " << totalCost << "\n";
+    std::cout << "\nRawCost: " << rawCost << "\n"
+              << "TotalCost: " << totalCost << "\n";
 
-    std::cout << "Pair Bank : \n";
-
+    std::cout << "Pair Bank:\n";
     for (int const id: getBank())
     {
         std::cout << id << ", ";
     }
 
-    std::cout << "\nRoutes : \n";
+    std::cout << "\nRoutes:\n";
     int i = 0;
     for (Route const &route: getRoutes())
     {
@@ -343,10 +325,11 @@ void Solution::print() const
         ++i;
     }
 
-    std::cout << "Constraints : \n";
-    for (std::unique_ptr<Constraint> const &constraint: constraints)
+    std::cout << "Constraints:\n";
+    for (auto const &constraint: constraints)
     {
         constraint->print();
     }
+
     std::cout << "\n";
 }

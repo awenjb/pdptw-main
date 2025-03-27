@@ -19,5 +19,4 @@ using TimeInteger = double;
 TimeInteger constexpr UNDEF_TIMESTAMP = std::numeric_limits<TimeInteger>::max();
 
 
-using Matrix = std::vector<std::vector<double>>; 
-
+using Matrix = std::vector<std::vector<double>>;

@@ -1,8 +1,10 @@
 #include "lns.h"
 
 #include "lns/acceptance/acceptance_function.h"
+#include "lns/operators/destruction/clean_empty_route.h"
 #include "lns/operators/selector/operator_selector.h"
 #include "output/solution_checker.h"
+#include "config.h"
 
 #include <chrono>
 
@@ -81,7 +83,7 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
     LnsRuntimeData runtime = {actualSolution};
 
     // temporary fixed iteration
-    int iterationMax = 100;
+    int iterationMax = NUMBER_ITERATION;
     while (iterationMax > 0)
     {
         // Init iteration
@@ -106,6 +108,10 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
         {
             std::cout << "\n > new Best Solution \n";
             checker::checkAll(candidateSolution, candidateSolution.getData(), false);
+
+            // remove empty route from the solution
+            CleanEmptyRoute clean = CleanEmptyRoute();
+            clean.destroySolution(candidateSolution);
 
             runtime.bestSolution = candidateSolution;
             opSelector.betterSolutionFound();

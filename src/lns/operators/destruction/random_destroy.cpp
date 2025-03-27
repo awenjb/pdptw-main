@@ -11,7 +11,7 @@ void RandomDestroy::destroySolution(Solution &solution) const
 {
     std::cout << "RD ";
 
-    int nbRequests = solution.requestsFulFilledCount();
+    int nbRequests = solution.requestsFulfilledCount();
     int actualNumberOfPairsToDestroy = std::min(nbRequests, numberOfPairsToDestroy);
     int remainingPairToDelete = actualNumberOfPairsToDestroy;
 
