@@ -76,6 +76,7 @@ public:
     PDPTWData const &getData() const;
     double getRawCost() const;
     double getCost() const;
+    int getNumberOfRoutes() const;
     unsigned int missingPairCount() const;
     std::vector<std::unique_ptr<Constraint>> const &getConstraints() const;
 

@@ -61,8 +61,22 @@ double Solution::computeSolutionCost() const
 
 double Solution::computePenalisation() const
 {
-    return getBank().size() * EXCLUSION_PENALTY;
+    return getBank().size() * EXCLUSION_PENALTY + getNumberOfRoutes() * ROUTE_PENALTY;
 }
+
+int Solution::getNumberOfRoutes() const 
+{
+    int cpt = 0;
+    for (Route const &route : getRoutes())
+    {
+        if (!(route.getRoute().empty()))
+        {
+            cpt++;
+        }
+    }
+    return cpt;
+}
+
 
 void Solution::init()
 {

@@ -1,4 +1,6 @@
-const int EXCLUSION_PENALTY = 100;
+const int EXCLUSION_PENALTY = 1000000;
+
+const int ROUTE_PENALTY = 1000;
 
 const int RANDOM_SEED = 100;
 

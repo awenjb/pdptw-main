@@ -188,7 +188,7 @@ end
 
 
 function euclidean_distance(x1, y1, x2, y2)
-    return round(sqrt((x2 - x1)^2 + (y2 - y1)^2), digits=2)
+    return sqrt((x2 - x1)^2 + (y2 - y1)^2)
 end
 
 
