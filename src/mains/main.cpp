@@ -6,6 +6,7 @@
 #include "input/time_window.h"
 #include "lns/acceptance/threshold_acceptance.h"
 #include "lns/constraints/capacity/capacity_constraint.h"
+#include "lns/constraints/time_window/forward_time_slack.h"
 #include "lns/constraints/time_window/time_window_constraint.h"
 #include "lns/lns.h"
 #include "lns/modification/pair/insert_pair.h"
@@ -24,11 +25,15 @@
 #include "lns/operators/sorting_strategy.h"
 #include "lns/solution/solution.h"
 #include "mains/main_interface.h"
+#include "output/solution_checker.h"
 #include "output/solution_exporter.h"
+#include "types.h"
 
 #include <filesystem>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
+#include <limits>
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
 #include <string>
@@ -51,40 +56,28 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
     SimpleOperatorSelector RandomDestroy_BestInsert;
     addAllReconstructor(RandomDestroy_BestInsert);
     RandomDestroy_BestInsert.addDestructor(RandomDestroy(pairs));
-    RandomDestroy_BestInsert.addDestructor(StringRemoval(10,10));
-    RandomDestroy_BestInsert.addDestructor(CleanEmptyRoute());
+    RandomDestroy_BestInsert.addDestructor(StringRemoval(10, 10));
 
     SimpleOperatorSelector largeSelector;
     addAllReconstructor(largeSelector);
     largeSelector.addDestructor(RandomDestroy(manyPairs));
-    largeSelector.addDestructor(StringRemoval(10,10));
-    largeSelector.addDestructor(CleanEmptyRoute());
+    largeSelector.addDestructor(StringRemoval(10, 10));
 
-    // SimpleOperatorSelector veryLargeSelector;
-    // addAllReconstructor(veryLargeSelector);
-    // veryLargeSelector.addDestructor(RandomDestroy(pairs));
-
-    // SimpleOperatorSelector hugeSelector;
-    // addAllReconstructor(hugeSelector);
-    // hugeSelector.addDestructor(RandomDestroy(pairs));
-
-    // SimpleOperatorSelector lastSelector;
-    // addAllReconstructor(lastSelector);
-    // lastSelector.addDestructor(RandomDestroy(manyPairs));
 
     std::vector<SmallLargeOperatorSelector::StepSelector> selectors;
     selectors.emplace_back(10, std::move(RandomDestroy_BestInsert));
     selectors.emplace_back(50, std::move(largeSelector));
-    // selectors.emplace_back(2, std::move(veryLargeSelector));
-    // selectors.emplace_back(2, std::move(hugeSelector));
-    // selectors.emplace_back(2, std::move(lastSelector));
+
     SmallLargeOperatorSelector smallLargeSelector(std::move(selectors));
 
     // run lns
     output::LnsOutput result = lns::runLns(startingSolution, smallLargeSelector, acceptor);
-    
-    result.getBestSolution().print();
-    std::cout << result.getNumberOfIteration() << " " << result.getTimeSpent() << std::endl;
+
+    Solution sol = result.getBestSolution();
+
+    CleanEmptyRoute clean = CleanEmptyRoute();
+    clean.destroySolution(sol);
+    sol.print();
 }
 
 int main(int argc, char **argv)
@@ -93,35 +86,14 @@ int main(int argc, char **argv)
 
     ///////////////////////////////////////////////////////////////////////
 
-    //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n100/bar-n100-1.json";
-    std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100/lrc201.json";
+    std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n100/bar-n100-1.json";
+    //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100/lc102.json";
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes_1.json";
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n5000/bar-n5000-1.json";
 
     PDPTWData data = parsing::parseJson(filepath);
     Solution startingSolution = Solution::emptySolution(data);
-
-    startingSolution.print();
-
-    //data.print();
-
     simpleLNS(data, startingSolution);
-
-
-    ///
-    // std::cout << "===== TEST ===== \n";
-    // Solution testSolution = Solution::emptySolution(data);
-    // ListHeuristicCostOriented reconstruction = ListHeuristicCostOriented(SortingStrategyType::SHUFFLE, EnumerationType::ALL_INSERT_PAIR);
-    // reconstruction.reconstructSolution(testSolution, 0.01);
-
-    // testSolution.print();
-
-    // std::cout << "============ \n";
-
-    // StringRemoval StringRemoval(10,10);
-    // StringRemoval.destroySolution(testSolution);
-
-    // testSolution.print();
 
     return 0;
 }

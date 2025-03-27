@@ -77,6 +77,7 @@ public:
     double getRawCost() const;
     double getCost() const;
     unsigned int missingPairCount() const;
+    std::vector<std::unique_ptr<Constraint>> const &getConstraints() const;
 
     /**
      *  Return the route index associated to the given location ID.

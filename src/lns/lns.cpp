@@ -81,7 +81,7 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
     LnsRuntimeData runtime = {actualSolution};
 
     // temporary fixed iteration
-    int iterationMax = 200;
+    int iterationMax = 100;
     while (iterationMax > 0)
     {
         // Init iteration

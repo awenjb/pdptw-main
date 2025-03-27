@@ -1,25 +1,25 @@
 #pragma once
-#include <vector>
-
 #include "lns/constraints/constraint.h"
-
-#include "lns/solution/solution.h"
 #include "lns/modification/pair/insert_pair.h"
 #include "lns/modification/pair/remove_pair.h"
 #include "lns/modification/route/insert_route.h"
 #include "lns/modification/route/remove_route.h"
+#include "lns/solution/solution.h"
+
+#include <vector>
 
 /**
  * Capacity constraint.
- * To check this, we keep track of the sum of all requests and check it against the max capacity.
- * TO DO, verification in O(1) by storing a matrix !
  */
 class CapacityConstraint : public Constraint
 {
 public:
     using CapacityVector = std::vector<int>;
-private:
 
+private:
+    /**
+     * Store the used capacity value when leaving one location in each route.
+     */
     std::vector<CapacityVector> routeCapacities;
 
     void apply(InsertPair const &op) override;
@@ -31,22 +31,21 @@ private:
     bool check(InsertRoute const &op) const override;
     bool check(RemovePair const &op) const override;
     bool check(RemoveRoute const &op) const override;
-public:
 
+public:
     explicit CapacityConstraint(Solution const &);
     CapacityConstraint(CapacityConstraint const &) = default;
 
     std::unique_ptr<Constraint> clone(Solution const &newOwningSolution) const override;
 
     /*
-    *   Given the solution, calculate the capacities when leaving each location
-    *   Modify the routeCapacities vector !
-    */
-    void initCapacities();
+     *  Compute from scratch the routeCapacities vector.
+     */
+    void initRouteCapacities();
 
     /*
-    *   Return capacity vector of a route
-    */
+     *  Return capacity vector of a route
+     */
     CapacityVector const &getRouteCapacities(int routeIndex) const;
 
     /*
@@ -62,7 +61,7 @@ public:
     /*
     *   Update the weight
     */
-    void applyModif(Pair const &pair, int routeIndex, int PickupPosition,  int DeliveryPosition, bool addPair);
+    void applyModif(Pair const &pair, int routeIndex, int PickupPosition, int DeliveryPosition, bool addPair);
 
     void print() const override;
 };

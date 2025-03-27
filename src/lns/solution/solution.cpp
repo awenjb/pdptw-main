@@ -4,6 +4,7 @@
 #include "input/data.h"
 #include "input/time_window.h"
 #include "lns/constraints/capacity/capacity_constraint.h"
+#include "lns/constraints/constraint.h"
 #include "lns/constraints/time_window/time_window_constraint.h"
 #include "lns/solution/route.h"
 #include "output/solution_checker.h"
@@ -50,7 +51,7 @@ void Solution::computeAndStoreSolutionCost()
 
 double Solution::computeSolutionCost() const
 {
-    double cost = 0;
+    double cost = 0.0;
     for (Route const &route: getRoutes())
     {
         cost += data::routeCost(data, route);
@@ -203,6 +204,11 @@ double Solution::getRawCost() const
 PDPTWData const &Solution::getData() const
 {
     return data.get();
+}
+
+std::vector<std::unique_ptr<Constraint>> const &Solution::getConstraints() const
+{
+    return constraints;
 }
 
 int Solution::requestsFulFilledCount() const

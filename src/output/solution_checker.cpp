@@ -3,6 +3,7 @@
 #include "input/data.h"
 #include "input/location.h"
 #include "input/pdptw_data.h"
+#include "lns/operators/destruction/clean_empty_route.h"
 #include "lns/solution/solution.h"
 #include "types.h"
 
@@ -64,7 +65,6 @@ void checker::checkSolutionCoherence(Solution const &sol, PDPTWData const &data)
 
     if (errorFlag)
     {
-        sol.print();
         throw SolutionConstraintError("Error in the consistency of the solution.", sol);
     }
 }
