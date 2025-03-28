@@ -15,6 +15,5 @@ namespace output
         unsigned int getNumberOfIteration() const;
         Solution const &getBestSolution() const;
         unsigned long getTimeSpent() const;
-        void writeSolutionToFile() const;
     };
 }// namespace output

@@ -28,6 +28,8 @@
 #include "output/solution_checker.h"
 #include "output/solution_exporter.h"
 #include "types.h"
+#include "output/run.h"
+#include "config.h"
 
 #include <filesystem>
 #include <fstream>
@@ -73,7 +75,10 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
     // run lns
     output::LnsOutput result = lns::runLns(startingSolution, smallLargeSelector, acceptor);
 
-    result.getBestSolution().print();
+    if (STORE_SOLUTION)
+    {
+        output::exportToJson(result);
+    }
 }
 
 int main(int argc, char **argv)
@@ -87,9 +92,12 @@ int main(int argc, char **argv)
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes_1.json";
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n5000/bar-n5000-1.json";
 
-    PDPTWData data = parsing::parseJson(filepath);
-    Solution startingSolution = Solution::emptySolution(data);
-    simpleLNS(data, startingSolution);
+    // PDPTWData data = parsing::parseJson(filepath);
+    // Solution startingSolution = Solution::emptySolution(data);
+    // simpleLNS(data, startingSolution);
+
+    std::string path = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100";
+    runAllInDirectory(path, simpleLNS);
 
     return 0;
 }

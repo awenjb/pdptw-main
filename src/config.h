@@ -1,3 +1,5 @@
+#include <string>
+
 // Parameters
 
 // Penalty for excluding a certain pickup-delivery pair, aims to minimize the number of excluded pairs.
@@ -26,3 +28,9 @@ bool const PRINT = true;
 // Flag indicating whether the final solution is stored.
 bool const STORE_SOLUTION = true;
 
+// Flag indicating whether the solution is stored with complete information or not.
+bool const COMPLETE_STORE = true;
+
+// Directories
+
+std::string const OUTPUT_DIRECTORY = "./../../output/100_complete";

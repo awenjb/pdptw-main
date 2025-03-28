@@ -1,11 +1,11 @@
 #pragma once
 
 #include "lns/solution/solution.h"
+#include "output/lns_output.h"
 
-#include <nlohmann/json.hpp>
-#include <ctime> 
+#include <ctime>
 #include <fstream>
-
+#include <nlohmann/json.hpp>
 
 namespace output
 {
@@ -17,13 +17,13 @@ namespace output
     /**
      * Get a complete json representation of a solution (heavier)
      */
-    nlohmann::ordered_json getCompleteJson(Solution const &solution);
+    nlohmann::ordered_json getCompleteJson(Solution const &solution, int iteration, double time);
 
 
-    nlohmann::ordered_json routeToJson(int routeID, const Route& route);
+    nlohmann::ordered_json routeToJson(int routeID, Route const &route);
 
 
-    void exportToJson(Solution const &solution);
+    void exportToJson(output::LnsOutput result);
 
 }// namespace output
 

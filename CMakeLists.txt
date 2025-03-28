@@ -49,6 +49,7 @@ add_executable(pdptw src/mains/main.cpp
                 src/lns/operators/selector/small_large_selector.cpp
                 src/lns/lns.cpp
                 src/utils.cpp
+                src/output/run.cpp
                 )
 
 target_link_libraries(pdptw PRIVATE CLI11::CLI11 nlohmann_json::nlohmann_json spdlog::spdlog)
