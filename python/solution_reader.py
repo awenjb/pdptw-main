@@ -8,6 +8,17 @@ import pandas as pd
 import osmnx as ox
 import networkx as nx
 
+def read_best_known(file):
+    try:
+        with open(file, 'r') as file:
+            df = pd.read_csv(file, delim_whitespace=True, names=["Instance", "Vehicles", "Distance", "Reference", "Date"], skiprows=1)
+            return df
+    except FileNotFoundError:
+        print(f"Error : The file {file} does not exist.")
+    except Exception as e:
+        print(f"Error : {e}")
+
+
 def read_json(file):
     try:
         with open(file, 'r') as file:
@@ -41,6 +52,51 @@ class PDPTWSolution:
     def get_json(self):
         return self._json_file
 
+class PDPTWCompleteSolution:
+    def __init__(self, filename: str):
+        with open(filename, mode="r", encoding="utf-8") as f:
+            self._json_file = json.load(f)
+        self._parse_json()
+
+    def _parse_json(self):
+        if self._json_file is None:
+            raise "Trying to parse json, but was not loaded"
+        self._routes: list[dict] = self._json_file["routes"]
+        self._vehicles = len(self._routes)
+        self._cost = self._json_file["cost"]
+        self._instance = self._json_file["instanceName"]
+        self._iteration = self._json_file["iteration"]
+        self._time = self._json_file["time"]
+        self._date = self._json_file["date"]
+        self._reference = self._json_file["reference"]
+
+    def get_routes(self):
+        return self._routes
+    
+    def get_vehicles(self):
+        return self._vehicles
+
+    def get_cost(self):
+        return self._cost
+    
+    def get_instance(self):
+        return self._instance
+    
+    def get_iteration(self):
+        return self._iteration
+
+    def get_time(self):
+        return self._time
+    
+    def get_date(self):
+        return self._date
+
+    def get_reference(self):
+        return self._reference
+    
+    def get_json(self):
+        return self._json_file
+    
 
 class PDPTWData:
     def __init__(self, filename: str):

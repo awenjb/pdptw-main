@@ -23,10 +23,10 @@ nlohmann::ordered_json output::getMinimalJson(Solution const &solution)
         ++routeID;
     }
 
-    jsonSolution["InstanceName"] = solution.getData().getDataName();
-    jsonSolution["Authors"] = "...";
-    jsonSolution["Date"] = getCurrentDate();
-    jsonSolution["Reference"] = "...";
+    jsonSolution["instanceName"] = solution.getData().getDataName();
+    jsonSolution["authors"] = "...";
+    jsonSolution["date"] = getCurrentDate();
+    jsonSolution["reference"] = "...";
     jsonSolution["routes"] = jsonRoutes;
 
     return jsonSolution;
@@ -44,14 +44,14 @@ nlohmann::ordered_json output::getCompleteJson(Solution const &solution, int ite
         ++routeID;
     }
 
-    jsonSolution["InstanceName"] = solution.getData().getDataName();
-    jsonSolution["Authors"] = "...";
-    jsonSolution["Date"] = getCurrentDate();
-    jsonSolution["Reference"] = "...";
-    jsonSolution["Cost"] =  std::ceil(solution.getRawCost() * 100.0) / 100.0;
-    jsonSolution["Time"] = time;
-    jsonSolution["Iteration"] = iteration;
-    jsonSolution["Unfullfilled"] = solution.getPairBank().size();
+    jsonSolution["instanceName"] = solution.getData().getDataName();
+    jsonSolution["authors"] = "...";
+    jsonSolution["date"] = getCurrentDate();
+    jsonSolution["reference"] = "...";
+    jsonSolution["cost"] =  std::ceil(solution.getRawCost() * 100.0) / 100.0;
+    jsonSolution["time"] = time;
+    jsonSolution["iteration"] = iteration;
+    jsonSolution["unfullfilled"] = solution.getPairBank().size();
     jsonSolution["routes"] = jsonRoutes;
 
     return jsonSolution;
@@ -88,7 +88,7 @@ void output::exportToJson(output::LnsOutput result)
 
     file << jsonData.dump(4);
     file.close();
-    std::cout << "Solution exported" << std::endl;
+    spdlog::info("Solution of {} exported to {}", result.getBestSolution().getData().getDataName(), OUTPUT_DIRECTORY);
 }
 
 nlohmann::ordered_json output::routeToJson(int routeID, Route const &route)

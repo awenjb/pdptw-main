@@ -23,14 +23,6 @@ namespace enumeration
                     Index index = std::make_tuple(routeIndex, p, d);
 
                     consumeModification(InsertPair(index,pair));
-
-                    // std::unique_ptr<InsertPair> modification = std::make_unique<InsertPair>(index, pair);
-                    // // add to list if valid modification
-                    // if (solution.checkModification(*modification))
-                    // {
-                    //     std::cout << " => Insert Modification\n";
-                    //     list.push_front(std::move(modification));
-                    // }
                 }
             }
             ++routeIndex;

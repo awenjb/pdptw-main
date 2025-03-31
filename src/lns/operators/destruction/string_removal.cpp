@@ -156,6 +156,5 @@ namespace
 
 void StringRemoval::destroySolution(Solution &solution) const
 {
-    std::cout << "SISR ";
     SISRsRuin(solution, maxCardinalityOfString, averageNumberRemovedElement);
 }

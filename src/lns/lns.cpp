@@ -1,10 +1,10 @@
 #include "lns.h"
 
+#include "config.h"
 #include "lns/acceptance/acceptance_function.h"
 #include "lns/operators/destruction/clean_empty_route.h"
 #include "lns/operators/selector/operator_selector.h"
 #include "output/solution_checker.h"
-#include "config.h"
 
 #include <chrono>
 
@@ -90,7 +90,6 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
         ++runtime.numberOfIteration;
         logProgress(runtime, actualSolution);
 
-        std::cout << "\n" << runtime.numberOfIteration << " : ";
         /**
          * The solution on which we apply the operators.
          * It is discarded at the end of each loop if it is not accepted by the Acceptance Function.
@@ -106,8 +105,8 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
         // Update best solution
         if (isBetterSolution(candidateSolution, runtime.bestSolution))
         {
-            std::cout << "\n > new Best Solution \n";
             checker::checkAll(candidateSolution, candidateSolution.getData(), false);
+
 
             // remove empty route from the solution
             CleanEmptyRoute clean = CleanEmptyRoute();
@@ -115,6 +114,13 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
 
             runtime.bestSolution = candidateSolution;
             opSelector.betterSolutionFound();
+
+            // new best solution !
+            spdlog::info("New Best Solution | Routes {} \t Cost {} \t Iteration {} \t Time {}ms",
+                         runtime.bestSolution.getRoutes().size(),
+                         std::ceil(runtime.bestSolution.getRawCost() * 100.0) / 100.0,
+                         runtime.numberOfIteration,
+                         getTimeSinceInMs(runtime.start));
         }
 
         // Check if we use the candidate solution as the new actual solution

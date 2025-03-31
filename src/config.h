@@ -9,10 +9,10 @@ int const EXCLUSION_PENALTY = 1000000;
 int const ROUTE_PENALTY = 0;
 
 // Number of vehicles involved at the start of the optimization process (cannot be increased).
-int const NUMBER_VEHICLE = 20;
+int const NUMBER_VEHICLE = 50;
 
 // Number of iterations for the algorithm or simulation to run.
-int const NUMBER_ITERATION = 500;
+int const NUMBER_ITERATION = 5000;
 
 // Flags
 
@@ -33,4 +33,4 @@ bool const COMPLETE_STORE = true;
 
 // Directories
 
-std::string const OUTPUT_DIRECTORY = "./../../output/100_complete";
+std::string const OUTPUT_DIRECTORY = "./../../output/selection";

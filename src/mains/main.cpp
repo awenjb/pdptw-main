@@ -19,7 +19,6 @@
 #include "lns/operators/destruction/string_removal.h"
 #include "lns/operators/reconstruction/enumerate.h"
 #include "lns/operators/reconstruction/list_heuristic_cost_oriented.h"
-#include "lns/operators/reconstruction/list_heuristic_insertion.h"
 #include "lns/operators/selector/operator_selector.h"
 #include "lns/operators/selector/small_large_selector.h"
 #include "lns/operators/sorting_strategy.h"
@@ -96,7 +95,7 @@ int main(int argc, char **argv)
     // Solution startingSolution = Solution::emptySolution(data);
     // simpleLNS(data, startingSolution);
 
-    std::string path = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100";
+    std::string path = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/selection";
     runAllInDirectory(path, simpleLNS);
 
     return 0;
