@@ -5,6 +5,7 @@
 #include "lns/modification/route/insert_route.h"
 #include "lns/modification/route/remove_route.h"
 #include "lns/solution/solution.h"
+#include "types.h"
 
 #include <vector>
 
@@ -17,10 +18,12 @@ public:
     using CapacityVector = std::vector<int>;
 
 private:
+
     /**
-     * Store the used capacity value when leaving one location in each route.
+     *  Store the maximum used capacity between two locations.
+     *  A cell is not updated to 0 when the location is removed from a route.
      */
-    std::vector<CapacityVector> routeCapacities;
+    Matrix maxCapacity;
 
     void apply(InsertPair const &op) override;
     void apply(InsertRoute const &op) override;
@@ -39,28 +42,22 @@ public:
     std::unique_ptr<Constraint> clone(Solution const &newOwningSolution) const override;
 
     /*
-     *  Compute from scratch the routeCapacities vector.
+     *  Compute from scratch the maxCapacity matrix.
      */
-    void initRouteCapacities();
+    void initMaxCapacity();
+
+    /*
+     *  Update MaxCapacity.
+     *  Suppose the route has already been updated
+     */
+    void updateMaxCapacity(Route const &route);
 
     /*
      *  Return capacity vector of a route
      */
     CapacityVector const &getRouteCapacities(int routeIndex) const;
 
-    /*
-    *   Check if a modification is valid or not
-    *   (for now, check only the position of the pickup)
-    *   TO DO (1 or 2)
-    *   1) check if every index on the path can take the new capacity
-    *   2) store a matrix / Segment Tree ?? to evaluate the maximum load between two part of the route 
-    *      -> a matrix but check in O(1) (update in O(n))
-    */
     bool checkModif(Pair const &pair, int routeIndex, int position, int DeliveryPosition) const;
-
-    /*
-    *   Update the weight
-    */
     void applyModif(Pair const &pair, int routeIndex, int PickupPosition, int DeliveryPosition, bool addPair);
 
     void print() const override;

@@ -78,6 +78,35 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
     {
         output::exportToJson(result);
     }
+
+
+    // Solution sol = result.getBestSolution();
+    // CapacityConstraint capa = CapacityConstraint(sol);
+
+    // capa.initRouteCapacities();
+    // capa.initMaxCapacity();
+    // capa.print();
+
+    // RemovePair rem = RemovePair(0, 1, 4, sol.getData().getPair(1));
+
+    
+
+    // sol.applyDestructSolution(rem);
+    // sol.print();
+    // capa.updateMaxCapacity(sol.getData(), sol.getRoute(0));
+    // capa.print();
+    // int pickup = 8;
+    // int delivery = 8;
+    // std::cout << std::endl<< capa.checkModif(sol.getData().getPair(1), 0, pickup, delivery) << std::endl;
+    // std::cout << std::endl<< capa.checkModif2(sol.getData().getPair(1), 0, pickup, delivery) << std::endl;
+
+    // InsertPair add = InsertPair(0, pickup, delivery, sol.getData().getPair(1));
+    // sol.applyRecreateSolution(add);
+
+    // checker::checkAll(sol, sol.getData());
+
+    // capa.updateMaxCapacity(sol.getData(), sol.getRoute(0));
+    // capa.print();
 }
 
 int main(int argc, char **argv)
@@ -91,12 +120,14 @@ int main(int argc, char **argv)
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes_1.json";
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n5000/bar-n5000-1.json";
 
-    // PDPTWData data = parsing::parseJson(filepath);
-    // Solution startingSolution = Solution::emptySolution(data);
-    // simpleLNS(data, startingSolution);
+    PDPTWData data = parsing::parseJson(filepath);
+    Solution startingSolution = Solution::emptySolution(data);
+    simpleLNS(data, startingSolution);
 
-    std::string path = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/selection";
-    runAllInDirectory(path, simpleLNS);
+    // std::string path = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/selection";
+    // runAllInDirectory(path, simpleLNS);
+
+
 
     return 0;
 }
