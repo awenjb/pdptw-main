@@ -34,7 +34,7 @@ private:
 
 public:
     /*
-     * Creates an empty solution with all pairs in the pairBank and one empty route.
+     * Creates an empty solution with all pairs in the pairBank.
      */
     static Solution emptySolution(PDPTWData const &data);
 
@@ -137,7 +137,7 @@ public:
     /*
      * Pre-modification check. The modification must be valid.
      */
-    void beforeApplyModification(AtomicModification &modification);
+    void beforeApplyModification(AtomicModification &modification) const;
     /*
      * Updates constraints after modification is applied.
      */

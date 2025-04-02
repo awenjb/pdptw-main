@@ -12,7 +12,7 @@ int const ROUTE_PENALTY = 0;
 int const NUMBER_VEHICLE = 50;
 
 // Number of iterations for the algorithm or simulation to run.
-int const NUMBER_ITERATION = 100000;
+int const NUMBER_ITERATION = 10000;
 
 // Flags
 
@@ -33,4 +33,4 @@ bool const COMPLETE_STORE = true;
 
 // Directories
 
-std::string const OUTPUT_DIRECTORY = "./../../output/test2";
+std::string const OUTPUT_DIRECTORY = "./../../output/select2";

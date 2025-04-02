@@ -124,18 +124,21 @@ Solution &Solution::operator=(Solution const &rhs)
     return *this;
 }
 
-Solution::Solution(Solution &&sol) noexcept : data(std::move(sol.data))
+Solution::Solution(Solution &&sol) noexcept : data(sol.data)
 {
     *this = std::move(sol);
 }
 
 Solution &Solution::operator=(Solution &&sol) noexcept
 {
-    if (this == &sol) return *this;
+    if (this == &sol)
+    {
+        return *this;
+    }
 
-    data = std::move(sol.data);
-    rawCost = std::move(sol.rawCost);
-    totalCost = std::move(sol.totalCost);
+    data = sol.data;
+    rawCost = sol.rawCost;
+    totalCost = sol.totalCost;
 
     pairBank = std::move(sol.pairBank);
     routes = std::move(sol.routes);
@@ -259,7 +262,7 @@ bool Solution::checkModification(AtomicRecreation const &modification) const
     return true;
 }
 
-void Solution::beforeApplyModification(AtomicModification &modification)
+void Solution::beforeApplyModification(AtomicModification &modification) const
 {
     // Pre-modification check
     check();
