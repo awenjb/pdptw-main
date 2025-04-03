@@ -7,6 +7,9 @@ import numpy as np
 import pandas as pd
 import osmnx as ox
 import networkx as nx
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+import matplotlib.colors as mcolors
 
 def read_best_known(file):
     try:
@@ -183,3 +186,51 @@ def display_route(map: folium.Map, data: PDPTWData, solution: PDPTWSolution, rou
                           tooltip=text).add_to(map)
 
 
+def plot_number_columns(routes, data):
+
+    sequences = []
+    location_ids_list = [] 
+    # recalculate the capacity with de route and data
+    for route in routes :
+        ids = route["locationIDs"]
+        cumulated = []
+        for id in ids :
+            location = data.get_locations()[id - 1]
+            demand = location["demand"]
+            if not cumulated:
+                cumulated.append(demand)
+            else :
+                cumulated.append( cumulated[-1] + demand)
+        sequences.append(cumulated)
+        location_ids_list.append(ids)
+
+    num_sequences = len(sequences)
+    fig, axes = plt.subplots(num_sequences, 1, figsize=(10, num_sequences * 4), sharex=False)
+    
+    #fig.suptitle("Capacity Constraint", fontsize=16, fontweight='bold')
+
+    if num_sequences == 1:
+        axes = [axes]
+    
+    for i, (ax, seq, loc_ids) in enumerate(zip(axes, sequences, location_ids_list)):
+
+        max_value = data.get_capacity()
+        
+        #normalized_seq = [value / max_value * 100 for value in seq] # %
+        x_positions = np.arange(len(seq))
+        
+        norm = mcolors.Normalize(vmin=min(seq), vmax=max_value)
+        colors = [cm.get_cmap('YlOrRd')(norm(value)) for value in seq]
+        
+        ax.bar(x_positions, seq, color=colors, edgecolor='black', width=1.0) 
+        ax.set_ylabel('Used Capacity')
+        ax.set_title(f'Route {i+1}')
+        #ax.set_ylim(0, 110)
+        ax.set_ylim(0, max_value + max_value * 0.1)
+        ax.set_xticks(x_positions)
+        ax.set_xticklabels(loc_ids, rotation=0)
+
+        ax.set_xlabel('Location ID')
+
+    plt.tight_layout()
+    plt.show()
