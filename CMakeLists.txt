@@ -51,6 +51,10 @@ add_executable(pdptw src/mains/main.cpp
                 src/output/run.cpp
                 )
 
+set_target_properties(pdptw PROPERTIES UNITY_BUILD ON UNITY_BUILD_BATCH_SIZE 0)
+
+add_compile_options(-g)
+
 target_link_libraries(pdptw PRIVATE CLI11::CLI11 nlohmann_json::nlohmann_json spdlog::spdlog)
 
 target_include_directories(pdptw PUBLIC ${CMAKE_SOURCE_DIR}/src)
