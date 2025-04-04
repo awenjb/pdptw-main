@@ -55,11 +55,12 @@ void ListHeuristicCostOriented::reconstructSolution(Solution &solution, double b
         switch (enumeration)
         {
             case EnumerationType::ALL_INSERT_PAIR: {
-                enumeration::enumerateAllInsertPair(
-                        solution,
-                        pair,
-                        keepBestSolution<InsertPair>(solution, bestRecreation, bestRecreationCost, blinkRate));
+                // enumeration::enumerateAllInsertPair(
+                //         solution,
+                //         pair,
+                //         keepBestSolution<InsertPair>(solution, bestRecreation, bestRecreationCost, blinkRate));
 
+                enumeration::enumerateAllInsertPairOpti(solution, pair, bestRecreation, bestRecreationCost, blinkRate);
                 break;
             }
             default:

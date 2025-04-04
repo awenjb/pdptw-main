@@ -5,7 +5,7 @@
 double data::addedCostForInsertion(PDPTWData const &data, int before, int toInsert, int after)
 {
     const Matrix & matrix = data.getMatrix();
-    return matrix.at(before).at(toInsert) + matrix.at(toInsert).at(after) - matrix.at(before).at(after);
+    return matrix[before][toInsert] + matrix[toInsert][after] - matrix[before][after];
 }
 
 double data::removedCostForSuppression(PDPTWData const &data, int before, int toRemove, int after)

@@ -223,7 +223,7 @@ def plot_number_columns(routes, data):
         colors = [cm.get_cmap('YlOrRd')(norm(value)) for value in seq]
         
         ax.bar(x_positions, seq, color=colors, edgecolor='black', width=1.0) 
-        ax.set_ylabel('Used Capacity')
+        ax.set_ylabel('Used capacity leaving the location')
         ax.set_title(f'Route {i+1}')
         #ax.set_ylim(0, 110)
         ax.set_ylim(0, max_value + max_value * 0.1)

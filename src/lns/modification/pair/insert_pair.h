@@ -1,14 +1,13 @@
 #pragma once
 
-#include <functional>
-#include <tuple>
-
-#include "lns/modification/atomic_recreation.h"
-#include "lns/solution/solution.h"
 #include "input/location.h"
 #include "input/pair.h"
+#include "lns/modification/atomic_recreation.h"
+#include "lns/solution/solution.h"
 #include "types.h"
 
+#include <functional>
+#include <tuple>
 
 /**
  * A modification that will insert a pair (pickup/delivery) of location in a route at the given index.
@@ -31,30 +30,31 @@ class InsertPair : public AtomicRecreation
      * Index at which the insertion must be made
      */
     int deliveryInsertion;
-   
+
     /**
      * The pickup location to insert
      */
-    Location const & pickupLocation;
+    Location const &pickupLocation;
 
     /**
      * The delivery location to insert
      */
-    Location const & deliveryLocation;
+    Location const &deliveryLocation;
 
-    Pair const & pair;
+    Pair const &pair;
 
 public:
-    
     InsertPair(int routeIndex, int pickupInsertion, int deliveryInsertion, Pair const &pair);
     InsertPair(Index position, Pair const &pair);
 
     ~InsertPair() override = default;
 
     ModificationApplyVariant asApplyVariant() const override;
-    
+
     void modifySolution(Solution &solution) override;
     double evaluate(Solution const &solution) const override;
+    double getPickupCost(Solution const &solution) const;
+    double getDeliveryCost(Solution const &solution) const;
     int getAddedPairs() const override;
 
     int getPickupInsertion() const;
@@ -66,4 +66,4 @@ public:
     Index getIndex() const;
 
     ModificationCheckVariant asCheckVariant() const override;
-};  
+};

@@ -1,31 +1,110 @@
 #include "enumerate.h"
 
+#include "input/data.h"
+#include "input/pdptw_data.h"
+#include "lns/constraints/constraint.h"
+#include "utils.h"
+
+#include <vector>
+
 namespace enumeration
 {
     /**
-     * Enumerate InsertPair modifications.
-     * Does some checks to cut some loops. (TO DO)
+     * Enumerate InsertPair modifications (no cuts).
      * @param solution
      * @param pair
      * @param ModificationContainer
      */
-    void enumerateAllInsertPair(Solution const &solution, Pair const &pair, std::function<void(InsertPair &&)> const &consumeModification)
+    void enumerateAllInsertPair(Solution const &solution, Pair const &pair,
+                                std::function<void(InsertPair &&)> const &consumeModification)
     {
         int routeIndex = 0;
+
         // Insert into existing routes
         for (Route const &route: solution.getRoutes())
         {
             int routeSize = route.getSize();
+
             for (int p = 0; p <= routeSize; ++p)
             {
                 for (int d = p; d <= routeSize; ++d)
                 {
                     Index index = std::make_tuple(routeIndex, p, d);
 
-                    consumeModification(InsertPair(index,pair));
+                    consumeModification(InsertPair(index, pair));
                 }
             }
             ++routeIndex;
         }
     }
+
+    /**
+     * Enumerate InsertPair modifications.
+     * @param solution
+     * @param pair
+     * @param bestModificationPtr
+     * @param bestCost
+     * @param blinkRate
+     */
+    void enumerateAllInsertPairOpti(Solution const &solution, Pair const &pair,
+                                    std::unique_ptr<AtomicRecreation> &bestModificationPtr, double &bestCost,
+                                    double blinkRate)
+    {
+        int routeIndex = 0;
+        PDPTWData const &data = solution.getData();
+
+        // try to insert into all existing routes
+        for (Route const &route: solution.getRoutes())
+        {
+            int routeSize = route.getSize();
+            std::vector<int> const &routeIDs = route.getRoute();
+
+            // for every pickup position
+            for (int p = 0; p <= routeSize; ++p)
+            {
+                // compute pickup cost
+                int prevPickup = (p == 0) ? 0 : routeIDs.at(p - 1);
+                int nextPickup = (p >= routeSize) ? 0 : routeIDs.at(p);
+                double pickupCost = data::addedCostForInsertion(data, prevPickup, pair.getPickup().getId(), nextPickup);
+
+                // cut if the pickupCost is not cheaper than the best known insertion cost
+                if (pickupCost >= bestCost)
+                {
+                    continue;
+                }
+                
+                // for every delivery position
+                for (int d = p; d <= routeSize; ++d)
+                {
+                    // compute delivery cost
+                    int prevDelivery = (d == 0) ? 0 : routeIDs.at(d - 1);
+                    if (p == d)
+                    {
+                        prevDelivery = pair.getPickup().getId();
+                    }
+                    int nextDelivery = (d >= routeIDs.size()) ? 0 : routeIDs.at(d);
+                    double deliveryCost =
+                            data::addedCostForInsertion(data, prevDelivery, pair.getDelivery().getId(), nextDelivery);
+
+                    double cost = pickupCost + deliveryCost;
+
+                    Index index = std::make_tuple(routeIndex, p, d);
+
+                    InsertPair modification = InsertPair(index, pair);
+
+                    // first test the cost
+                    // if the modification is better, then blink,
+                    // then check the modification
+                    // then store the best cost and the modification to the pointer
+                    if (cost < bestCost && util::getRandom() >= blinkRate && solution.checkModification(modification))
+                    {
+                        bestModificationPtr = std::make_unique<InsertPair>(modification);
+                        bestCost = cost;
+                    }
+                }
+            }
+            ++routeIndex;
+        }
+    }
+
 }// namespace enumeration

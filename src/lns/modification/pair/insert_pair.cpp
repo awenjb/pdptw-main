@@ -57,6 +57,36 @@ double InsertPair::evaluate(Solution const &solution) const {
     return pickupCost + deliveryCost;
 }
 
+double InsertPair::getPickupCost(Solution const &solution) const
+{
+    Route const &route = solution.getRoute(routeIndex);
+    const std::vector<int> & routeIDs = route.getRoute();
+    const PDPTWData &data = solution.getData();
+
+    int prevPickup = (pickupInsertion == 0) ? 0 : routeIDs.at(pickupInsertion - 1);
+    int nextPickup = (pickupInsertion >= routeIDs.size()) ? 0 : routeIDs.at(pickupInsertion);
+    double pickupCost = data::addedCostForInsertion(data, prevPickup, pickupLocation.getId(), nextPickup);
+
+    return pickupCost;
+}
+
+double InsertPair::getDeliveryCost(Solution const &solution) const
+{
+    Route const &route = solution.getRoute(routeIndex);
+    const std::vector<int> & routeIDs = route.getRoute();
+    const PDPTWData &data = solution.getData();
+
+    int prevDelivery = (deliveryInsertion == 0) ? 0 : routeIDs.at(deliveryInsertion - 1); 
+    if (pickupInsertion == deliveryInsertion)
+    {
+        prevDelivery = pickupLocation.getId();
+    }
+    int nextDelivery = (deliveryInsertion >= routeIDs.size()) ? 0 : routeIDs.at(deliveryInsertion);
+
+    double deliveryCost = data::addedCostForInsertion(data, prevDelivery, deliveryLocation.getId(), nextDelivery);
+    return deliveryCost;
+}
+
 
 ModificationCheckVariant InsertPair::asCheckVariant() const
 {

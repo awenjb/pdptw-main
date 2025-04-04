@@ -8,10 +8,10 @@
 /**
  * A type of enumeration for a specific modification
  */
- enum class EnumerationType {
+enum class EnumerationType
+{
     ALL_INSERT_PAIR
 };
-
 
 namespace enumeration
 {
@@ -24,8 +24,10 @@ namespace enumeration
      * @param Pair
      * @param list
      */
-    void enumerateAllInsertPair(Solution const &solution, Pair const &pair, std::function<void(InsertPair &&)> const &consumeModification);
-
+    void enumerateAllInsertPair(Solution const &solution, Pair const &pair,
+                                std::function<void(InsertPair &&)> const &consumeModification);
+    void enumerateAllInsertPairOpti(Solution const &solution, Pair const &pair,
+                                    std::unique_ptr<AtomicRecreation> &bestModificationPtr, double &bestCost,
+                                    double blinkRate);
 
 }// namespace enumeration
-
