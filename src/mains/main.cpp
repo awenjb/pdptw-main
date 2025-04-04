@@ -14,6 +14,7 @@
 #include "lns/modification/route/insert_route.h"
 #include "lns/modification/route/remove_route.h"
 #include "lns/operators/abstract_operator.h"
+#include "lns/operators/destruction/bank_focus_string_removal/bank_focus_string_removal.h"
 #include "lns/operators/destruction/clean_empty_route.h"
 #include "lns/operators/destruction/random_destroy.h"
 #include "lns/operators/destruction/string_removal.h"
@@ -79,33 +80,17 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
         output::exportToJson(result);
     }
 
-    // Solution sol = result.getBestSolution();
-    // CapacityConstraint capa = CapacityConstraint(sol);
-
-    // capa.initRouteCapacities();
-    // capa.initMaxCapacity();
-    // capa.print();
-
-    // RemovePair rem = RemovePair(0, 1, 4, sol.getData().getPair(1));
-
+    Solution sol = result.getBestSolution();
+    sol.print();
+    // try reduce the number of routes
+    BankFocusStringRemoval rem = BankFocusStringRemoval(10,10);
     
+    rem.destroySolution(sol);
 
-    // sol.applyDestructSolution(rem);
-    // sol.print();
-    // capa.updateMaxCapacity(sol.getData(), sol.getRoute(0));
-    // capa.print();
-    // int pickup = 8;
-    // int delivery = 8;
-    // std::cout << std::endl<< capa.checkModif(sol.getData().getPair(1), 0, pickup, delivery) << std::endl;
-    // std::cout << std::endl<< capa.checkModif2(sol.getData().getPair(1), 0, pickup, delivery) << std::endl;
+    std::cout << "final print" << std::endl;
+    sol.print();
 
-    // InsertPair add = InsertPair(0, pickup, delivery, sol.getData().getPair(1));
-    // sol.applyRecreateSolution(add);
 
-    // checker::checkAll(sol, sol.getData());
-
-    // capa.updateMaxCapacity(sol.getData(), sol.getRoute(0));
-    // capa.print();
 }
 
 int main(int argc, char **argv)

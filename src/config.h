@@ -13,7 +13,7 @@ int const ROUTE_PENALTY = 0;
 int const NUMBER_VEHICLE = 50;
 
 // Number of iterations for the algorithm or simulation to run.
-int const NUMBER_ITERATION = 100000;
+int const NUMBER_ITERATION = 1000;
 
 // Flags
 
@@ -27,7 +27,7 @@ int const RANDOM_SEED = 100;
 bool const PRINT = true;
 
 // Flag indicating whether the final solution is stored.
-bool const STORE_SOLUTION = true;
+bool const STORE_SOLUTION = false;
 
 // Flag indicating whether the solution is stored with complete information or not.
 bool const COMPLETE_STORE = true;

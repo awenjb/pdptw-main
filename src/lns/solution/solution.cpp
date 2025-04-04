@@ -318,11 +318,11 @@ void Solution::print() const
         ++i;
     }
 
-    std::cout << "Constraints:\n";
-    for (auto const &constraint: constraints)
-    {
-        constraint->print();
-    }
+    // std::cout << "Constraints:\n";
+    // for (auto const &constraint: constraints)
+    // {
+    //     constraint->print();
+    // }
 
     std::cout << "\n";
 }

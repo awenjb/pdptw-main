@@ -8,7 +8,7 @@
 
 #include <vector>
 
-namespace
+namespace sisr
 {
 
     double computeAverageCardinality(std::vector<Route> const &routes)
@@ -156,5 +156,5 @@ namespace
 
 void StringRemoval::destroySolution(Solution &solution) const
 {
-    SISRsRuin(solution, maxCardinalityOfString, averageNumberRemovedElement);
+    sisr::SISRsRuin(solution, maxCardinalityOfString, averageNumberRemovedElement);
 }

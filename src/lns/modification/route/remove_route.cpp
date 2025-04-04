@@ -18,14 +18,14 @@ RemoveRoute::RemoveRoute(int routeIndex, std::vector<int> &&removedPairID)
 void RemoveRoute::modifySolution(Solution &solution)
 {
     std::vector<Route> &routes = solution.getRoutes();
-    if (routes.at(routeIndex).getRoute().empty())
+    std::vector<int> const &routeIDs = routes.at(routeIndex).getRoute();
+
+    if (!(routeIDs.empty()))
     {
-        std::vector<int> const &locationIDs = routes.at(routeIndex).getRoute();
-
         // update removedPairID
-        removedPairID.reserve(routes.at(routeIndex).getSize());
+        removedPairID.reserve(routeIDs.size());
 
-        for (int id: locationIDs)
+        for (int id: routeIDs)
         {
             if (solution.getData().getLocation(id).getLocType() == LocType::PICKUP)
             {
