@@ -79,6 +79,7 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
         output::exportToJson(result);
     }
 
+    result.getBestSolution().print();
 
     // Solution sol = result.getBestSolution();
     // CapacityConstraint capa = CapacityConstraint(sol);
@@ -116,16 +117,16 @@ int main(int argc, char **argv)
     ///////////////////////////////////////////////////////////////////////
 
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n100/bar-n100-1.json";
-    //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100/lc106.json";
-    //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes_1.json";
+    // std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100/lc103.json";
+    std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes_1.json";
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n5000/bar-n5000-1.json";
 
-    // PDPTWData data = parsing::parseJson(filepath);
-    // Solution startingSolution = Solution::emptySolution(data);
-    // simpleLNS(data, startingSolution);
+    PDPTWData data = parsing::parseJson(filepath);
+    Solution startingSolution = Solution::emptySolution(data);
+    simpleLNS(data, startingSolution);
 
-    std::string path = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/selection";
-    runAllInDirectory(path, simpleLNS);
+    // std::string path = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/selection";
+    // runAllInDirectory(path, simpleLNS);
 
 
 

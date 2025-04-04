@@ -179,21 +179,11 @@ std::vector<Route> &Solution::getRoutes()
 
 Route &Solution::getRoute(int routeIndex)
 {
-    if (routeIndex < 0 || routeIndex >= routes.size())
-    {
-        spdlog::error("Invalid route index: {}", routeIndex);
-        throw std::out_of_range("Invalid route index.");
-    }
     return routes.at(routeIndex);
 }
 
 Route const &Solution::getRoute(int routeIndex) const
 {
-    if (routeIndex < 0 || routeIndex >= routes.size())
-    {
-        spdlog::error("Invalid route index: {}", routeIndex);
-        throw std::out_of_range("Invalid route index.");
-    }
     return routes.at(routeIndex);
 }
 

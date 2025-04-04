@@ -99,7 +99,7 @@ void CapacityConstraint::updateMaxCapacity(Route const &route)
         maxCharge = (i == 0) ? 0.0 : cumulated.at(i - 1);
         int firstLocationID = routeIDs.at(i);
 
-        auto maxCapacityRow = maxCapacity.at(firstLocationID);
+        auto & maxCapacityRow = maxCapacity.at(firstLocationID);
         for (int j = i; j < m; ++j)
         {
             int secondLocationID = routeIDs.at(j);
