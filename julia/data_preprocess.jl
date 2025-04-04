@@ -1,5 +1,4 @@
-using CSV
-using DataFrames
+using CSV, DataFrames, StatsBase, Random, Distributions
 
 
 input = "/home/a24jacqb/Documents/Code/pdptw-main/julia/LCN_01.csv"
@@ -35,10 +34,42 @@ function count_is_missing(column)
     return count(x -> ismissing(x), column)
 end
 
-# remove doublon
 
-# remove empty order
+# remove doublon
+df = unique(df)
+
+# remove missing # order
+dropmissing!(df, ["# order"])
 
 # fill missing data (weight & revenue) with a normal distribution
+
+
+function fill_missing(value, type)
+    if ismissing(value) && type == "PICKUP"
+        new_value = round(rand(Normal(mu, sigma)), digits=2)
+        new_value = max(new_value, 1.0)
+        new_value = min(new_value, maxi)
+        return new_value
+    else
+        return value
+    end
+end
+
+df.weight = map(parse_weight, df.weight)
+
+maxi = maximum(skipmissing(df.weight))
+mu = mean(skipmissing(df.weight))
+sigma = std(skipmissing(df.weight))
+
+df.weight = map(fill_missing, df.weight, df.type)
+
+
+for row in eachrow(df)
+    if row.type == "DROPOFF"
+        row.weight = - df.weight[(df."# order" .== row."# order") .& (df.type .== "PICKUP")][1]
+    end
+end
+
+println(first(df, 15))
 
 CSV.write("clean_LCN_01.csv", df)
