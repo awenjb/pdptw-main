@@ -80,15 +80,15 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
         output::exportToJson(result);
     }
 
-    Solution sol = result.getBestSolution();
-    sol.print();
-    // try reduce the number of routes
-    BankFocusStringRemoval rem = BankFocusStringRemoval(10,10);
+    // Solution sol = result.getBestSolution();
+    // sol.print();
+    // // try reduce the number of routes
+    // BankFocusStringRemoval rem = BankFocusStringRemoval(10,10);
     
-    rem.destroySolution(sol);
+    // rem.destroySolution(sol);
 
-    std::cout << "final print" << std::endl;
-    sol.print();
+    // std::cout << "final print" << std::endl;
+    // sol.print();
 
 
 }
@@ -100,9 +100,10 @@ int main(int argc, char **argv)
     ///////////////////////////////////////////////////////////////////////
 
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n100/bar-n100-1.json";
-    std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100/lc103.json";
+    // std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100/lc103.json";
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes_1.json";
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n5000/bar-n5000-1.json";
+    std::string filepath =  "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes/Nantes_03_10_2023";
 
     PDPTWData data = parsing::parseJson(filepath);
     Solution startingSolution = Solution::emptySolution(data);

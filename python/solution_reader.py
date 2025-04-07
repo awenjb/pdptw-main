@@ -3,6 +3,7 @@ import datetime
 import enum
 
 import folium
+from folium import Icon
 import numpy as np
 import pandas as pd
 import osmnx as ox
@@ -182,8 +183,9 @@ def display_route(map: folium.Map, data: PDPTWData, solution: PDPTWSolution, rou
     for index, row in df.iterrows():
         if row["type"] == "REQUEST":
             text = f'{index} - {row["latitude"], row["longitude"]} : times ({row["arrival"]},{row["service"]},{row["departure"]}), time window [{row["Hmin"]},{row["Hmax"]}]'
+            
             folium.Circle(location=(row["latitude"], row["longitude"]), fill_color="orange", radius=4,
-                          tooltip=text).add_to(map)
+                           tooltip=text).add_to(map)
 
 
 def plot_number_columns(routes, data):

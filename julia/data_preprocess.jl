@@ -1,6 +1,5 @@
 using CSV, DataFrames, StatsBase, Random, Distributions
 
-
 input = "/home/a24jacqb/Documents/Code/pdptw-main/julia/LCN_01.csv"
 
 df = CSV.read(input, DataFrame)
@@ -25,15 +24,17 @@ df.weight = map(extract_weight, df.comments)
 df.weight = convert(Vector{Union{Missing, String}}, df.weight)
 df.weight = replace!(df.weight, "" => missing)
 
+df.weight = map(x -> ismissing(x) ? missing : replace(x, r"\s*kg" => ""), df.weight)
+df.weight = map(x -> ismissing(x) ? missing : parse(Float64, x), df.weight)
+
 select!(df, Not("comments")) # delete "comments"
-
-println(first(df, 15))
-
 
 function count_is_missing(column)
     return count(x -> ismissing(x), column)
 end
 
+
+##################### modify / generate data
 
 # remove doublon
 df = unique(df)
@@ -42,7 +43,6 @@ df = unique(df)
 dropmissing!(df, ["# order"])
 
 # fill missing data (weight & revenue) with a normal distribution
-
 
 function fill_missing(value, type)
     if ismissing(value) && type == "PICKUP"
@@ -55,7 +55,6 @@ function fill_missing(value, type)
     end
 end
 
-df.weight = map(parse_weight, df.weight)
 
 maxi = maximum(skipmissing(df.weight))
 mu = mean(skipmissing(df.weight))
@@ -72,4 +71,4 @@ end
 
 println(first(df, 15))
 
-CSV.write("clean_LCN_01.csv", df)
+#CSV.write("clean_LCN_01.csv", df)
