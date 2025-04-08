@@ -63,7 +63,5 @@ void BankFocusStringRemoval::destroySolution(Solution &solution) const
         RemoveRoute remove = RemoveRoute(util::getRandomInt(1, solution.getRoutes().size()) - 1);
         solution.applyDestructSolution(remove);
     }
-    std::cout << "After preparation :" << std::endl;
-    solution.print();
     BankFocusSISRsRuin(solution, maxCardinalityOfString, averageNumberRemovedElement);
 }

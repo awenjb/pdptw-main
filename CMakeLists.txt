@@ -47,6 +47,7 @@ add_executable(pdptw src/mains/main.cpp
                 src/lns/operators/reconstruction/list_heuristic_cost_oriented.cpp
                 src/lns/operators/selector/operator_selector.cpp
                 src/lns/operators/selector/small_large_selector.cpp
+                src/lns/operators/selector/min_small_large_selector.cpp
                 src/lns/lns.cpp
                 src/utils.cpp
                 src/output/run.cpp

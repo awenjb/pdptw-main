@@ -101,7 +101,7 @@ def save_to_json(output_dir, filename, size, capacity, depot, locations, distanc
         "distance_matrix": distance_matrix
     })
 
-    output_path = os.path.join(output_dir, os.path.basename(filename) + ".json")
+    output_path = os.path.join(output_dir, os.path.basename(filename)+".json")
     with open(output_path, "w") as f:
         json.dump(data, f, indent=4)
 
@@ -152,7 +152,7 @@ def read_day_requests(csv_file: str, target_day: str) -> list[Location]:
     
     return locations, depot
 
-locations, depot = read_day_requests("julia/clean_LCN_01.csv", "03/10/2023")
+locations, depot = read_day_requests("julia/clean_LCN_01.csv", "31/10/2023")
 
 size = len(locations) + 1
 capacity = 275
@@ -162,4 +162,4 @@ copyLocations.insert(0, depot)
 
 distance_matrix, time_matrix = compute_matrix(copyLocations)
 
-save_to_json("data_in/Nantes/", "Nantes_03_10_2023", size, capacity, depot, locations, time_matrix)
+save_to_json("data_in/Nantes/", "Nantes_31_10_2023", size, capacity, depot, locations, time_matrix)
