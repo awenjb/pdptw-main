@@ -121,6 +121,8 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
                          std::ceil(runtime.bestSolution.getRawCost() * 100.0) / 100.0,
                          runtime.numberOfIteration,
                          getTimeSinceInMs(runtime.start));
+
+            //runtime.bestSolution.print();
         }
 
         // Check if we use the candidate solution as the new actual solution

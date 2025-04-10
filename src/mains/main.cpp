@@ -66,7 +66,6 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
     largeSelector.addDestructor(RandomDestroy(manyPairs));
     largeSelector.addDestructor(StringRemoval(10, 10));
 
-    std::optional<output::LnsOutput> result;
     if (TWO_PHASE_ALGORITHM)
     {
         // route min operators
@@ -83,6 +82,16 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
         MinSmallLargeOperatorSelector minSmallLargeSelector(std::move(operatorList), NUMBER_ITERATION);
         // run lns
         output::LnsOutput result = lns::runLns(startingSolution, minSmallLargeSelector, acceptor);
+
+        if (PRINT)
+        {
+            result.getBestSolution().print();
+        }
+
+        if (STORE_SOLUTION)
+        {
+            output::exportToJson(result);
+        }
     }
     else
     {
@@ -93,18 +102,15 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
         SmallLargeOperatorSelector smallLargeSelector(std::move(selectors));
         // run lns
         output::LnsOutput result = lns::runLns(startingSolution, smallLargeSelector, acceptor);
-    }
 
-    if (result.has_value())
-    {
         if (PRINT)
         {
-            result->getBestSolution().print();
+            result.getBestSolution().print();
         }
 
         if (STORE_SOLUTION)
         {
-            output::exportToJson(*result);
+            output::exportToJson(result);
         }
     }
 }
@@ -116,17 +122,17 @@ int main(int argc, char **argv)
     ///////////////////////////////////////////////////////////////////////
 
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n100/bar-n100-1.json";
-    std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100/lc103.json";
+    std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100/lc102.json";
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes_1.json";
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n5000/bar-n5000-1.json";
     //std::string filepath =  "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes/Nantes_31_10_2023.json";
 
-    PDPTWData data = parsing::parseJson(filepath);
-    Solution startingSolution = Solution::emptySolution(data);
-    simpleLNS(data, startingSolution);
+    // PDPTWData data = parsing::parseJson(filepath);
+    // Solution startingSolution = Solution::emptySolution(data);
+    // simpleLNS(data, startingSolution);
 
-    // std::string path = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/selection";
-    // runAllInDirectory(path, simpleLNS);
+    std::string path = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/selection";
+    runAllInDirectory(path, simpleLNS);
 
 
     return 0;

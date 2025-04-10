@@ -16,32 +16,34 @@ OperatorPair MinSmallLargeOperatorSelector::getOperatorPair()
     int smallToLarge = totalIteration * LNS_FREQUENCY;
 
     // first phase (assume this phase use a route minimisation operator)
-    if (iterationAtCurrentStep <= minToSLNS)
+    if (iterationAtCurrentStep < minToSLNS)
     {
-        //std::cout << "Phase mini" << std::endl;
         selectorStep = 0;
     }
     else
     {
         // second phase (small and large neighborhood search)
-
         if (SLNSIteration < smallToLarge)
         {
             // Small
-            // std::cout << "Phase small" << std::endl;
             selectorStep = 1;
         }
         else
         {
             // Large
-            // std::cout << "Phase large" << std::endl;
             selectorStep = 2;
+            SLNSIteration = 0;
         }
         ++SLNSIteration;
     }
 
     SimpleOperatorSelector &selector = operatorList.at(selectorStep);
     OperatorPair pair = selector.getOperatorPair();
+
+    if (selectorStep == 0)
+    {
+        pair.setForceAcceptance();
+    }
 
     ++iterationAtCurrentStep;
     return pair;
