@@ -4,6 +4,7 @@
 #include "lns/operators/destruction/string_removal.h"
 
 /*
+ *  /!\ Does not support solutions containing empty routes.
  *  String removal applied to unfullfilled requests.
  *  Aims to reduce the number of routes by applying SISR operators on unfullfilled requests.
  *  If all requests are fullfilled, remove a route and try again.

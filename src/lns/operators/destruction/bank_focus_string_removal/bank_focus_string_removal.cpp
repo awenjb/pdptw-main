@@ -1,8 +1,8 @@
 #include "bank_focus_string_removal.h"
+
 #include "lns/modification/route/remove_route.h"
 #include "lns/operators/destruction/clean_empty_route.h"
 #include "utils.h"
-
 
 namespace
 {
@@ -16,7 +16,7 @@ namespace
         unsigned int numberOfString = util::getRandomInt(1, maxNumberOfString + 1);                    // (7) k_s
 
 
-        // select a random location in the bank
+        // select a random location in the bank (bank is not supposed to be empty)
         std::vector<int> const &bank = solution.getBank();
         int locationSeed = bank.at(util::getRandomInt(1, bank.size()) - 1);
 
@@ -55,10 +55,6 @@ void BankFocusStringRemoval::destroySolution(Solution &solution) const
     // if the bank is empty (all requests are fullfilled), remove a route
     if (solution.getBank().empty())
     {
-        // clean empty routes
-        CleanEmptyRoute clean = CleanEmptyRoute();
-        clean.destroySolution(solution);
-
         // maybe try a heuristic to remove a specific route (smallest, longest, etc...)
         RemoveRoute remove = RemoveRoute(util::getRandomInt(1, solution.getRoutes().size()) - 1);
         solution.applyDestructSolution(remove);

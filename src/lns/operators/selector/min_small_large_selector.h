@@ -13,8 +13,6 @@ public:
 
 private:
     int totalIteration;
-    // the number of call to getOperatorPair (ie. lns iteration) done with the current step
-    unsigned int iterationAtCurrentStep;
 
     unsigned int SLNSIteration;
 

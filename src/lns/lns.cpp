@@ -2,8 +2,10 @@
 
 #include "config.h"
 #include "lns/acceptance/acceptance_function.h"
+#include "lns/operators/destruction/bank_focus_string_removal/bank_focus_string_removal.h"
 #include "lns/operators/destruction/clean_empty_route.h"
 #include "lns/operators/selector/operator_selector.h"
+#include "mains/main_interface.h"
 #include "output/solution_checker.h"
 
 #include <chrono>
@@ -15,18 +17,26 @@ namespace
         return candidateSolution.getCost() < bestKnownSol.getCost();
     }
 
+    bool isReducingNbRoutes(Solution const &candidateSolution, Solution const &bestSolution)
+    {
+        return candidateSolution.getBank().empty() &&
+               (candidateSolution.getRoutes().size() < bestSolution.getRoutes().size());
+    }
+
     using lns_clock = std::chrono::high_resolution_clock;
     using lns_time_point = std::chrono::time_point<lns_clock, std::chrono::nanoseconds>;
 
     struct LnsRuntimeData
     {
         Solution bestSolution;
+        unsigned int bestIteration = 0;
+        lns_time_point bestTime = lns_clock::now();
         unsigned int numberOfIteration = 0;
         lns_time_point start = lns_clock::now();
     };
 
     /**
-     * @return the number of seconds between point and now (the moment the function is called).
+     * @return the number of seconds between point and nœow (the moment the function is called).
      */
     unsigned long getTimeSinceInSec(lns_time_point point)
     {
@@ -70,6 +80,68 @@ namespace
         }
     }
 
+    void fleetMinimization(int &iterationMax, LnsRuntimeData &runtime, Solution &actualSolution)
+    {
+        double firstPhaseIteration = NUMBER_ITERATION * (1 - FIRST_PHASE_ITERATION);
+
+        SimpleOperatorSelector minimizationSelector;
+        addAllReconstructor(minimizationSelector);
+        minimizationSelector.addDestructor(BankFocusStringRemoval(10, 10));
+        //minimizationSelector.addDestructor(StringRemoval(10, 10));
+
+        while (iterationMax > firstPhaseIteration)
+        {
+            // Init iteration
+            ++runtime.numberOfIteration;
+            logProgress(runtime, actualSolution);
+
+            Solution candidateSolution = actualSolution;
+
+            // Remove empty route from the solution
+            if (candidateSolution.getBank().empty())
+            {
+                CleanEmptyRoute clean = CleanEmptyRoute();
+                clean.destroySolution(candidateSolution);
+            }
+
+            // Chose operator pair
+            auto destructReconstructPair = minimizationSelector.getOperatorPair();
+            // Apply operators
+            destructReconstructPair.destructor().destroySolution(candidateSolution);
+            destructReconstructPair.reconstructor().reconstructSolution(candidateSolution, 0.01);
+            candidateSolution.computeAndStoreSolutionCost();
+
+            if (isReducingNbRoutes(candidateSolution, runtime.bestSolution))
+            {
+                checker::checkAll(candidateSolution, candidateSolution.getData(), false);
+
+                runtime.bestSolution = candidateSolution;
+                runtime.bestIteration = runtime.numberOfIteration;
+                runtime.bestTime = lns_clock::now();
+
+                minimizationSelector.betterSolutionFound();
+
+                // new best solution !
+                spdlog::info("New Best Solution | Routes {} \t Cost {} \t Iteration {} \t Time {}ms",
+                             runtime.bestSolution.getRoutes().size(),
+                             std::ceil(runtime.bestSolution.getRawCost() * 100.0) / 100.0,
+                             runtime.numberOfIteration,
+                             getTimeSinceInMs(runtime.start));
+            }
+            
+            // candidateSolution.print();
+            // spdlog::info("Actual Solution | Routes {} \t Cost {}",
+            //              candidateSolution.getRoutes().size(),
+            //              std::ceil(candidateSolution.getRawCost() * 100.0) / 100.0);
+
+            actualSolution = std::move(candidateSolution);
+
+            --iterationMax;
+
+        }
+    }
+
+
 }// namespace
 
 output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector &opSelector,
@@ -84,6 +156,16 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
 
     // fixed iteration
     int iterationMax = NUMBER_ITERATION;
+
+    if (TWO_PHASE_ALGORITHM)
+    {
+        spdlog::info("Route Minimization | Iteration {}", NUMBER_ITERATION * FIRST_PHASE_ITERATION);
+        fleetMinimization(iterationMax, runtime, actualSolution);
+    }
+
+    actualSolution = runtime.bestSolution;
+
+    spdlog::info("SLNS | Iteration {}", NUMBER_ITERATION - NUMBER_ITERATION * FIRST_PHASE_ITERATION);
     while (iterationMax > 0)
     {
         // Init iteration
@@ -113,6 +195,8 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
             clean.destroySolution(candidateSolution);
 
             runtime.bestSolution = candidateSolution;
+            runtime.bestIteration = runtime.numberOfIteration;
+            runtime.bestTime = lns_clock::now();
             opSelector.betterSolutionFound();
 
             // new best solution !
@@ -134,6 +218,10 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
         }
         --iterationMax;
     }
+
+    spdlog::info("End | Iteration {} \t Time {}s",
+        runtime.numberOfIteration,
+        getTimeSinceInSec(runtime.start));
 
     auto result = output::LnsOutput(
             std::move(runtime.bestSolution), runtime.numberOfIteration, getTimeSinceInSec(runtime.start));

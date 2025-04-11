@@ -66,52 +66,35 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
     largeSelector.addDestructor(RandomDestroy(manyPairs));
     largeSelector.addDestructor(StringRemoval(10, 10));
 
-    if (TWO_PHASE_ALGORITHM)
-    {
-        // route min operators
-        SimpleOperatorSelector routeMinSelector;
-        addAllReconstructor(routeMinSelector);
-        routeMinSelector.addDestructor(BankFocusStringRemoval(10, 10));
-        //routeMinSelector.addDestructor(StringRemoval(10, 10));
+    std::unique_ptr<OperatorSelector> runSelector;
 
+    if (CLASSIC_SLNS)
+    {
         std::vector<SimpleOperatorSelector> operatorList;
-        operatorList.emplace_back(std::move(routeMinSelector));
         operatorList.emplace_back(std::move(smallSelector));
         operatorList.emplace_back(std::move(largeSelector));
 
-        MinSmallLargeOperatorSelector minSmallLargeSelector(std::move(operatorList), NUMBER_ITERATION);
-        // run lns
-        output::LnsOutput result = lns::runLns(startingSolution, minSmallLargeSelector, acceptor);
-
-        if (PRINT)
-        {
-            result.getBestSolution().print();
-        }
-
-        if (STORE_SOLUTION)
-        {
-            output::exportToJson(result);
-        }
+        runSelector = std::make_unique<MinSmallLargeOperatorSelector>(std::move(operatorList), NUMBER_ITERATION);
     }
     else
     {
         std::vector<SmallLargeOperatorSelector::StepSelector> selectors;
         selectors.emplace_back(10, std::move(smallSelector));
         selectors.emplace_back(50, std::move(largeSelector));
+        runSelector = std::make_unique<SmallLargeOperatorSelector>(std::move(selectors));
+    }
+    // run lns
+    output::LnsOutput result = lns::runLns(startingSolution, *runSelector, acceptor);
 
-        SmallLargeOperatorSelector smallLargeSelector(std::move(selectors));
-        // run lns
-        output::LnsOutput result = lns::runLns(startingSolution, smallLargeSelector, acceptor);
 
-        if (PRINT)
-        {
-            result.getBestSolution().print();
-        }
+    if (PRINT)
+    {
+        result.getBestSolution().print();
+    }
 
-        if (STORE_SOLUTION)
-        {
-            output::exportToJson(result);
-        }
+    if (STORE_SOLUTION)
+    {
+        output::exportToJson(result);
     }
 }
 
@@ -122,17 +105,17 @@ int main(int argc, char **argv)
     ///////////////////////////////////////////////////////////////////////
 
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n100/bar-n100-1.json";
-    std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100/lc102.json";
+    std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100/lc103.json";
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes_1.json";
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n5000/bar-n5000-1.json";
     //std::string filepath =  "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes/Nantes_31_10_2023.json";
 
-    // PDPTWData data = parsing::parseJson(filepath);
-    // Solution startingSolution = Solution::emptySolution(data);
-    // simpleLNS(data, startingSolution);
+    PDPTWData data = parsing::parseJson(filepath);
+    Solution startingSolution = Solution::emptySolution(data);
+    simpleLNS(data, startingSolution);
 
-    std::string path = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/selection";
-    runAllInDirectory(path, simpleLNS);
+    // std::string path = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/selection";
+    // runAllInDirectory(path, simpleLNS);
 
 
     return 0;
