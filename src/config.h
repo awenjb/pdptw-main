@@ -40,11 +40,11 @@ int const RANDOM_SEED = 100;
 bool const PRINT = true;
 
 // Flag indicating whether the final solution is stored.
-bool const STORE_SOLUTION = false;
+bool const STORE_SOLUTION = true;
 
 // Flag indicating whether the solution is stored with complete information or not.
 bool const COMPLETE_STORE = true;
 
 // Directories
 
-std::string const OUTPUT_DIRECTORY = "./../../output/selection_SLNS";
+std::string const OUTPUT_DIRECTORY = "./../../output/test_new_json";

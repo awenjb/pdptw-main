@@ -1,17 +1,17 @@
-#include "min_small_large_selector.h"
+#include "classic_small_large_selector.h"
 
 #include "config.h"
 
 #include <algorithm>
 #include <spdlog/spdlog.h>
 
-MinSmallLargeOperatorSelector::MinSmallLargeOperatorSelector(std::vector<SimpleOperatorSelector> selectorsList,
+ClassicSmallLargeOperatorSelector::ClassicSmallLargeOperatorSelector(std::vector<SimpleOperatorSelector> selectorsList,
                                                              int totalIteration)
     : totalIteration(totalIteration), SLNSIteration(0), selectorStep(0),
       operatorList(std::move(selectorsList))
 {}
 
-OperatorPair MinSmallLargeOperatorSelector::getOperatorPair()
+OperatorPair ClassicSmallLargeOperatorSelector::getOperatorPair()
 {
     int smallToLarge = totalIteration * LNS_FREQUENCY;
 
@@ -34,17 +34,7 @@ OperatorPair MinSmallLargeOperatorSelector::getOperatorPair()
     return pair;
 }
 
-void MinSmallLargeOperatorSelector::betterSolutionFound()
+void ClassicSmallLargeOperatorSelector::betterSolutionFound()
 {
-    // print
-    if (selectorStep == 0)
-    {
-        std::cout << "in small phase" << std::endl;
-    }
-    if (selectorStep == 1)
-    {
-        std::cout << "in large phase" << std::endl;
-    }
-
     SLNSIteration = 0;
 }

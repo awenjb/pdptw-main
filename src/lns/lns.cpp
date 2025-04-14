@@ -9,6 +9,7 @@
 #include "output/solution_checker.h"
 
 #include <chrono>
+#include <vector>
 
 namespace
 {
@@ -26,13 +27,38 @@ namespace
     using lns_clock = std::chrono::high_resolution_clock;
     using lns_time_point = std::chrono::time_point<lns_clock, std::chrono::nanoseconds>;
 
+    /**
+     *  Holds informations related to the evolution of the solution over iterations.
+     */
     struct LnsRuntimeData
     {
         Solution bestSolution;
+
+        std::vector<unsigned long> bestTimes;
+        std::vector<int> bestIterations;
+        std::vector<int> bestVehicles;
+        std::vector<double> bestCosts;
+
+        unsigned int bestIterationFleet = 0;
+        unsigned long bestTimeFleet = 0;
+
         unsigned int bestIteration = 0;
-        lns_time_point bestTime = lns_clock::now();
+        unsigned long bestTime = 0;
+
         unsigned int numberOfIteration = 0;
         lns_time_point start = lns_clock::now();
+
+        unsigned long transitionTime = 0;
+        unsigned long transitionIteration = 0;
+
+        explicit LnsRuntimeData(Solution sol) : bestSolution(sol)
+        {
+            const size_t reserveSize = NUMBER_ITERATION * 0.1;
+            bestTimes.reserve(reserveSize);
+            bestIterations.reserve(reserveSize);
+            bestVehicles.reserve(reserveSize);
+            bestCosts.reserve(reserveSize);
+        }
     };
 
     /**
@@ -115,9 +141,18 @@ namespace
             {
                 checker::checkAll(candidateSolution, candidateSolution.getData(), false);
 
+                unsigned long now = getTimeSinceInMs(runtime.start);
+
                 runtime.bestSolution = candidateSolution;
+                runtime.bestIterationFleet = runtime.numberOfIteration;
+                runtime.bestTimeFleet = now;
                 runtime.bestIteration = runtime.numberOfIteration;
-                runtime.bestTime = lns_clock::now();
+                runtime.bestTime = now;
+
+                runtime.bestTimes.emplace_back(now);
+                runtime.bestIterations.emplace_back(runtime.numberOfIteration);
+                runtime.bestVehicles.emplace_back(runtime.bestSolution.getNumberOfRoutes());
+                runtime.bestCosts.emplace_back((runtime.bestSolution.getRawCost() * 100.0) / 100.0);
 
                 minimizationSelector.betterSolutionFound();
 
@@ -128,7 +163,7 @@ namespace
                              runtime.numberOfIteration,
                              getTimeSinceInMs(runtime.start));
             }
-            
+
             // candidateSolution.print();
             // spdlog::info("Actual Solution | Routes {} \t Cost {}",
             //              candidateSolution.getRoutes().size(),
@@ -137,7 +172,6 @@ namespace
             actualSolution = std::move(candidateSolution);
 
             --iterationMax;
-
         }
     }
 
@@ -152,7 +186,7 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
      * It is constant unless we accept the candidate solution.
      */
     Solution actualSolution = initialSolution;
-    LnsRuntimeData runtime = {actualSolution};
+    LnsRuntimeData runtime = LnsRuntimeData(actualSolution);
 
     // fixed iteration
     int iterationMax = NUMBER_ITERATION;
@@ -164,6 +198,8 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
     }
 
     actualSolution = runtime.bestSolution;
+    runtime.transitionTime = getTimeSinceInMs(runtime.start);
+    runtime.transitionIteration = runtime.numberOfIteration;
 
     spdlog::info("SLNS | Iteration {}", NUMBER_ITERATION - NUMBER_ITERATION * FIRST_PHASE_ITERATION);
     while (iterationMax > 0)
@@ -194,9 +230,17 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
             CleanEmptyRoute clean = CleanEmptyRoute();
             clean.destroySolution(candidateSolution);
 
+            unsigned long now = getTimeSinceInMs(runtime.start);
+
             runtime.bestSolution = candidateSolution;
             runtime.bestIteration = runtime.numberOfIteration;
-            runtime.bestTime = lns_clock::now();
+            runtime.bestTime = now;
+
+            runtime.bestTimes.emplace_back(now);
+            runtime.bestIterations.emplace_back(runtime.numberOfIteration);
+            runtime.bestVehicles.emplace_back(runtime.bestSolution.getNumberOfRoutes());
+            runtime.bestCosts.emplace_back((runtime.bestSolution.getRawCost() * 100.0) / 100.0);
+
             opSelector.betterSolutionFound();
 
             // new best solution !
@@ -219,11 +263,24 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
         --iterationMax;
     }
 
-    spdlog::info("End | Iteration {} \t Time {}s",
-        runtime.numberOfIteration,
-        getTimeSinceInSec(runtime.start));
+    spdlog::info("End | Iteration {} \t Time {}s", runtime.numberOfIteration, getTimeSinceInSec(runtime.start));
 
-    auto result = output::LnsOutput(
-            std::move(runtime.bestSolution), runtime.numberOfIteration, getTimeSinceInSec(runtime.start));
+
+
+    auto result = output::LnsOutput(runtime.bestSolution,
+                                    runtime.numberOfIteration,
+                                    runtime.transitionIteration,
+                                    getTimeSinceInSec(runtime.start),
+                                    runtime.transitionTime,
+                                    runtime.bestIterationFleet,
+                                    runtime.bestTimeFleet,
+                                    runtime.bestIteration,
+                                    runtime.bestTime,
+                                    runtime.bestTimes,
+                                    runtime.bestIterations,
+                                    runtime.bestVehicles,
+                                    runtime.bestCosts);
+    
+
     return result;
 }

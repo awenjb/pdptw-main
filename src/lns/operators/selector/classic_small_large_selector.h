@@ -7,7 +7,7 @@
  *  First phase minimise the number of routes.
  *  Second phase minimise the size of each routes.
  */
-class MinSmallLargeOperatorSelector : public OperatorSelector
+class ClassicSmallLargeOperatorSelector : public OperatorSelector
 {
 public:
 
@@ -26,7 +26,7 @@ public:
      *  Does a certain amount of iteration with an initial type of selector.
      *  Then finish the execution with a classical small and large algorirthm.
      */
-    explicit MinSmallLargeOperatorSelector(std::vector<SimpleOperatorSelector> operatorList, int totalIterarion);
+    explicit ClassicSmallLargeOperatorSelector(std::vector<SimpleOperatorSelector> operatorList, int totalIterarion);
     OperatorPair getOperatorPair() override;
     void betterSolutionFound() override;
 };

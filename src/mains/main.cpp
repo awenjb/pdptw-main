@@ -21,7 +21,7 @@
 #include "lns/operators/destruction/string_removal.h"
 #include "lns/operators/reconstruction/enumerate.h"
 #include "lns/operators/reconstruction/list_heuristic_cost_oriented.h"
-#include "lns/operators/selector/min_small_large_selector.h"
+#include "lns/operators/selector/classic_small_large_selector.h"
 #include "lns/operators/selector/operator_selector.h"
 #include "lns/operators/selector/small_large_selector.h"
 #include "lns/operators/sorting_strategy.h"
@@ -74,7 +74,7 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
         operatorList.emplace_back(std::move(smallSelector));
         operatorList.emplace_back(std::move(largeSelector));
 
-        runSelector = std::make_unique<MinSmallLargeOperatorSelector>(std::move(operatorList), NUMBER_ITERATION);
+        runSelector = std::make_unique<ClassicSmallLargeOperatorSelector>(std::move(operatorList), NUMBER_ITERATION);
     }
     else
     {

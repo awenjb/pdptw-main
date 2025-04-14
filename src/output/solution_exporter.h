@@ -17,13 +17,13 @@ namespace output
     /**
      * Get a complete json representation of a solution (heavier)
      */
-    nlohmann::ordered_json getCompleteJson(Solution const &solution, int iteration, double time);
+    nlohmann::ordered_json getCompleteJson(output::LnsOutput const &result);
 
 
     nlohmann::ordered_json routeToJson(int routeID, Route const &route);
 
 
-    void exportToJson(output::LnsOutput result);
+    void exportToJson(output::LnsOutput const &result);
 
 }// namespace output
 

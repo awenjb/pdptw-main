@@ -32,9 +32,11 @@ nlohmann::ordered_json output::getMinimalJson(Solution const &solution)
     return jsonSolution;
 }
 
-nlohmann::ordered_json output::getCompleteJson(Solution const &solution, int iteration, double time)
+nlohmann::ordered_json output::getCompleteJson(output::LnsOutput const &result)
 {
     nlohmann::ordered_json jsonSolution;
+
+    Solution solution = result.getBestSolution();
 
     nlohmann::ordered_json jsonRoutes = nlohmann::ordered_json::array();
     int routeID = 0;
@@ -48,16 +50,28 @@ nlohmann::ordered_json output::getCompleteJson(Solution const &solution, int ite
     jsonSolution["authors"] = "...";
     jsonSolution["date"] = getCurrentDate();
     jsonSolution["reference"] = "...";
+    jsonSolution["vehicles"] = solution.getNumberOfRoutes();
     jsonSolution["cost"] =  std::ceil(solution.getRawCost() * 100.0) / 100.0;
-    jsonSolution["time"] = time;
-    jsonSolution["iteration"] = iteration;
+    jsonSolution["time"] = result.getTimeSpent();
+    jsonSolution["iteration"] = result.getNumberOfIteration();
     jsonSolution["unfullfilled"] = solution.getPairBank().size();
     jsonSolution["routes"] = jsonRoutes;
+
+    jsonSolution["timeInFLeetMin"] = result.getTimeSpentFLeetMin();
+    jsonSolution["iterationInFLeetMin"] = result.getNumberOfIterationFleetMin();
+    jsonSolution["timeBestInFleetMin"] = result.getBestTimeFleetMin();
+    jsonSolution["iterationBestInFleetMin"] = result.getBestIterationFleetMin();
+
+    jsonSolution["bestVehicles"] = result.getBestVehicles();
+    jsonSolution["bestCosts"] = result.getBestCosts();
+    jsonSolution["bestTimes"] = result.getBestTimes();
+    jsonSolution["bestIterations"] = result.getBestIterations();
+
 
     return jsonSolution;
 }
 
-void output::exportToJson(output::LnsOutput result)
+void output::exportToJson(output::LnsOutput const &result)
 {
     std::string directory = OUTPUT_DIRECTORY;
     std::string filename = directory + "/" + result.getBestSolution().getData().getDataName() + "_sol.json";
@@ -79,7 +93,7 @@ void output::exportToJson(output::LnsOutput result)
     if (COMPLETE_STORE)
     {
         jsonData =
-                output::getCompleteJson(result.getBestSolution(), result.getNumberOfIteration(), result.getTimeSpent());
+                output::getCompleteJson(result);
     }
     else
     {

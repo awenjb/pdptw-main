@@ -24,3 +24,10 @@ public:
 private:
     int numberOfPairsToDestroy;
 };
+
+namespace sisr
+{
+    double computeAverageCardinality(std::vector<Route> const &routes);
+    void removeString(Solution &solution, int routeIndex, unsigned int stringLength, int startLocation);
+    void SISRsRuin(Solution &solution, unsigned int maxStringSize, unsigned int averageNumberRemovedElement);
+};// namespace
