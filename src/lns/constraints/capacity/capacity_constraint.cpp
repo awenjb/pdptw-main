@@ -18,122 +18,69 @@ std::unique_ptr<Constraint> CapacityConstraint::clone(Solution const &newOwningS
     return clonePtr;
 }
 
-void CapacityConstraint::initMaxCapacity()
+void CapacityConstraint::updateMaxCapacity(const Route &route)
 {
-    // n = number of location (depot include)
-    int n = getSolution().getData().getSize();
-
-    maxCapacity.assign(n * n, 0.0);
-
-    for (Route const &route: getSolution().getRoutes())
-    {
-        int m = route.getSize();// depot + route
-        std::vector<int> routeIDs = route.getRoute();
-        std::vector<double> cumulated = std::vector<double>(m, 0.0);
-
-        // calculate the cumulated capacity
-        // + maxCharge from the depot to another location in the route
-        double maxCharge = 0;
-        for (int i = 0; i < m; i++)
-        {
-            int locationID = routeIDs.at(i);
-            double demand = getSolution().getData().getLocation(locationID).getDemand();
-            cumulated.at(i) = (i == 0) ? demand : cumulated.at(i - 1) + demand;
-
-            // Why i - 1 ?, the insertion is done before i, so we look at the state of the capacity at the previous location
-            if (i != 0)
-            {
-                maxCharge = std::max(maxCharge, cumulated.at(i - 1));
-            }
-            maxCapacity.at(0 * n + locationID) = maxCharge;
-        }
-
-        // charge_max between i and j
-        for (int i = 0; i < m; i++)
-        {
-            maxCharge = 0;
-            int firstLocationID = routeIDs.at(i);
-            if (i != 0)
-            {
-                maxCharge = cumulated.at(i - 1);
-            }
-            for (int j = i; j < m; j++)
-            {
-                int secondLocationID = routeIDs.at(j);
-                if (j != 0)
-                {
-                    maxCharge = std::max(maxCharge, cumulated.at(j - 1));
-                }
-                maxCapacity.at(firstLocationID * n + secondLocationID) = maxCharge;
-            }
-        }
-    }
-}
-
-void CapacityConstraint::updateMaxCapacity(Route const &route)
-{
-    std::vector<int> const &routeIDs = route.getRoute();
-    PDPTWData const &data = getSolution().getData();
+    const std::vector<int> &routeIDs = route.getRoute();
+    const PDPTWData &data = getSolution().getData();
     int m = routeIDs.size();
 
-    // Recalculate cumulated
     std::vector<double> cumulated(m, 0.0);
+    double currentSum = 0.0;
 
-    double maxCharge = 0;
+    // Depot to Location
     for (int i = 0; i < m; ++i)
     {
         int locationID = routeIDs.at(i);
-        double demand = data.getLocation(locationID).getDemand();
-        cumulated.at(i) = (i == 0) ? demand : cumulated.at(i - 1) + demand;
+        currentSum += data.getLocation(locationID).getDemand();
+        cumulated.at(i) = currentSum;
 
-        // Why i - 1 ?, the insertion is done before i, so we look at the state of the capacity at the previous location
-        if (i != 0)
-        {
-            maxCharge = std::max(maxCharge, cumulated.at(i - 1));
-        }
+        double maxCharge = (i == 0) ? 0.0 : cumulated.at(i - 1);
         maxCapacity.at(0 * n + locationID) = maxCharge;
     }
-    // Update maxCapacity
+
+    // Location to Location
     for (int i = 0; i < m; ++i)
     {
-        maxCharge = (i == 0) ? 0.0 : cumulated.at(i - 1);
-        int firstLocationID = routeIDs.at(i);
+        int fromID = routeIDs.at(i);
+        double maxCharge = (i == 0) ? 0.0 : cumulated.at(i - 1);
 
         for (int j = i; j < m; ++j)
         {
-            int secondLocationID = routeIDs.at(j);
-            if (j != 0)
+            if (j > 0)
             {
                 maxCharge = std::max(maxCharge, cumulated.at(j - 1));
             }
-            maxCapacity.at(firstLocationID * n + secondLocationID) = maxCharge;
+
+            int toID = routeIDs.at(j);
+            maxCapacity.at(fromID * n + toID) = maxCharge;
         }
     }
 }
 
 bool CapacityConstraint::checkModif(Pair const &pair, int routeIndex, int PickupPosition, int DeliveryPosition) const
 {
-    Solution const &solution = getSolution();
-    std::vector<int> const &routeIDs = solution.getRoutes().at(routeIndex).getRoute();
-    double vehicleCapacity = solution.getData().getCapacity();
-
     if (PickupPosition > DeliveryPosition)
     {
         return false;
     }
 
+    Solution const &solution = getSolution();
+    std::vector<int> const &routeIDs = solution.getRoutes().at(routeIndex).getRoute();
+    double vehicleCapacity = solution.getData().getCapacity();
     int m = routeIDs.size();
 
     if (m == 0)
     {
-        return true;
+        return pair.getPickup().getDemand() <= vehicleCapacity;
     }
 
     double demand = pair.getPickup().getDemand();
 
-    int lastLocationID = routeIDs.at(m - 1);
-    int pickupLocationID = (PickupPosition >= m) ? lastLocationID : routeIDs.at(PickupPosition);
-    int deliveryLocationID = (DeliveryPosition >= m) ? lastLocationID : routeIDs.at(DeliveryPosition);
+    int pickupIndex = (PickupPosition >= m) ? m - 1 : PickupPosition;
+    int deliveryIndex = (DeliveryPosition >= m) ? m - 1 : DeliveryPosition;
+
+    int pickupLocationID = routeIDs.at(pickupIndex);
+    int deliveryLocationID = routeIDs.at(deliveryIndex);
 
     return maxCapacity.at(pickupLocationID * n + deliveryLocationID) + demand <= vehicleCapacity;
 }
@@ -164,7 +111,7 @@ bool CapacityConstraint::check(InsertRoute const &op) const
 
 void CapacityConstraint::apply(InsertRoute const &op)
 {
-
+    // No-op
 }
 
 bool CapacityConstraint::check(RemovePair const &op) const
@@ -185,7 +132,7 @@ bool CapacityConstraint::check(RemoveRoute const &op) const
 
 void CapacityConstraint::apply(RemoveRoute const &op)
 {
-
+    // No-op
 }
 
 void CapacityConstraint::print() const
@@ -195,7 +142,7 @@ void CapacityConstraint::print() const
     {
         for (int j = 0; j < n; ++j)
         {
-            std::cout << maxCapacity[i * n + j] << "\t";
+            std::cout << maxCapacity.at(i * n + j) << "\t";
         }
         std::cout << std::endl;
     }

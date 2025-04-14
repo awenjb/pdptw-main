@@ -47,11 +47,6 @@ public:
     std::unique_ptr<Constraint> clone(Solution const &newOwningSolution) const override;
 
     /*
-     *  Compute from scratch the maxCapacity matrix.
-     */
-    void initMaxCapacity();
-
-    /*
      *  Update MaxCapacity.
      *  Suppose the route has already been updated
      */

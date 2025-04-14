@@ -40,7 +40,7 @@ int const RANDOM_SEED = 100;
 bool const PRINT = true;
 
 // Flag indicating whether the final solution is stored.
-bool const STORE_SOLUTION = true;
+bool const STORE_SOLUTION = false;
 
 // Flag indicating whether the solution is stored with complete information or not.
 bool const COMPLETE_STORE = true;
