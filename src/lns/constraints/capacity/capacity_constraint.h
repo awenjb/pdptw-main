@@ -20,10 +20,15 @@ public:
 private:
 
     /**
+     *  Linearise matrix
      *  Store the maximum used capacity between two locations.
      *  A cell is not updated to 0 when the location is removed from a route.
      */
-    Matrix maxCapacity;
+    std::vector<double> maxCapacity;
+    /*
+     *  number of locations
+     */
+    int n;
 
     void apply(InsertPair const &op) override;
     void apply(InsertRoute const &op) override;

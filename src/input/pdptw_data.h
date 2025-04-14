@@ -29,7 +29,7 @@ class PDPTWData
     Location depot;
     std::vector<Location> locations;
     std::vector<Pair> pairs;// std::unordered_map<int, Pair> pair; if getPair(index) is needed ?
-    Matrix distanceMatrix;
+    Matrix costMatrix;
     // stores the list of locations ID from closest to furthest for every location (no depot).
     std::vector<std::vector<int>> closestLocations;
 
@@ -49,7 +49,7 @@ public:
      * @see parsing::parseJson
      */
     PDPTWData(std::string dataName, int size, int capacity, Location depot, std::vector<Location> locations,
-              Matrix distanceMatrix);
+              Matrix costMatrix);
     /**
      * Checks some data coherence
      */

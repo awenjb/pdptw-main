@@ -5,11 +5,10 @@
 
 #include <unistd.h>
 
-CapacityConstraint::CapacityConstraint(Solution const &solution) : Constraint(solution)
+CapacityConstraint::CapacityConstraint(Solution const &solution) : Constraint(solution), n(getSolution().getData().getSize())
 {
     // Init an empty maxCapacity
-    int n = getSolution().getData().getSize();
-    maxCapacity = std::vector<std::vector<double>>(n, std::vector<double>(n, 0));
+    maxCapacity = std::vector<double>(n * n, 0.0);
 }
 
 std::unique_ptr<Constraint> CapacityConstraint::clone(Solution const &newOwningSolution) const
@@ -23,7 +22,8 @@ void CapacityConstraint::initMaxCapacity()
 {
     // n = number of location (depot include)
     int n = getSolution().getData().getSize();
-    maxCapacity.assign(n, std::vector<double>(n, 0));
+
+    maxCapacity.assign(n * n, 0.0);
 
     for (Route const &route: getSolution().getRoutes())
     {
@@ -45,7 +45,7 @@ void CapacityConstraint::initMaxCapacity()
             {
                 maxCharge = std::max(maxCharge, cumulated.at(i - 1));
             }
-            maxCapacity.at(0).at(locationID) = maxCharge;
+            maxCapacity.at(0 * n + locationID) = maxCharge;
         }
 
         // charge_max between i and j
@@ -64,7 +64,7 @@ void CapacityConstraint::initMaxCapacity()
                 {
                     maxCharge = std::max(maxCharge, cumulated.at(j - 1));
                 }
-                maxCapacity.at(firstLocationID).at(secondLocationID) = maxCharge;
+                maxCapacity.at(firstLocationID * n + secondLocationID) = maxCharge;
             }
         }
     }
@@ -91,7 +91,7 @@ void CapacityConstraint::updateMaxCapacity(Route const &route)
         {
             maxCharge = std::max(maxCharge, cumulated.at(i - 1));
         }
-        maxCapacity.at(0).at(locationID) = maxCharge;
+        maxCapacity.at(0 * n + locationID) = maxCharge;
     }
     // Update maxCapacity
     for (int i = 0; i < m; ++i)
@@ -99,7 +99,6 @@ void CapacityConstraint::updateMaxCapacity(Route const &route)
         maxCharge = (i == 0) ? 0.0 : cumulated.at(i - 1);
         int firstLocationID = routeIDs.at(i);
 
-        auto & maxCapacityRow = maxCapacity.at(firstLocationID);
         for (int j = i; j < m; ++j)
         {
             int secondLocationID = routeIDs.at(j);
@@ -107,7 +106,7 @@ void CapacityConstraint::updateMaxCapacity(Route const &route)
             {
                 maxCharge = std::max(maxCharge, cumulated.at(j - 1));
             }
-            maxCapacityRow.at(secondLocationID) = maxCharge;
+            maxCapacity.at(firstLocationID * n + secondLocationID) = maxCharge;
         }
     }
 }
@@ -136,7 +135,7 @@ bool CapacityConstraint::checkModif(Pair const &pair, int routeIndex, int Pickup
     int pickupLocationID = (PickupPosition >= m) ? lastLocationID : routeIDs.at(PickupPosition);
     int deliveryLocationID = (DeliveryPosition >= m) ? lastLocationID : routeIDs.at(DeliveryPosition);
 
-    return maxCapacity.at(pickupLocationID).at(deliveryLocationID) + demand <= vehicleCapacity;
+    return maxCapacity.at(pickupLocationID * n + deliveryLocationID) + demand <= vehicleCapacity;
 }
 
 
@@ -191,12 +190,12 @@ void CapacityConstraint::apply(RemoveRoute const &op)
 
 void CapacityConstraint::print() const
 {
-    std::cout << "Max Capacity Matrix : " << std::endl;
-    for (auto const &maxVector: maxCapacity)
+    std::cout << "Max Capacity Matrix:" << std::endl;
+    for (int i = 0; i < n; ++i)
     {
-        for (int const maxCapa: maxVector)
+        for (int j = 0; j < n; ++j)
         {
-            std::cout << maxCapa << "\t";
+            std::cout << maxCapacity[i * n + j] << "\t";
         }
         std::cout << std::endl;
     }

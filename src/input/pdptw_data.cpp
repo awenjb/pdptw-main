@@ -50,13 +50,13 @@ Location const &PDPTWData::getLocation(int id) const
 
 Matrix const &PDPTWData::getMatrix() const
 {
-    return distanceMatrix;
+    return costMatrix;
 }
 
 PDPTWData::PDPTWData(std::string dataName, int size, int capacity, Location depot, std::vector<Location> locations,
-                     Matrix distanceMatrix)
+                     Matrix costMatrix)
     : dataName(dataName), size(size), capacity(capacity), depot(depot), locations(std::move(locations)),
-      distanceMatrix(std::move(distanceMatrix))
+      costMatrix(std::move(costMatrix))
 {
     // Associate pair of locations
     pairs.clear();
@@ -110,7 +110,7 @@ void PDPTWData::print() const
     }
 
     std::cout << "Distance Matrix:\n";
-    for (auto const &row: distanceMatrix)
+    for (auto const &row: costMatrix)
     {
         for (auto const &dist: row)
         {

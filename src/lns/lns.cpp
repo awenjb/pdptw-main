@@ -178,6 +178,9 @@ namespace
 
 }// namespace
 
+
+
+
 output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector &opSelector,
                               AcceptanceFunction const &acceptFunctor)
 {
