@@ -51,6 +51,9 @@ add_executable(pdptw src/mains/main.cpp
                 src/lns/lns.cpp
                 src/utils.cpp
                 src/output/run.cpp
+                src/lns/lns_utils.cpp 
+                src/lns/lns_runtime_data.cpp
+                src/lns/fleet_minimization.cpp
                 )
 
 set_target_properties(pdptw PROPERTIES UNITY_BUILD ON UNITY_BUILD_BATCH_SIZE 0)
