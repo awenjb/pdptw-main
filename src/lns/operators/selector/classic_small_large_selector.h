@@ -13,7 +13,6 @@ public:
 
 private:
     int totalIteration;
-
     unsigned int SLNSIteration;
 
     // the index of the selector used, called step

@@ -13,9 +13,9 @@ ClassicSmallLargeOperatorSelector::ClassicSmallLargeOperatorSelector(std::vector
 
 OperatorPair ClassicSmallLargeOperatorSelector::getOperatorPair()
 {
-    int smallToLarge = totalIteration * LNS_FREQUENCY;
+    int frequency = totalIteration * LNS_FREQUENCY;
 
-    if (SLNSIteration < smallToLarge)
+    if (SLNSIteration < frequency)
     {
         // Small
         selectorStep = 0;
@@ -30,6 +30,12 @@ OperatorPair ClassicSmallLargeOperatorSelector::getOperatorPair()
 
     SimpleOperatorSelector &selector = operatorList.at(selectorStep);
     OperatorPair pair = selector.getOperatorPair();
+
+    if (selectorStep == 1) // always accept solution from a large iteration
+    {
+        pair.setForceAcceptance();
+        pair.setLargeIteration();
+    }
 
     return pair;
 }

@@ -3,8 +3,8 @@
 #include "config.h"
 #include "lns/acceptance/acceptance_function.h"
 #include "lns/fleet_minimization.h"
-#include "lns/lns_utils.h"
 #include "lns/lns_runtime_data.h"
+#include "lns/lns_utils.h"
 #include "lns/operators/destruction/bank_focus_string_removal/bank_focus_string_removal.h"
 #include "lns/operators/destruction/clean_empty_route.h"
 #include "lns/operators/selector/operator_selector.h"
@@ -13,7 +13,6 @@
 
 #include <chrono>
 #include <vector>
-
 
 output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector &opSelector,
                               AcceptanceFunction const &acceptFunctor)
@@ -53,10 +52,17 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
 
         // Chose operator pair
         auto destructReconstructPair = opSelector.getOperatorPair();
+
+        if (destructReconstructPair.isLargeIteration())
+        {
+            candidateSolution = runtime.bestSolution;
+        }
+
         // Apply operators
         destructReconstructPair.destructor().destroySolution(candidateSolution);
         destructReconstructPair.reconstructor().reconstructSolution(candidateSolution, 0.01);
         candidateSolution.computeAndStoreSolutionCost();
+
         // Update best solution
         if (isBetterSolution(candidateSolution, runtime.bestSolution))
         {
@@ -103,7 +109,6 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
     spdlog::info("End | Iteration {} \t Time {}s", runtime.numberOfIteration, getTimeSinceInSec(runtime.start));
 
 
-
     auto result = output::LnsOutput(runtime.bestSolution,
                                     runtime.numberOfIteration,
                                     runtime.transitionIteration,
@@ -117,7 +122,7 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
                                     runtime.bestIterations,
                                     runtime.bestVehicles,
                                     runtime.bestCosts);
-    
+
 
     return result;
 }

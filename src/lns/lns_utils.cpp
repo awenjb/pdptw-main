@@ -49,7 +49,7 @@ void logProgress(const LnsRuntimeData& runtime, const Solution& actualSolution)
         }
         else
         {
-            speedLog = fmt::format("{:.1f} i/s", iterPerSecond);
+            speedLog = fmt::format("{:.1f} it/s", iterPerSecond);
         }
 
         long requestsMissing = runtime.bestSolution.missingPairCount();
