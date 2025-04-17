@@ -71,7 +71,6 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
     if (SLNS)
     {
         // run slns
-        std::cout << "run SLNS" << std::endl;
         result = std::make_unique<output::LnsOutput>(lns::runSlns(startingSolution, smallSelector, largeSelector, acceptor));
     }
     else

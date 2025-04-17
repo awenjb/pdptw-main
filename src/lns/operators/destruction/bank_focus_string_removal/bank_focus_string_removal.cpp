@@ -52,12 +52,12 @@ namespace
 
 void BankFocusStringRemoval::destroySolution(Solution &solution) const
 {
-    // if the bank is empty (all requests are fullfilled), remove a route
-    if (solution.getBank().empty())
-    {
-        // maybe try a heuristic to remove a specific route (smallest, longest, etc...)
-        RemoveRoute remove = RemoveRoute(util::getRandomInt(1, solution.getRoutes().size()) - 1);
-        solution.applyDestructSolution(remove);
-    }
+    // // if the bank is empty (all requests are fullfilled), remove a route
+    // if (solution.getBank().empty())
+    // {
+    //     // maybe try a heuristic to remove a specific route (smallest, longest, etc...)
+    //     RemoveRoute remove = RemoveRoute(util::getRandomInt(1, solution.getRoutes().size()) - 1);
+    //     solution.applyDestructSolution(remove);
+    // }
     BankFocusSISRsRuin(solution, maxCardinalityOfString, averageNumberRemovedElement);
 }

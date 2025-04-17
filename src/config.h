@@ -13,7 +13,7 @@ int const ROUTE_PENALTY = 0;
 int const NUMBER_VEHICLE = 50;
 
 // Number of iterations for the algorithm or simulation to run.
-int const NUMBER_ITERATION = 10000;
+int const NUMBER_ITERATION = 100000;
 
 // % of NUMBER_ITERATION given to the first phase (route minimisation)
 double const FIRST_PHASE_ITERATION = 0.3;
@@ -25,7 +25,7 @@ double const LNS_FREQUENCY = 0.05;
 // Flags
 
 // Execute a classical SLNS (a variant is execute if false)
-bool const SLNS = false;
+bool const SLNS = true;
 
 // Execute a route minimization algorithm before the SLNS
 bool const TWO_PHASE_ALGORITHM = true;

@@ -53,10 +53,21 @@ void logProgress(const LnsRuntimeData& runtime, const Solution& actualSolution)
         }
 
         long requestsMissing = runtime.bestSolution.missingPairCount();
-        spdlog::info("Progress | Iteration {} | Time {}s | Speed: {} | Missing requests: {}",
+        spdlog::info("Progress | Iteration {} \t | Time {}s \t | Speed: {} | Missing requests: {}",
                      runtime.numberOfIteration,
                      actualTime / 1000,
                      speedLog,
                      requestsMissing);
     }
+}
+
+void updateBestSolution(LnsRuntimeData& runtime, const Solution& candidateSolution, unsigned long now) {
+    runtime.bestSolution = candidateSolution;
+    runtime.bestIteration = runtime.numberOfIteration;
+    runtime.bestTime = now;
+
+    runtime.bestTimes.emplace_back(now);
+    runtime.bestIterations.emplace_back(runtime.numberOfIteration);
+    runtime.bestVehicles.emplace_back(runtime.bestSolution.getNumberOfRoutes());
+    runtime.bestCosts.emplace_back((runtime.bestSolution.getRawCost() * 100.0) / 100.0);
 }

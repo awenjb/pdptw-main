@@ -30,7 +30,7 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
     if (TWO_PHASE_ALGORITHM)
     {
         spdlog::info("Route Minimization | Iteration {}", NUMBER_ITERATION * FIRST_PHASE_ITERATION);
-        fleetMinimization(iterationMax, runtime, actualSolution);
+        fleetMinimizationCVB(iterationMax, runtime, actualSolution);
     }
 
     actualSolution = runtime.bestSolution;
@@ -82,11 +82,11 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
             opSelector.betterSolutionFound();
 
             // new best solution !
-            spdlog::info("New Best Solution | Routes {} \t Cost {} \t Iteration {} \t Time {}ms",
-                         runtime.bestSolution.getRoutes().size(),
-                         std::ceil(runtime.bestSolution.getRawCost() * 100.0) / 100.0,
+            spdlog::info("New Best | Iteration {} \t | Time {}ms \t | Routes {} \t | Cost {}",
                          runtime.numberOfIteration,
-                         getTimeSinceInMs(runtime.start));
+                         getTimeSinceInMs(runtime.start),
+                         runtime.bestSolution.getRoutes().size(),
+                         std::ceil(runtime.bestSolution.getRawCost() * 100.0) / 100.0);
         }
 
         // Check if we use the candidate solution as the new actual solution
@@ -120,8 +120,6 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
     return result;
 }
 
-
-
 output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector &opSelectorSmall,
                                OperatorSelector &opSelectorLarge, AcceptanceFunction const &acceptFunctor)
 {
@@ -137,7 +135,7 @@ output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector
     if (TWO_PHASE_ALGORITHM)
     {
         spdlog::info("Route Minimization | Iteration {}", NUMBER_ITERATION * FIRST_PHASE_ITERATION);
-        fleetMinimization(iterationMax, runtime, actualSolution);
+        fleetMinimizationCVB(iterationMax, runtime, actualSolution);
     }
 
     actualSolution = runtime.bestSolution;
@@ -167,7 +165,6 @@ output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector
         }
         else
         {
-            std::cout << "large" << runtime.numberOfIteration << std::endl;
             // Large iteration
             candidateSolution = runtime.bestSolution;
             // Select large operators
@@ -190,22 +187,14 @@ output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector
             clean.destroySolution(candidateSolution);
 
             unsigned long now = getTimeSinceInMs(runtime.start);
-
-            runtime.bestSolution = candidateSolution;
-            runtime.bestIteration = runtime.numberOfIteration;
-            runtime.bestTime = now;
-
-            runtime.bestTimes.emplace_back(now);
-            runtime.bestIterations.emplace_back(runtime.numberOfIteration);
-            runtime.bestVehicles.emplace_back(runtime.bestSolution.getNumberOfRoutes());
-            runtime.bestCosts.emplace_back((runtime.bestSolution.getRawCost() * 100.0) / 100.0);
+            updateBestSolution(runtime, candidateSolution, now);
 
             // new best solution !
-            spdlog::info("New Best Solution | Routes {} \t Cost {} \t Iteration {} \t Time {}ms",
-                         runtime.bestSolution.getRoutes().size(),
-                         std::ceil(runtime.bestSolution.getRawCost() * 100.0) / 100.0,
+            spdlog::info("New Best | Iteration {} \t | Time {}ms \t | Routes {} \t | Cost {}",
                          runtime.numberOfIteration,
-                         getTimeSinceInMs(runtime.start));
+                         getTimeSinceInMs(runtime.start),
+                         runtime.bestSolution.getRoutes().size(),
+                         std::ceil(runtime.bestSolution.getRawCost() * 100.0) / 100.0);
         }
 
         // Check if we use the candidate solution as the new actual solution
@@ -221,7 +210,7 @@ output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector
         --iterationMax;
     }
 
-    spdlog::info("End | Iteration {} \t Time {}s", runtime.numberOfIteration, getTimeSinceInSec(runtime.start));
+    spdlog::info("End | Iteration {} | Time {}s", runtime.numberOfIteration, getTimeSinceInSec(runtime.start));
 
 
     auto result = output::LnsOutput(runtime.bestSolution,
