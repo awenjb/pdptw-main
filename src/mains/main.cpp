@@ -21,7 +21,6 @@
 #include "lns/operators/destruction/string_removal.h"
 #include "lns/operators/reconstruction/enumerate.h"
 #include "lns/operators/reconstruction/list_heuristic_cost_oriented.h"
-#include "lns/operators/selector/classic_small_large_selector.h"
 #include "lns/operators/selector/operator_selector.h"
 #include "lns/operators/selector/small_large_selector.h"
 #include "lns/operators/sorting_strategy.h"
@@ -37,6 +36,7 @@
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <memory>
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
 #include <string>
@@ -66,35 +66,33 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
     largeSelector.addDestructor(RandomDestroy(manyPairs));
     largeSelector.addDestructor(StringRemoval(10, 10));
 
-    std::unique_ptr<OperatorSelector> runSelector;
+    std::unique_ptr<output::LnsOutput> result;
 
-    if (CLASSIC_SLNS)
+    if (SLNS)
     {
-        std::vector<SimpleOperatorSelector> operatorList;
-        operatorList.emplace_back(std::move(smallSelector));
-        operatorList.emplace_back(std::move(largeSelector));
-
-        runSelector = std::make_unique<ClassicSmallLargeOperatorSelector>(std::move(operatorList), NUMBER_ITERATION);
+        // run slns
+        std::cout << "run SLNS" << std::endl;
+        result = std::make_unique<output::LnsOutput>(lns::runSlns(startingSolution, smallSelector, largeSelector, acceptor));
     }
     else
     {
         std::vector<SmallLargeOperatorSelector::StepSelector> selectors;
         selectors.emplace_back(10, std::move(smallSelector));
         selectors.emplace_back(50, std::move(largeSelector));
-        runSelector = std::make_unique<SmallLargeOperatorSelector>(std::move(selectors));
-    }
-    // run lns
-    output::LnsOutput result = lns::runLns(startingSolution, *runSelector, acceptor);
+        SmallLargeOperatorSelector smallLargeSelector(std::move(selectors));
 
+        // run lns
+        result =  std::make_unique<output::LnsOutput>(lns::runLns(startingSolution, smallLargeSelector, acceptor));
+    }
 
     if (PRINT)
     {
-        result.getBestSolution().print();
+        result->getBestSolution().print();
     }
 
     if (STORE_SOLUTION)
     {
-        output::exportToJson(result);
+        output::exportToJson(*result);
     }
 }
 

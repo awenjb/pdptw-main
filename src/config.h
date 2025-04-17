@@ -25,7 +25,7 @@ double const LNS_FREQUENCY = 0.05;
 // Flags
 
 // Execute a classical SLNS (a variant is execute if false)
-bool const CLASSIC_SLNS = true;
+bool const SLNS = false;
 
 // Execute a route minimization algorithm before the SLNS
 bool const TWO_PHASE_ALGORITHM = true;

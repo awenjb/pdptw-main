@@ -19,7 +19,6 @@ class OperatorPair
      * @return true to force the acceptance of the solution after the operators calls.
      */
     bool forceAcceptance;
-    bool largeIteration;
 
 public:
     OperatorPair(DestructionOperator &destruct, ReconstructionOperator &reconstruct, bool forceAcceptance = false, bool largeIteration = false);
@@ -27,9 +26,7 @@ public:
     ReconstructionOperator &reconstructor();
     // the solution obtained with this operator pair will be accepted by the lns
     void setForceAcceptance();
-    void setLargeIteration();
     bool forceTakeSolution() const;
-    bool isLargeIteration();
 };
 
 

@@ -53,11 +53,6 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
         // Chose operator pair
         auto destructReconstructPair = opSelector.getOperatorPair();
 
-        if (destructReconstructPair.isLargeIteration())
-        {
-            candidateSolution = runtime.bestSolution;
-        }
-
         // Apply operators
         destructReconstructPair.destructor().destroySolution(candidateSolution);
         destructReconstructPair.reconstructor().reconstructSolution(candidateSolution, 0.01);
@@ -92,8 +87,6 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
                          std::ceil(runtime.bestSolution.getRawCost() * 100.0) / 100.0,
                          runtime.numberOfIteration,
                          getTimeSinceInMs(runtime.start));
-
-            //runtime.bestSolution.print();
         }
 
         // Check if we use the candidate solution as the new actual solution
@@ -103,6 +96,128 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
         {
             actualSolution = std::move(candidateSolution);
         }
+        --iterationMax;
+    }
+
+    spdlog::info("End | Iteration {} \t Time {}s", runtime.numberOfIteration, getTimeSinceInSec(runtime.start));
+
+
+    auto result = output::LnsOutput(runtime.bestSolution,
+                                    runtime.numberOfIteration,
+                                    runtime.transitionIteration,
+                                    getTimeSinceInSec(runtime.start),
+                                    runtime.transitionTime,
+                                    runtime.bestIterationFleet,
+                                    runtime.bestTimeFleet,
+                                    runtime.bestIteration,
+                                    runtime.bestTime,
+                                    runtime.bestTimes,
+                                    runtime.bestIterations,
+                                    runtime.bestVehicles,
+                                    runtime.bestCosts);
+
+
+    return result;
+}
+
+
+
+output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector &opSelectorSmall,
+                               OperatorSelector &opSelectorLarge, AcceptanceFunction const &acceptFunctor)
+{
+    Solution actualSolution = initialSolution;
+    LnsRuntimeData runtime = LnsRuntimeData(actualSolution);
+
+    // fixed iteration
+    int iterationMax = NUMBER_ITERATION;
+    int frequency = NUMBER_ITERATION * LNS_FREQUENCY;// temporary
+    int SlnsIteration = 0;
+    bool largeIteration = false;
+
+    if (TWO_PHASE_ALGORITHM)
+    {
+        spdlog::info("Route Minimization | Iteration {}", NUMBER_ITERATION * FIRST_PHASE_ITERATION);
+        fleetMinimization(iterationMax, runtime, actualSolution);
+    }
+
+    actualSolution = runtime.bestSolution;
+    runtime.transitionTime = getTimeSinceInMs(runtime.start);
+    runtime.transitionIteration = runtime.numberOfIteration;
+
+    spdlog::info("SLNS | Iteration {}", NUMBER_ITERATION - NUMBER_ITERATION * FIRST_PHASE_ITERATION);
+
+    while (iterationMax > 0)
+    {
+        // Init iteration
+        ++runtime.numberOfIteration;
+        logProgress(runtime, actualSolution);
+
+        Solution candidateSolution = actualSolution;
+        if (SlnsIteration < frequency)
+        {
+            // Small iteration
+            // Select small operators
+            auto destructReconstructPair = opSelectorSmall.getOperatorPair();
+            // Apply small operators
+            destructReconstructPair.destructor().destroySolution(candidateSolution);
+            destructReconstructPair.reconstructor().reconstructSolution(candidateSolution, 0.01);
+            candidateSolution.computeAndStoreSolutionCost();
+
+            ++SlnsIteration;
+        }
+        else
+        {
+            std::cout << "large" << runtime.numberOfIteration << std::endl;
+            // Large iteration
+            candidateSolution = runtime.bestSolution;
+            // Select large operators
+            auto destructReconstructPair = opSelectorLarge.getOperatorPair();
+            // Apply large operators
+            destructReconstructPair.destructor().destroySolution(candidateSolution);
+            destructReconstructPair.reconstructor().reconstructSolution(candidateSolution, 0.01);
+            candidateSolution.computeAndStoreSolutionCost();
+
+            largeIteration = true;
+            SlnsIteration = 0;
+        }
+
+        if (isBetterSolution(candidateSolution, runtime.bestSolution))
+        {
+            checker::checkAll(candidateSolution, candidateSolution.getData(), false);
+
+            // remove empty route from the solution
+            CleanEmptyRoute clean = CleanEmptyRoute();
+            clean.destroySolution(candidateSolution);
+
+            unsigned long now = getTimeSinceInMs(runtime.start);
+
+            runtime.bestSolution = candidateSolution;
+            runtime.bestIteration = runtime.numberOfIteration;
+            runtime.bestTime = now;
+
+            runtime.bestTimes.emplace_back(now);
+            runtime.bestIterations.emplace_back(runtime.numberOfIteration);
+            runtime.bestVehicles.emplace_back(runtime.bestSolution.getNumberOfRoutes());
+            runtime.bestCosts.emplace_back((runtime.bestSolution.getRawCost() * 100.0) / 100.0);
+
+            // new best solution !
+            spdlog::info("New Best Solution | Routes {} \t Cost {} \t Iteration {} \t Time {}ms",
+                         runtime.bestSolution.getRoutes().size(),
+                         std::ceil(runtime.bestSolution.getRawCost() * 100.0) / 100.0,
+                         runtime.numberOfIteration,
+                         getTimeSinceInMs(runtime.start));
+        }
+
+        // Check if we use the candidate solution as the new actual solution
+        // operator can force to take the new solution
+        if (largeIteration ||
+            acceptFunctor(candidateSolution, actualSolution, runtime.bestSolution) == AcceptationStatus::ACCEPT)
+        {
+            largeIteration = false;
+            actualSolution = std::move(candidateSolution);
+        }
+
+
         --iterationMax;
     }
 

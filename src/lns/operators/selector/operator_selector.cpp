@@ -17,29 +17,14 @@ bool OperatorPair::forceTakeSolution() const
     return forceAcceptance;
 }
 
-bool OperatorPair::isLargeIteration()
-{
-    if (largeIteration)
-    {
-        largeIteration = false;
-        return true;
-    }
-    return false;
-}
-
 OperatorPair::OperatorPair(DestructionOperator &destruct, ReconstructionOperator &reconstruct, bool forceAcceptance,
                            bool largeIteration)
-    : destruct(destruct), reconstruct(reconstruct), forceAcceptance(forceAcceptance), largeIteration(largeIteration)
+    : destruct(destruct), reconstruct(reconstruct), forceAcceptance(forceAcceptance)
 {}
 
 void OperatorPair::setForceAcceptance()
 {
     forceAcceptance = true;
-}
-
-void OperatorPair::setLargeIteration()
-{
-    largeIteration = true;
 }
 
 OperatorPair SimpleOperatorSelector::getOperatorPair()
