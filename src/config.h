@@ -31,7 +31,7 @@ bool const SLNS = true;
 bool const TWO_PHASE_ALGORITHM = true;
 
 // Flag indicating whether the random seed has been set (true means it is set).
-bool const SEED_SET = true;
+bool const SEED_SET = false;
 
 // Seed for random number generation (ensures reproducibility).
 int const RANDOM_SEED = 100;
