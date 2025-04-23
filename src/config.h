@@ -13,10 +13,13 @@ int const ROUTE_PENALTY = 0;
 int const NUMBER_VEHICLE = 50;
 
 // Number of iterations for the algorithm or simulation to run.
-int const NUMBER_ITERATION = 100000;
+int const NUMBER_ITERATION = 1000000;
 
-// % of NUMBER_ITERATION given to the first phase (route minimisation)
-double const FIRST_PHASE_ITERATION = 0.3;
+// Number of seconds for the algorithm to run.
+int const MAX_DURATION_SEC = 60;
+
+// % of total time given to the first phase (route minimisation)
+double const FIRST_PHASE_THRESHOLD = 0.3;
 
 // % of NUMBER_ITERATION
 // If no new best solution is found within LNS_FREQUENCY small iterations, then the next iteration will be a large iteration.
@@ -31,7 +34,7 @@ bool const SLNS = true;
 bool const TWO_PHASE_ALGORITHM = true;
 
 // Flag indicating whether the random seed has been set (true means it is set).
-bool const SEED_SET = false;
+bool const SEED_SET = true;
 
 // Seed for random number generation (ensures reproducibility).
 int const RANDOM_SEED = 100;

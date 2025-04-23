@@ -27,18 +27,24 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
     // fixed iteration
     int iterationMax = NUMBER_ITERATION;
 
+    unsigned long startTime = getTimeSinceInSec(runtime.start);
+    unsigned long currentTime = startTime;
+
     if (TWO_PHASE_ALGORITHM)
     {
-        spdlog::info("Route Minimization | Iteration {}", NUMBER_ITERATION * FIRST_PHASE_ITERATION);
-        fleetMinimizationCVB(iterationMax, runtime, actualSolution);
+        spdlog::info("Route Minimization");
+        fleetMinimizationCVB(/*iterationMax,*/ runtime, actualSolution);
     }
 
     actualSolution = runtime.bestSolution;
     runtime.transitionTime = getTimeSinceInMs(runtime.start);
     runtime.transitionIteration = runtime.numberOfIteration;
 
-    spdlog::info("SLNS | Iteration {}", NUMBER_ITERATION - NUMBER_ITERATION * FIRST_PHASE_ITERATION);
-    while (iterationMax > 0)
+    currentTime = getTimeSinceInSec(runtime.start);
+    spdlog::info("SLNS | Iteration {} | Time {}s ", runtime.numberOfIteration, currentTime);
+    
+    // while (iterationMax > 0)
+    while ((currentTime - startTime) < MAX_DURATION_SEC)
     {
         // Init iteration
         ++runtime.numberOfIteration;
@@ -96,7 +102,9 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
         {
             actualSolution = std::move(candidateSolution);
         }
-        --iterationMax;
+
+        currentTime = getTimeSinceInSec(runtime.start);
+        // --iterationMax;
     }
 
     spdlog::info("End | Iteration {} \t Time {}s", runtime.numberOfIteration, getTimeSinceInSec(runtime.start));
@@ -120,6 +128,8 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
     return result;
 }
 
+
+
 output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector &opSelectorSmall,
                                OperatorSelector &opSelectorLarge, AcceptanceFunction const &acceptFunctor)
 {
@@ -127,24 +137,32 @@ output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector
     LnsRuntimeData runtime = LnsRuntimeData(actualSolution);
 
     // fixed iteration
-    int iterationMax = NUMBER_ITERATION;
-    int frequency = NUMBER_ITERATION * LNS_FREQUENCY;// temporary
+    // int iterationMax = NUMBER_ITERATION;
+    
+    int frequency = NUMBER_ITERATION * LNS_FREQUENCY;
+
+    unsigned long startTime = getTimeSinceInSec(runtime.start);
+    unsigned long currentTime = startTime;
+
     int SlnsIteration = 0;
     bool largeIteration = false;
 
     if (TWO_PHASE_ALGORITHM)
     {
-        spdlog::info("Route Minimization | Iteration {}", NUMBER_ITERATION * FIRST_PHASE_ITERATION);
-        fleetMinimizationCVB(iterationMax, runtime, actualSolution);
+        spdlog::info("Route Minimization");
+        fleetMinimizationCVB(/*iterationMax,*/ runtime, actualSolution);
     }
 
     actualSolution = runtime.bestSolution;
     runtime.transitionTime = getTimeSinceInMs(runtime.start);
     runtime.transitionIteration = runtime.numberOfIteration;
 
-    spdlog::info("SLNS | Iteration {}", NUMBER_ITERATION - NUMBER_ITERATION * FIRST_PHASE_ITERATION);
+    currentTime = getTimeSinceInSec(runtime.start);
 
-    while (iterationMax > 0)
+    spdlog::info("SLNS | Iteration {} | Time {}s ", runtime.numberOfIteration, currentTime);
+
+    while ((currentTime - startTime) < MAX_DURATION_SEC)
+    //while (iterationMax > 0)
     {
         // Init iteration
         ++runtime.numberOfIteration;
@@ -206,8 +224,8 @@ output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector
             actualSolution = std::move(candidateSolution);
         }
 
-
-        --iterationMax;
+        currentTime = getTimeSinceInSec(runtime.start);
+        //--iterationMax;
     }
 
     spdlog::info("End | Iteration {} | Time {}s", runtime.numberOfIteration, getTimeSinceInSec(runtime.start));

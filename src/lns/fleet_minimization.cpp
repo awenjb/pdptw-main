@@ -14,63 +14,63 @@
 #include <spdlog/spdlog.h>
 #include <vector>
 
-void fleetMinimization(int &iterationMax, LnsRuntimeData &runtime, Solution &actualSolution)
-{
-    double firstPhaseIteration = NUMBER_ITERATION * (1 - FIRST_PHASE_ITERATION);
+// void fleetMinimization(int &iterationMax, LnsRuntimeData &runtime, Solution &actualSolution)
+// {
+//     double firstPhaseIteration = NUMBER_ITERATION * (1 - FIRST_PHASE_ITERATION);
 
-    SimpleOperatorSelector minimizationSelector;
-    addAllReconstructor(minimizationSelector);
-    minimizationSelector.addDestructor(BankFocusStringRemoval(10, 10));
+//     SimpleOperatorSelector minimizationSelector;
+//     addAllReconstructor(minimizationSelector);
+//     minimizationSelector.addDestructor(BankFocusStringRemoval(10, 10));
 
-    while (iterationMax > firstPhaseIteration)
-    {
-        ++runtime.numberOfIteration;
-        logProgress(runtime, actualSolution);
+//     while (iterationMax > firstPhaseIteration)
+//     {
+//         ++runtime.numberOfIteration;
+//         logProgress(runtime, actualSolution);
 
-        Solution candidateSolution = actualSolution;
+//         Solution candidateSolution = actualSolution;
 
-        if (candidateSolution.getBank().empty())
-        {
-            CleanEmptyRoute clean;
-            clean.destroySolution(candidateSolution);
-        }
+//         if (candidateSolution.getBank().empty())
+//         {
+//             CleanEmptyRoute clean;
+//             clean.destroySolution(candidateSolution);
+//         }
 
-        auto destructReconstructPair = minimizationSelector.getOperatorPair();
-        destructReconstructPair.destructor().destroySolution(candidateSolution);
-        destructReconstructPair.reconstructor().reconstructSolution(candidateSolution, 0.01);
-        candidateSolution.computeAndStoreSolutionCost();
+//         auto destructReconstructPair = minimizationSelector.getOperatorPair();
+//         destructReconstructPair.destructor().destroySolution(candidateSolution);
+//         destructReconstructPair.reconstructor().reconstructSolution(candidateSolution, 0.01);
+//         candidateSolution.computeAndStoreSolutionCost();
 
-        if (isReducingNbRoutes(candidateSolution, runtime.bestSolution))
-        {
-            checker::checkAll(candidateSolution, candidateSolution.getData(), false);
+//         if (isReducingNbRoutes(candidateSolution, runtime.bestSolution))
+//         {
+//             checker::checkAll(candidateSolution, candidateSolution.getData(), false);
 
-            unsigned long now = getTimeSinceInMs(runtime.start);
+//             unsigned long now = getTimeSinceInMs(runtime.start);
 
-            runtime.bestSolution = candidateSolution;
-            runtime.bestIterationFleet = runtime.numberOfIteration;
-            runtime.bestTimeFleet = now;
-            runtime.bestIteration = runtime.numberOfIteration;
-            runtime.bestTime = now;
+//             runtime.bestSolution = candidateSolution;
+//             runtime.bestIterationFleet = runtime.numberOfIteration;
+//             runtime.bestTimeFleet = now;
+//             runtime.bestIteration = runtime.numberOfIteration;
+//             runtime.bestTime = now;
 
-            runtime.bestTimes.emplace_back(now);
-            runtime.bestIterations.emplace_back(runtime.numberOfIteration);
-            runtime.bestVehicles.emplace_back(runtime.bestSolution.getNumberOfRoutes());
-            runtime.bestCosts.emplace_back((runtime.bestSolution.getRawCost() * 100.0) / 100.0);
+//             runtime.bestTimes.emplace_back(now);
+//             runtime.bestIterations.emplace_back(runtime.numberOfIteration);
+//             runtime.bestVehicles.emplace_back(runtime.bestSolution.getNumberOfRoutes());
+//             runtime.bestCosts.emplace_back((runtime.bestSolution.getRawCost() * 100.0) / 100.0);
 
-            minimizationSelector.betterSolutionFound();
+//             minimizationSelector.betterSolutionFound();
 
-            // new best solution !
-            spdlog::info("New Best | Iteration {} \t | Time {}ms \t | Routes {} \t | Cost {}",
-                         runtime.numberOfIteration,
-                         getTimeSinceInMs(runtime.start),
-                         runtime.bestSolution.getRoutes().size(),
-                         std::ceil(runtime.bestSolution.getRawCost() * 100.0) / 100.0);
-        }
+//             // new best solution !
+//             spdlog::info("New Best | Iteration {} \t | Time {}ms \t | Routes {} \t | Cost {}",
+//                          runtime.numberOfIteration,
+//                          getTimeSinceInMs(runtime.start),
+//                          runtime.bestSolution.getRoutes().size(),
+//                          std::ceil(runtime.bestSolution.getRawCost() * 100.0) / 100.0);
+//         }
 
-        actualSolution = std::move(candidateSolution);
-        --iterationMax;
-    }
-}
+//         actualSolution = std::move(candidateSolution);
+//         --iterationMax;
+//     }
+// }
 
 int sumAbs(Solution const &solution, std::vector<int> const &absCounter)
 {
@@ -84,34 +84,42 @@ int sumAbs(Solution const &solution, std::vector<int> const &absCounter)
 
 void removeOneRoute(Solution &solution, std::vector<int> const &absCounter)
 {
-    //RemoveRoute remove = RemoveRoute(util::getRandomInt(1, solution.getRoutes().size()) - 1);
+    RemoveRoute remove = RemoveRoute(util::getRandomInt(1, solution.getRoutes().size()) - 1);
 
-    int routeIndex = 0;
-    int sum = 0;
-    int max = 0;
-    int index = 0;
-    std::vector<Route> routes = solution.getRoutes();
-    for (Route const &route : routes)
-    {
-        std::vector<int> locIDs = route.getRoute();
-        for (int id : locIDs)
-        {
-            sum += absCounter.at(id);
-        }
-        if (max < sum)
-        {
-            max = sum;
-            routeIndex = index;
-        }
-        ++index;
-    }
-    RemoveRoute remove = RemoveRoute(routeIndex);
+    // int routeIndex = 0;
+    // int index = 0;
+
+    // int min = std::numeric_limits<int>::max();
+
+    // const std::vector<Route> &routes = solution.getRoutes();
+    // for (const Route &route : routes)
+    // {
+    //     int sum = 0;
+    //     const std::vector<int> &locIDs = route.getRoute();
+    //     for (int id : locIDs)
+    //     {
+    //         sum += absCounter.at(id);
+    //     }
+    //     if (sum < min)
+    //     {
+    //         min = sum;
+    //         routeIndex = index;
+    //     }
+    //     ++index;
+    // }
+
+    // RemoveRoute remove = RemoveRoute(routeIndex);
     solution.applyDestructSolution(remove);
 }
 
-void fleetMinimizationCVB(int &iterationMax, LnsRuntimeData &runtime, Solution &actualSolution)
+
+void fleetMinimizationCVB(/*int &iterationMax,*/ LnsRuntimeData &runtime, Solution &actualSolution)
 {
-    double firstPhaseIteration = NUMBER_ITERATION * (1 - FIRST_PHASE_ITERATION);
+    // const double firstPhaseThreshold = NUMBER_ITERATION * (1 - FIRST_PHASE_ITERATION);
+
+    unsigned long startTime = getTimeSinceInSec(runtime.start);
+    unsigned long currentTime = startTime;
+    unsigned long firstPhaseThreshold = MAX_DURATION_SEC * FIRST_PHASE_THRESHOLD;
 
     SimpleOperatorSelector minimizationSelector;
     addAllReconstructor(minimizationSelector);
@@ -121,58 +129,60 @@ void fleetMinimizationCVB(int &iterationMax, LnsRuntimeData &runtime, Solution &
     // counter of the number of solutions where c was not served by any routes
     std::vector<int> absCounter = std::vector<int>(actualSolution.getData().getSize() + 1, 0);
 
-    while (iterationMax > firstPhaseIteration)
+    while ((currentTime - startTime) < firstPhaseThreshold)
     {
         ++runtime.numberOfIteration;
         logProgress(runtime, actualSolution);
 
         Solution candidateSolution = actualSolution;
-
         auto destructReconstructPair = minimizationSelector.getOperatorPair();
+        
         destructReconstructPair.destructor().destroySolution(candidateSolution);
         destructReconstructPair.reconstructor().reconstructSolution(candidateSolution, 0.01);
         candidateSolution.computeAndStoreSolutionCost();
 
         std::vector<int> const &candidateBank = candidateSolution.getBank();
 
+        // is Empty Candidate Bank
         if (candidateBank.empty())
         {
-            // clean empty routes
-            CleanEmptyRoute clean = CleanEmptyRoute();
+            CleanEmptyRoute clean;
             clean.destroySolution(candidateSolution);
 
-            if (candidateSolution.getRoutes().size() <= runtime.bestSolution.getRoutes().size() && candidateSolution.getCost() < runtime.bestSolution.getCost())
+            if (candidateSolution.getRoutes().size() </*=*/ runtime.bestSolution.getRoutes().size() /*&& candidateSolution.getCost() < runtime.bestSolution.getCost()*/)
             {
-                // update best solution
                 checker::checkAll(candidateSolution, candidateSolution.getData(), false);
 
                 unsigned long now = getTimeSinceInMs(runtime.start);
                 updateBestSolution(runtime, candidateSolution, now);
+
                 runtime.bestIterationFleet = runtime.numberOfIteration;
                 runtime.bestTimeFleet = now;
 
-                // new best solution !
                 spdlog::info("New Best | Iteration {} \t | Time {}ms \t | Routes {} \t | Cost {}",
                              runtime.numberOfIteration,
-                             getTimeSinceInMs(runtime.start),
+                             now,
                              runtime.bestSolution.getRoutes().size(),
                              std::ceil(runtime.bestSolution.getRawCost() * 100.0) / 100.0);
             }
 
-            // remove a route
             removeOneRoute(candidateSolution, absCounter);
         }
 
+        // is Better Candidate
         if ((candidateBank.size() < actualSolution.getBank().size()) ||
             (sumAbs(candidateSolution, absCounter) < sumAbs(actualSolution, absCounter)))
         {
             actualSolution = candidateSolution;
         }
 
+        // update absCounter
         for (int i: candidateBank)
         {
             ++absCounter.at(i);
         }
-        --iterationMax;
+        
+        currentTime = getTimeSinceInSec(runtime.start);
+        // --iterationMax;
     }
 }
