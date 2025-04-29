@@ -8,6 +8,7 @@
  */
 enum class SortingStrategyType
 {
+    FIFO,
     SHUFFLE,
     DEMAND,
     CLOSE,
@@ -38,7 +39,17 @@ namespace sorting_strategy
     };
 
     /**
-     * Shuffle the requests.
+     *  First in, first out, does not touch the request bank
+     */
+    class FirstInFirstOut : public SortingStrategy
+    {
+    public:
+        using SortingStrategy::SortingStrategy;
+        std::vector<int> const &sortPairs() const override;
+    };
+
+    /**
+     *  Shuffle the requests.
      */
     class Shuffle : public SortingStrategy
     {

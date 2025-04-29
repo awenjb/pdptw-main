@@ -120,7 +120,8 @@ void fleetMinimizationCVB(/*int &iterationMax,*/ LnsRuntimeData &runtime, Soluti
     unsigned long firstPhaseThreshold = MAX_DURATION_SEC * FIRST_PHASE_THRESHOLD;
 
     SimpleOperatorSelector minimizationSelector;
-    addAllReconstructor(minimizationSelector);
+    minimizationSelector.addReconstructor(ListHeuristicCostOriented(SortingStrategyType::FIFO, EnumerationType::ALL_INSERT_PAIR), 1);
+    //addAllReconstructor(minimizationSelector);
     minimizationSelector.addDestructor(BankFocusStringRemoval(10, 10));
     //minimizationSelector.addDestructor(StringRemoval(10, 10));
 

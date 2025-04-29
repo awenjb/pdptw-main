@@ -12,6 +12,12 @@ double getDistanceToDepot(PDPTWData const &data, int pairID)
     return data::TravelTime(data, 0, pairID);
 }
 
+std::vector<int> const &sorting_strategy::FirstInFirstOut::sortPairs() const
+{
+    auto &bank = getSolution().getPairBank();
+    return bank;
+}
+
 std::vector<int> const &sorting_strategy::Shuffle::sortPairs() const
 {
     auto &bank = getSolution().getPairBank();
