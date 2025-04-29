@@ -52,19 +52,19 @@ nlohmann::ordered_json output::getCompleteJson(output::LnsOutput const &result)
     jsonSolution["reference"] = "...";
     jsonSolution["vehicles"] = solution.getNumberOfRoutes();
     jsonSolution["cost"] =  std::ceil(solution.getRawCost() * 100.0) / 100.0;
-    jsonSolution["time"] = result.getTimeSpent();
+    jsonSolution["time(s)"] = result.getTimeSpent();
     jsonSolution["iteration"] = result.getNumberOfIteration();
     jsonSolution["unfullfilled"] = solution.getPairBank().size();
     jsonSolution["routes"] = jsonRoutes;
 
-    jsonSolution["timeInFLeetMin"] = result.getTimeSpentFLeetMin();
-    jsonSolution["iterationInFLeetMin"] = result.getNumberOfIterationFleetMin();
-    jsonSolution["timeBestInFleetMin"] = result.getBestTimeFleetMin();
+    jsonSolution["timeInFleetMin"] = result.getTimeSpentFleetMin();
+    jsonSolution["iterationInFleetMin"] = result.getNumberOfIterationFleetMin();
+    jsonSolution["timeBestInFleetMin(s)"] = result.getBestTimeFleetMin();
     jsonSolution["iterationBestInFleetMin"] = result.getBestIterationFleetMin();
 
     jsonSolution["bestVehicles"] = result.getBestVehicles();
     jsonSolution["bestCosts"] = result.getBestCosts();
-    jsonSolution["bestTimes"] = result.getBestTimes();
+    jsonSolution["bestTimes(ms)"] = result.getBestTimes();
     jsonSolution["bestIterations"] = result.getBestIterations();
 
 

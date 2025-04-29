@@ -107,12 +107,12 @@ int main(int argc, char **argv)
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n5000/bar-n5000-1.json";
     //std::string filepath =  "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes/Nantes_31_10_2023.json";
 
-    PDPTWData data = parsing::parseJson(filepath);
-    Solution startingSolution = Solution::emptySolution(data);
-    simpleLNS(data, startingSolution);
+    // PDPTWData data = parsing::parseJson(filepath);
+    // Solution startingSolution = Solution::emptySolution(data);
+    // simpleLNS(data, startingSolution);
 
-    // std::string path = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/selection";
-    // runAllInDirectory(path, simpleLNS);
+    std::string path = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/select_200";
+    runAllInDirectory(path, simpleLNS);
 
 
     return 0;

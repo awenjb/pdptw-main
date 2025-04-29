@@ -1,13 +1,13 @@
 #include "lns_output.h"
 
 output::LnsOutput::LnsOutput(Solution const &bestSolution, unsigned int numberOfIteration,
-                     unsigned int numberOfIterationFleetMin, unsigned long timeSpent, unsigned long timeSpentFLeetMin,
+                     unsigned int numberOfIterationFleetMin, unsigned long timeSpent, unsigned long timeSpentFleetMin,
                      unsigned int bestIterationFleetMin, unsigned long bestTimeFleetMin, unsigned int bestIteration,
                      unsigned long bestTime, std::vector<unsigned long> const &bestTimes,
                      std::vector<int> const &bestIterations, std::vector<int> const &bestVehicles,
                      std::vector<double> const &bestCosts)
     : bestSolution(bestSolution), numberOfIteration(numberOfIteration),
-      numberOfIterationFleetMin(numberOfIterationFleetMin), timeSpent(timeSpent), timeSpentFLeetMin(timeSpentFLeetMin),
+      numberOfIterationFleetMin(numberOfIterationFleetMin), timeSpent(timeSpent), timeSpentFleetMin(timeSpentFleetMin),
       bestIterationFleetMin(bestIterationFleetMin), bestTimeFleetMin(bestTimeFleetMin), bestIteration(bestIteration),
       bestTime(bestTime), bestTimes(bestTimes), bestIterations(bestIterations), bestVehicles(bestVehicles),
       bestCosts(bestCosts)
@@ -33,9 +33,9 @@ unsigned long output::LnsOutput::getTimeSpent() const
     return timeSpent;
 }
 
-unsigned long output::LnsOutput::getTimeSpentFLeetMin() const
+unsigned long output::LnsOutput::getTimeSpentFleetMin() const
 {
-    return timeSpentFLeetMin;
+    return timeSpentFleetMin;
 }
 
 unsigned int output::LnsOutput::getBestIterationFleetMin() const

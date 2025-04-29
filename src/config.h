@@ -16,10 +16,10 @@ int const NUMBER_VEHICLE = 50;
 int const NUMBER_ITERATION = 1000000;
 
 // Number of seconds for the algorithm to run.
-int const MAX_DURATION_SEC = 60;
+int const MAX_DURATION_SEC = 90;
 
 // % of total time given to the first phase (route minimisation)
-double const FIRST_PHASE_THRESHOLD = 0.3;
+double const FIRST_PHASE_THRESHOLD = 1.0;
 
 // % of NUMBER_ITERATION
 // If no new best solution is found within LNS_FREQUENCY small iterations, then the next iteration will be a large iteration.
@@ -40,14 +40,13 @@ bool const SEED_SET = true;
 int const RANDOM_SEED = 100;
 
 // Flag indicating whether we print during the execution.
-bool const PRINT = true;
+bool const PRINT = false;
 
 // Flag indicating whether the final solution is stored.
-bool const STORE_SOLUTION = false;
+bool const STORE_SOLUTION = true;
 
 // Flag indicating whether the solution is stored with complete information or not.
 bool const COMPLETE_STORE = true;
 
 // Directories
-
-std::string const OUTPUT_DIRECTORY = "./../../output/test_new_json";
+std::string const OUTPUT_DIRECTORY = "./../../output/mini_200";

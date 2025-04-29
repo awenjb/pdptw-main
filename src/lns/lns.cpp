@@ -37,7 +37,7 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
     }
 
     actualSolution = runtime.bestSolution;
-    runtime.transitionTime = getTimeSinceInMs(runtime.start);
+    runtime.transitionTime = getTimeSinceInSec(runtime.start);
     runtime.transitionIteration = runtime.numberOfIteration;
 
     currentTime = getTimeSinceInSec(runtime.start);
@@ -154,7 +154,7 @@ output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector
     }
 
     actualSolution = runtime.bestSolution;
-    runtime.transitionTime = getTimeSinceInMs(runtime.start);
+    runtime.transitionTime = getTimeSinceInSec(runtime.start);
     runtime.transitionIteration = runtime.numberOfIteration;
 
     currentTime = getTimeSinceInSec(runtime.start);

@@ -12,7 +12,7 @@ namespace output
         unsigned int numberOfIteration;
         unsigned int numberOfIterationFleetMin;
         unsigned long timeSpent;
-        unsigned long timeSpentFLeetMin;
+        unsigned long timeSpentFleetMin;
 
         unsigned int bestIterationFleetMin;
         unsigned long bestTimeFleetMin;
@@ -28,7 +28,7 @@ namespace output
     public:
         // Constructeur
         LnsOutput(Solution const &bestSolution, unsigned int numberOfIteration, unsigned int numberOfIterationFleetMin,
-                  unsigned long timeSpent, unsigned long timeSpentFLeetMin, unsigned int bestIterationFleetMin,
+                  unsigned long timeSpent, unsigned long timeSpentFleetMin, unsigned int bestIterationFleetMin,
                   unsigned long bestTimeFleetMin, unsigned int bestIteration, unsigned long bestTime,
                   std::vector<unsigned long> const &bestTimes, std::vector<int> const &bestIterations,
                   std::vector<int> const &bestVehicles, std::vector<double> const &bestCost);
@@ -38,7 +38,7 @@ namespace output
         unsigned int getNumberOfIteration() const;
         unsigned int getNumberOfIterationFleetMin() const;
         unsigned long getTimeSpent() const;
-        unsigned long getTimeSpentFLeetMin() const;
+        unsigned long getTimeSpentFleetMin() const;
 
         unsigned int getBestIterationFleetMin() const;
         unsigned long getBestTimeFleetMin() const;

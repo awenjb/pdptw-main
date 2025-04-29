@@ -84,31 +84,29 @@ int sumAbs(Solution const &solution, std::vector<int> const &absCounter)
 
 void removeOneRoute(Solution &solution, std::vector<int> const &absCounter)
 {
-    RemoveRoute remove = RemoveRoute(util::getRandomInt(1, solution.getRoutes().size()) - 1);
+    int routeIndex = 0;
+    int index = 0;
 
-    // int routeIndex = 0;
-    // int index = 0;
+    int min = std::numeric_limits<int>::max();
 
-    // int min = std::numeric_limits<int>::max();
+    const std::vector<Route> &routes = solution.getRoutes();
+    for (const Route &route : routes)
+    {
+        int sum = 0;
+        const std::vector<int> &locIDs = route.getRoute();
+        for (int id : locIDs)
+        {
+            sum += absCounter.at(id);
+        }
+        if (sum < min)
+        {
+            min = sum;
+            routeIndex = index;
+        }
+        ++index;
+    }
 
-    // const std::vector<Route> &routes = solution.getRoutes();
-    // for (const Route &route : routes)
-    // {
-    //     int sum = 0;
-    //     const std::vector<int> &locIDs = route.getRoute();
-    //     for (int id : locIDs)
-    //     {
-    //         sum += absCounter.at(id);
-    //     }
-    //     if (sum < min)
-    //     {
-    //         min = sum;
-    //         routeIndex = index;
-    //     }
-    //     ++index;
-    // }
-
-    // RemoveRoute remove = RemoveRoute(routeIndex);
+    RemoveRoute remove = RemoveRoute(routeIndex);
     solution.applyDestructSolution(remove);
 }
 
@@ -157,7 +155,7 @@ void fleetMinimizationCVB(/*int &iterationMax,*/ LnsRuntimeData &runtime, Soluti
                 updateBestSolution(runtime, candidateSolution, now);
 
                 runtime.bestIterationFleet = runtime.numberOfIteration;
-                runtime.bestTimeFleet = now;
+                runtime.bestTimeFleet = getTimeSinceInSec(runtime.start);
 
                 spdlog::info("New Best | Iteration {} \t | Time {}ms \t | Routes {} \t | Cost {}",
                              runtime.numberOfIteration,

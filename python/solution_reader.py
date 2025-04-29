@@ -66,11 +66,19 @@ class PDPTWCompleteSolution:
         if self._json_file is None:
             raise "Trying to parse json, but was not loaded"
         self._routes: list[dict] = self._json_file["routes"]
-        self._vehicles = len(self._routes)
+        self._vehicles = self._json_file["vehicles"]
         self._cost = self._json_file["cost"]
+        self._unfullfilled = self._json_file["unfullfilled"]
         self._instance = self._json_file["instanceName"]
         self._iteration = self._json_file["iteration"]
-        self._time = self._json_file["time"]
+        self._time = self._json_file["time(s)"]
+        self._iteration = self._json_file["iteration"]
+        self._best_times = self._json_file["bestTimes(ms)"]
+        self._best_iterations = self._json_file["bestIterations"]
+        self._time_fleet = self._json_file["timeInFLeetMin"]
+        self._iteration_fleet = self._json_file["iterationInFleetMin"]
+        self._best_iteration_fleet = self._json_file["iterationBestInFleetMin"]
+        self._best_time_fleet = self._json_file["timeBestInFleetMin(s)"]
         self._date = self._json_file["date"]
         self._reference = self._json_file["reference"]
 
@@ -83,6 +91,9 @@ class PDPTWCompleteSolution:
     def get_cost(self):
         return self._cost
     
+    def get_unfullfilled(self):
+        return self._unfullfilled
+    
     def get_instance(self):
         return self._instance
     
@@ -92,6 +103,24 @@ class PDPTWCompleteSolution:
     def get_time(self):
         return self._time
     
+    def get_best_iterations(self):
+        return self._best_iterations
+
+    def get_best_times(self):
+        return self._best_times
+
+    def get_iteration_fleet(self):
+        return self._iteration_fleet
+
+    def get_time_fleet(self):
+        return self._time_fleet
+    
+    def get_best_iteration_fleet(self):
+        return self._best_iteration_fleet
+
+    def get_best_time_fleet(self):
+        return self._best_time_fleet
+        
     def get_date(self):
         return self._date
 
