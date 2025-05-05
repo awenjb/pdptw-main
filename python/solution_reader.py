@@ -75,7 +75,7 @@ class PDPTWCompleteSolution:
         self._iteration = self._json_file["iteration"]
         self._best_times = self._json_file["bestTimes(ms)"]
         self._best_iterations = self._json_file["bestIterations"]
-        self._time_fleet = self._json_file["timeInFLeetMin"]
+        self._time_fleet = self._json_file["timeInFleetMin"]
         self._iteration_fleet = self._json_file["iterationInFleetMin"]
         self._best_iteration_fleet = self._json_file["iterationBestInFleetMin"]
         self._best_time_fleet = self._json_file["timeBestInFleetMin(s)"]

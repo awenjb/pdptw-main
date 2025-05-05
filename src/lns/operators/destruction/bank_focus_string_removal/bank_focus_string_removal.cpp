@@ -16,7 +16,7 @@ namespace
         unsigned int numberOfString = util::getRandomInt(1, maxNumberOfString + 1);                    // (7) k_s
 
 
-        // select a random location in the bank (bank is not supposed to be empty)
+        // select a location in the bank (bank is not supposed to be empty)
         std::vector<int> const &bank = solution.getBank();
         int locationSeed = bank.at(util::getRandomInt(1, bank.size()) - 1);
 
@@ -52,12 +52,8 @@ namespace
 
 void BankFocusStringRemoval::destroySolution(Solution &solution) const
 {
-    // // if the bank is empty (all requests are fullfilled), remove a route
-    // if (solution.getBank().empty())
-    // {
-    //     // maybe try a heuristic to remove a specific route (smallest, longest, etc...)
-    //     RemoveRoute remove = RemoveRoute(util::getRandomInt(1, solution.getRoutes().size()) - 1);
-    //     solution.applyDestructSolution(remove);
-    // }
-    BankFocusSISRsRuin(solution, maxCardinalityOfString, averageNumberRemovedElement);
+    if (!(solution.getBank().empty()))
+    {
+        BankFocusSISRsRuin(solution, maxCardinalityOfString, averageNumberRemovedElement);
+    }
 }

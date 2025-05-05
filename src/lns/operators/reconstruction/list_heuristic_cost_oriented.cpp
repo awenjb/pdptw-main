@@ -10,6 +10,10 @@ void ListHeuristicCostOriented::reconstructSolution(Solution &solution, double b
     // selection strategy
     switch (strategy)
     {
+        case SortingStrategyType::LIFO: {
+            sortedPairs = sorting_strategy::LastInFirstOut(solution).sortPairs();
+            break;
+        }
         case SortingStrategyType::FIFO: {
             sortedPairs = sorting_strategy::FirstInFirstOut(solution).sortPairs();
             break;

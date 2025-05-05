@@ -8,6 +8,7 @@
  */
 enum class SortingStrategyType
 {
+    LIFO,
     FIFO,
     SHUFFLE,
     DEMAND,
@@ -39,7 +40,17 @@ namespace sorting_strategy
     };
 
     /**
-     *  First in, first out, does not touch the request bank
+     *  Last in, first out
+     */
+    class LastInFirstOut : public SortingStrategy
+    {
+    public:
+        using SortingStrategy::SortingStrategy;
+        std::vector<int> const &sortPairs() const override;
+    };
+
+    /**
+     *  First in, first out
      */
     class FirstInFirstOut : public SortingStrategy
     {

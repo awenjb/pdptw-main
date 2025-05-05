@@ -89,12 +89,12 @@ void removeOneRoute(Solution &solution, std::vector<int> const &absCounter)
 
     int min = std::numeric_limits<int>::max();
 
-    const std::vector<Route> &routes = solution.getRoutes();
-    for (const Route &route : routes)
+    std::vector<Route> const &routes = solution.getRoutes();
+    for (Route const &route: routes)
     {
         int sum = 0;
-        const std::vector<int> &locIDs = route.getRoute();
-        for (int id : locIDs)
+        std::vector<int> const &locIDs = route.getRoute();
+        for (int id: locIDs)
         {
             sum += absCounter.at(id);
         }
@@ -110,7 +110,6 @@ void removeOneRoute(Solution &solution, std::vector<int> const &absCounter)
     solution.applyDestructSolution(remove);
 }
 
-
 void fleetMinimizationCVB(/*int &iterationMax,*/ LnsRuntimeData &runtime, Solution &actualSolution)
 {
     // const double firstPhaseThreshold = NUMBER_ITERATION * (1 - FIRST_PHASE_ITERATION);
@@ -120,13 +119,14 @@ void fleetMinimizationCVB(/*int &iterationMax,*/ LnsRuntimeData &runtime, Soluti
     unsigned long firstPhaseThreshold = MAX_DURATION_SEC * FIRST_PHASE_THRESHOLD;
 
     SimpleOperatorSelector minimizationSelector;
-    minimizationSelector.addReconstructor(ListHeuristicCostOriented(SortingStrategyType::FIFO, EnumerationType::ALL_INSERT_PAIR), 1);
+    minimizationSelector.addReconstructor(ListHeuristicCostOriented(SortingStrategyType::DEMAND, EnumerationType::ALL_INSERT_PAIR), 1);
     //addAllReconstructor(minimizationSelector);
     minimizationSelector.addDestructor(BankFocusStringRemoval(10, 10));
     //minimizationSelector.addDestructor(StringRemoval(10, 10));
 
     // counter of the number of solutions where c was not served by any routes
     std::vector<int> absCounter = std::vector<int>(actualSolution.getData().getSize() + 1, 0);
+
 
     while ((currentTime - startTime) < firstPhaseThreshold)
     {
@@ -135,12 +135,20 @@ void fleetMinimizationCVB(/*int &iterationMax,*/ LnsRuntimeData &runtime, Soluti
 
         Solution candidateSolution = actualSolution;
         auto destructReconstructPair = minimizationSelector.getOperatorPair();
-        
+
         destructReconstructPair.destructor().destroySolution(candidateSolution);
         destructReconstructPair.reconstructor().reconstructSolution(candidateSolution, 0.01);
         candidateSolution.computeAndStoreSolutionCost();
 
         std::vector<int> const &candidateBank = candidateSolution.getBank();
+
+        // is Better Candidate
+        if ((candidateBank.size() < actualSolution.getBank().size()) ||
+            (sumAbs(candidateSolution, absCounter) < sumAbs(actualSolution, absCounter)))
+        {
+            //std::cout << "better candidate" << std::endl;
+            actualSolution = candidateSolution;
+        }
 
         // is Empty Candidate Bank
         if (candidateBank.empty())
@@ -148,7 +156,7 @@ void fleetMinimizationCVB(/*int &iterationMax,*/ LnsRuntimeData &runtime, Soluti
             CleanEmptyRoute clean;
             clean.destroySolution(candidateSolution);
 
-            if (candidateSolution.getRoutes().size() </*=*/ runtime.bestSolution.getRoutes().size() /*&& candidateSolution.getCost() < runtime.bestSolution.getCost()*/)
+            if (candidateSolution.getRoutes().size() < runtime.bestSolution.getRoutes().size())
             {
                 checker::checkAll(candidateSolution, candidateSolution.getData(), false);
 
@@ -165,14 +173,8 @@ void fleetMinimizationCVB(/*int &iterationMax,*/ LnsRuntimeData &runtime, Soluti
                              std::ceil(runtime.bestSolution.getRawCost() * 100.0) / 100.0);
             }
 
-            removeOneRoute(candidateSolution, absCounter);
-        }
-
-        // is Better Candidate
-        if ((candidateBank.size() < actualSolution.getBank().size()) ||
-            (sumAbs(candidateSolution, absCounter) < sumAbs(actualSolution, absCounter)))
-        {
             actualSolution = candidateSolution;
+            removeOneRoute(actualSolution, absCounter);
         }
 
         // update absCounter
@@ -180,7 +182,7 @@ void fleetMinimizationCVB(/*int &iterationMax,*/ LnsRuntimeData &runtime, Soluti
         {
             ++absCounter.at(i);
         }
-        
+
         currentTime = getTimeSinceInSec(runtime.start);
         // --iterationMax;
     }
