@@ -20,14 +20,12 @@ TimeWindowConstraint::TimeWindowConstraint(Solution const &solution) : Constrain
 
 TimeWindowConstraint::~TimeWindowConstraint()
 {
-    //allRouteReachTimes.clear();
     FTSContainer.clear();
 }
 
 std::unique_ptr<Constraint> TimeWindowConstraint::clone(Solution const &newOwningSolution) const
 {
     std::unique_ptr<TimeWindowConstraint> clonePtr = std::make_unique<TimeWindowConstraint>(newOwningSolution);
-    //clonePtr->allRouteReachTimes = allRouteReachTimes;
     clonePtr->FTSContainer = FTSContainer;
     return clonePtr;
 }

@@ -30,6 +30,7 @@ add_executable(pdptw src/mains/main.cpp
                 src/lns/constraints/capacity/capacity_constraint.cpp
                 src/lns/constraints/time_window/forward_time_slack.cpp
                 src/lns/constraints/time_window/time_window_constraint.cpp
+                src/lns/constraints/time_window/time_window_constraint_without_FTS.cpp
                 src/lns/modification/pair/insert_pair.cpp 
                 src/lns/modification/pair/remove_pair.cpp
                 src/lns/modification/route/insert_route_with_pair.cpp

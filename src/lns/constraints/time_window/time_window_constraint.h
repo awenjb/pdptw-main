@@ -11,13 +11,11 @@
 /**
  * Time Window Constraint
  * Check that the time windows are respected.
- * For now, compute all time window in a route
- * TO DO FTS
  */
 class TimeWindowConstraint : public Constraint
 {
 public:
-    using ReachTimeVector = std::vector<TimeInteger>;
+    using ArrivalTimeVector = std::vector<TimeInteger>;
 
 
     explicit TimeWindowConstraint(Solution const &);
@@ -37,6 +35,11 @@ public:
 
 private:
     std::vector<ForwardTimeSlack> FTSContainer;
+
+    /* Debut Ajout pour calcul sans FTS */ 
+    std::vector<ArrivalTimeVector> arrivalTimeContainer;
+
+    /* Fin Ajout pour calcul sans FTS */
 
     /**
      *  Check if the insertion of a pair pickup/delivery is valid or not.
