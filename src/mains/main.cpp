@@ -2,6 +2,7 @@
 #include "config.h"
 #include "input/data.h"
 #include "input/json_parser.h"
+#include "input/load_dependent.h"
 #include "input/location.h"
 #include "input/pdptw_data.h"
 #include "input/time_window.h"
@@ -71,7 +72,8 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
     if (SLNS)
     {
         // run slns
-        result = std::make_unique<output::LnsOutput>(lns::runSlns(startingSolution, smallSelector, largeSelector, acceptor));
+        result = std::make_unique<output::LnsOutput>(
+                lns::runSlns(startingSolution, smallSelector, largeSelector, acceptor));
     }
     else
     {
@@ -81,7 +83,7 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
         SmallLargeOperatorSelector smallLargeSelector(std::move(selectors));
 
         // run lns
-        result =  std::make_unique<output::LnsOutput>(lns::runLns(startingSolution, smallLargeSelector, acceptor));
+        result = std::make_unique<output::LnsOutput>(lns::runLns(startingSolution, smallLargeSelector, acceptor));
     }
 
     if (PRINT)
@@ -102,17 +104,31 @@ int main(int argc, char **argv)
     ///////////////////////////////////////////////////////////////////////
 
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n100/bar-n100-1.json";
-    std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100/lc103.json";
+    // std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100/lc103.json";
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes_1.json";
     //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n5000/bar-n5000-1.json";
     //std::string filepath =  "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes/Nantes_31_10_2023.json";
 
-    // PDPTWData data = parsing::parseJson(filepath);
-    // Solution startingSolution = Solution::emptySolution(data);
-    // simpleLNS(data, startingSolution);
+    std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes_1_elevation.json";
 
-    std::string path = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/select_200";
-    runAllInDirectory(path, simpleLNS);
+
+    PDPTWData data = parsing::parseJson(filepath);
+
+    // data.print();
+
+    // pre calculate some value in case of a load-dependent instances
+    if (ELEVATION)
+    {
+        ltt::preCalculation(data);
+    }
+
+    Solution startingSolution = Solution::emptySolution(data);
+
+
+    simpleLNS(data, startingSolution);
+
+    // std::string path = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_200";
+    // runAllInDirectory(path, simpleLNS);
 
 
     return 0;

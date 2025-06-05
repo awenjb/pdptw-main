@@ -1,5 +1,6 @@
 #include "solution_checker.h"
 
+#include "config.h"
 #include "input/data.h"
 #include "input/location.h"
 #include "input/pdptw_data.h"
@@ -108,42 +109,61 @@ void checker::checkCapacity(Solution const &sol, PDPTWData const &data)
 void checker::checkTimeWindows(Solution const &sol, PDPTWData const &data)
 {
     bool errorFlag = false;
-    TimeInteger reachTime = 0;
+    TimeInteger time = 0;
+    double travelTime = 0;
     int routeID = 0;
-    int locID = 0;
-
+    double slope = 0;
+    double load = 0;
 
     for (Route const &route: sol.getRoutes())
     {
         if (!route.getRoute().empty())
         {
-            // travel to the first location
-            reachTime = data.getDepot().getTimeWindow().getStart() + data::TravelTime(data, 0, route.getRoute().at(0));
+            int prev = 0;
+            int curr = 0;
+            load = 0;
+            time = data.getDepot().getTimeWindow().getStart();
 
-            for (int i = 0; i < route.getRoute().size() - 1; i++)
+            for (size_t i = 0; i < route.getRoute().size(); ++i)
             {
-                locID = route.getRoute().at(i);
-                // check TimeWindow
-                if (!(data.getLocation(locID).getTimeWindow().isValid(reachTime)))
+                curr = route.getRoute().at(i);
+
+                travelTime = data::travelCost(data, prev, curr);
+
+                if (ELEVATION)
                 {
-                    // Error, reach time not valid for the location time window
-                    spdlog::error("Reach time not valid for the location {} time window in route {}.", locID, routeID);
+                    load += data.getLocation(curr).getDemand();
+                    // slope = data::getSlope(data, prev, curr);
+                    // travelTime /= data::loadDependantPenalisation(load, slope);
+                }
+
+                time += travelTime;
+
+                if (!data.getLocation(curr).getTimeWindow().isValid(time))
+                {
+                    spdlog::error("Arrival time not valid for the location {} time window in route {}.", curr, routeID);
                     errorFlag = true;
                 }
 
-                TimeInteger travelTime = data::TravelTime(data, locID, route.getRoute().at(i + 1));
-                TimeInteger serviceTime = data.getLocation(locID).getServiceDuration();
-                TimeInteger startTW = data.getLocation(locID).getTimeWindow().getStart();
+                time = std::max(time, data.getLocation(curr).getTimeWindow().getStart());
+                time += data.getLocation(curr).getServiceDuration();
 
-                reachTime = std::max(reachTime, startTW) + serviceTime + travelTime;
+                prev = curr;
             }
 
-            // check last timeWindow
-            locID = route.getRoute().back();
-            if (!(data.getLocation(locID).getTimeWindow().isValid(reachTime)))
+            // check return to depot
+
+            travelTime = data::travelCost(data, prev, 0);
+            if (ELEVATION)
             {
-                // Error, reach time not valid for the location time window
-                spdlog::error("Reach time not valid for the location {} time window in route {}.", locID, routeID);
+                load += data.getLocation(prev).getDemand();
+                // slope = data::getSlope(data, prev, 0);
+                // travelTime /= data::loadDependantPenalisation(load, slope);
+            }
+
+            if (!data.getLocation(0).getTimeWindow().isValid(time))
+            {
+                spdlog::error("Arrival time not valid for the location {} time window in route {}.", curr, routeID);
                 errorFlag = true;
             }
         }

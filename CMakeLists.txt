@@ -23,6 +23,7 @@ add_executable(pdptw src/mains/main.cpp
                 src/input/pdptw_data.cpp
                 src/input/time_window.cpp
                 src/input/json_parser.cpp
+                src/input/load_dependent.cpp
                 src/lns/acceptance/threshold_acceptance.cpp
                 src/lns/solution/route.cpp 
                 src/lns/solution/solution.cpp
@@ -31,6 +32,7 @@ add_executable(pdptw src/mains/main.cpp
                 src/lns/constraints/time_window/forward_time_slack.cpp
                 src/lns/constraints/time_window/time_window_constraint.cpp
                 src/lns/constraints/time_window/time_window_constraint_without_FTS.cpp
+                src/lns/constraints/time_window_ltt/time_window_ltt_constraint.cpp
                 src/lns/modification/pair/insert_pair.cpp 
                 src/lns/modification/pair/remove_pair.cpp
                 src/lns/modification/route/insert_route_with_pair.cpp

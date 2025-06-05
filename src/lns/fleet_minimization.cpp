@@ -119,10 +119,10 @@ void fleetMinimizationCVB(/*int &iterationMax,*/ LnsRuntimeData &runtime, Soluti
     unsigned long firstPhaseThreshold = MAX_DURATION_SEC * FIRST_PHASE_THRESHOLD;
 
     SimpleOperatorSelector minimizationSelector;
-    minimizationSelector.addReconstructor(ListHeuristicCostOriented(SortingStrategyType::DEMAND, EnumerationType::ALL_INSERT_PAIR), 1);
-    //addAllReconstructor(minimizationSelector);
+    //minimizationSelector.addReconstructor(ListHeuristicCostOriented(SortingStrategyType::DEMAND, EnumerationType::ALL_INSERT_PAIR), 1);
+    addAllReconstructor(minimizationSelector);
     minimizationSelector.addDestructor(BankFocusStringRemoval(10, 10));
-    //minimizationSelector.addDestructor(StringRemoval(10, 10));
+    minimizationSelector.addDestructor(StringRemoval(10, 10));
 
     // counter of the number of solutions where c was not served by any routes
     std::vector<int> absCounter = std::vector<int>(actualSolution.getData().getSize() + 1, 0);

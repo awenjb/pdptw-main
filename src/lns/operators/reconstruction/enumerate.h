@@ -29,5 +29,7 @@ namespace enumeration
     void enumerateAllInsertPairOpti(Solution const &solution, Pair const &pair,
                                     std::unique_ptr<AtomicRecreation> &bestModificationPtr, double &bestCost,
                                     double blinkRate);
-
+    void enumerateAllInsertPairLTTKBest(Solution const &solution, Pair const &pair,
+                                        std::unique_ptr<AtomicRecreation> &bestModificationPtr, double &bestCost,
+                                        double blinkRate, size_t k);
 }// namespace enumeration

@@ -6,6 +6,7 @@
 #include "lns/constraints/capacity/capacity_constraint.h"
 #include "lns/constraints/constraint.h"
 #include "lns/constraints/time_window/time_window_constraint.h"
+#include "lns/constraints/time_window_ltt/time_window_ltt_constraint.h"
 #include "lns/solution/route.h"
 #include "output/solution_checker.h"
 
@@ -39,6 +40,11 @@ void Solution::initConstraints()
     constraints.clear();
     constraints.push_back(std::make_unique<CapacityConstraint>(*this));
     constraints.push_back(std::make_unique<TimeWindowConstraint>(*this));
+
+    if (ELEVATION)
+    {
+        lttConstraint = std::make_unique<TimeWindowLTTConstraint>(*this);
+    }
 }
 
 void Solution::computeAndStoreSolutionCost()
@@ -121,6 +127,18 @@ Solution &Solution::operator=(Solution const &rhs)
         return constraintPtr->clone(*this);
     });
 
+    if (ELEVATION)
+    {
+        if (rhs.lttConstraint)
+        {
+            lttConstraint = rhs.lttConstraint->clone(*this);
+        }
+        else
+        {
+            lttConstraint.reset();
+        }
+    }
+
     return *this;
 }
 
@@ -147,6 +165,15 @@ Solution &Solution::operator=(Solution &&sol) noexcept
     for (auto &constraint: constraints)
     {
         constraint->setSolution(*this);
+    }
+
+    if (ELEVATION)
+    {
+        lttConstraint = std::move(sol.lttConstraint);
+        if (lttConstraint)
+        {
+            lttConstraint->setSolution(*this);
+        }
     }
 
     return *this;
@@ -252,6 +279,13 @@ bool Solution::checkModification(AtomicRecreation const &modification) const
     return true;
 }
 
+bool Solution::checkModificationLTT(AtomicRecreation const &modification) const
+{
+    ModificationCheckVariant const &checkVariant = modification.asCheckVariant();
+
+    return lttConstraint->checkVariant(checkVariant);
+}
+
 void Solution::beforeApplyModification(AtomicModification &modification) const
 {
     // Pre-modification check
@@ -264,6 +298,11 @@ void Solution::afterApplyModification(AtomicModification &modification)
     for (auto &constraint: constraints)
     {
         constraint->applyVariant(modification.asApplyVariant());
+    }
+
+    if (ELEVATION)
+    {
+        lttConstraint->applyVariant(modification.asApplyVariant());
     }
 }
 
@@ -296,6 +335,16 @@ void Solution::applyDestructSolution(AtomicDestruction &modification)
 void Solution::check() const
 {
     checker::checkSolutionCoherence(*this, getData());
+}
+
+double Solution::getTotalDistance() const
+{
+    return 0;
+}
+
+double Solution::getTotalDuration() const
+{
+    return 0;
 }
 
 void Solution::print() const

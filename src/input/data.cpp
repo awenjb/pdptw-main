@@ -1,27 +1,24 @@
 #include "data.h"
 
-
+#include <math.h>
 
 double data::addedCostForInsertion(PDPTWData const &data, int before, int toInsert, int after)
 {
-    const Matrix & matrix = data.getMatrix();
-    return matrix[before][toInsert] + matrix[toInsert][after] - matrix[before][after];
+    Matrix const &matrix = data.getMatrix();
+    return matrix.at(before).at(toInsert) + matrix.at(toInsert).at(after) - matrix.at(before).at(after);
 }
 
 double data::removedCostForSuppression(PDPTWData const &data, int before, int toRemove, int after)
 {
-    const Matrix & matrix = data.getMatrix();
-    double cost = 0;
-
-    cost = matrix.at(before).at(after) - matrix.at(before).at(toRemove) - matrix.at(toRemove).at(after);
+    Matrix const &matrix = data.getMatrix();
+    double cost = matrix.at(before).at(after) - matrix.at(before).at(toRemove) - matrix.at(toRemove).at(after);
     return cost;
 }
 
-
-double data::routeCost(PDPTWData const & data, Route const & route)
+double data::routeCost(PDPTWData const &data, Route const &route)
 {
-    const Matrix & matrix = data.getMatrix();
-    const std::vector<int> & routeIDs = route.getRoute();
+    Matrix const &matrix = data.getMatrix();
+    std::vector<int> const &routeIDs = route.getRoute();
     double cost = 0.0;
 
     if (routeIDs.empty())
@@ -29,33 +26,21 @@ double data::routeCost(PDPTWData const & data, Route const & route)
         return 0.0;
     }
     // cost from and to the depot
-    cost +=  matrix.at(0).at(routeIDs.at(0));
-    // std::cout << "\n route cost : " << matrix.at(0).at(routeIDs.at(0)) << " ";
-    cost +=  matrix.at(routeIDs.back()).at(0);
-    
+    cost += matrix.at(0).at(routeIDs.at(0));
+    cost += matrix.at(routeIDs.back()).at(0);
+
     // cost in the route
-    for (size_t i = 0; i < routeIDs.size() - 1; ++i) {
-        cost += matrix.at(routeIDs.at(i)).at(routeIDs.at(i+1));
-        // std::cout << matrix.at(routeIDs.at(i)).at(routeIDs.at(i+1)) << " ";
+    for (size_t i = 0; i < routeIDs.size() - 1; ++i)
+    {
+        int from = routeIDs.at(i);
+        int to = routeIDs.at(i + 1);
+        cost += matrix.at(from).at(to);
     }
-    // std::cout << matrix.at(routeIDs.back()).at(0) << " : " << cost << "\n";
 
     return cost;
 }
 
-double data::TravelCost(PDPTWData const &data, int from, int to)
+double data::travelCost(PDPTWData const &data, int from, int to)
 {
     return data.getMatrix().at(from).at(to);
-}
-
-double data::TravelTime(PDPTWData const &data, int from, int to)
-{
-    return data.getMatrix().at(from).at(to);
-}
-
-
-double data::SegmentCost(PDPTWData const &data, Route const &route, int start, int end)
-{
-    // TO DO
-    return 0;
 }

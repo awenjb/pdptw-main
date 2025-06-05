@@ -3,29 +3,21 @@
 #include "location.h"
 
 /**
- *  Represent a pair pickup/delivery of location
- *  The pair ID is the pickup ID
- */ 
+ * Represents a pickup/delivery pair of locations.
+ * The pair ID is assumed to be the same as the pickup location's ID.
+ */
 class Pair
 {
 private:
-    std::reference_wrapper<Location const> pickup;
-    std::reference_wrapper<Location const> delivery;
-    int pairID;
+    std::reference_wrapper<Location const> pickup;  // Reference to the pickup location
+    std::reference_wrapper<Location const> delivery;// Reference to the delivery location
+    int pairID;                                     // Unique identifier, expected to match the pickup location's ID
 
 public:
-    Pair(const Location& pickup, const Location& delivery, int pairID);
+    Pair(Location const &pickup, Location const &delivery, int pairID);
 
-    const Location& getPickup() const;
-    const Location& getDelivery() const;
-    /**
-    *   getPickup() but shorter
-    */
-    const Location& getP() const;
-    /**
-    *   getDelivery() but shorter
-    */
-    const Location& getD() const;
+    Location const &getPickup() const;
+    Location const &getDelivery() const;
     int getID() const;
 
     void print() const;

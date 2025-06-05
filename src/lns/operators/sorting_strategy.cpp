@@ -9,7 +9,7 @@
 
 double getDistanceToDepot(PDPTWData const &data, int pairID)
 {
-    return data::TravelTime(data, 0, pairID);
+    return data::travelCost(data, 0, pairID);
 }
 
 std::vector<int> const &sorting_strategy::LastInFirstOut::sortPairs() const

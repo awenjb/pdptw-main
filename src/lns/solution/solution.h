@@ -31,6 +31,7 @@ private:
     double rawCost;
     double totalCost;
     std::vector<std::unique_ptr<Constraint>> constraints;
+    std::unique_ptr<Constraint> lttConstraint;  // Constraint used when elevation is taken into account
 
 public:
     /*
@@ -116,6 +117,14 @@ public:
      * Returns the constraints applied to the solution.
      */
     std::vector<std::unique_ptr<Constraint>> const &getConstraints() const;
+    /*
+     * Returns the cumulative distance of all routes.
+     */
+    double getTotalDistance() const;
+    /*
+     * Returns the cumulative duration of all routes.
+     */
+    double getTotalDuration() const;
 
     /*
      * Returns the route index associated with a given location ID, or -1 if not in a route.
@@ -129,6 +138,10 @@ public:
      * Checks if the modification is valid according to all constraints.
      */
     bool checkModification(AtomicRecreation const &modification) const;
+    /*
+     * Checks if the modification is valid to load-dependent time windows constraints.
+     */
+    bool checkModificationLTT(AtomicRecreation const &modification) const;
     /*
      * Verifies the correctness of the solution, mainly for debugging.
      */

@@ -52,6 +52,8 @@ nlohmann::ordered_json output::getCompleteJson(output::LnsOutput const &result)
     jsonSolution["reference"] = "...";
     jsonSolution["vehicles"] = solution.getNumberOfRoutes();
     jsonSolution["cost"] =  std::ceil(solution.getRawCost() * 100.0) / 100.0;
+    // jsonSolution["total_distance"] = std::ceil(solution.getRawCost() * 100.0) / 100.0;
+    // jsonSolution["total_duration"] = std::ceil(solution.getRawCost() * 100.0) / 100.0;
     jsonSolution["time(s)"] = result.getTimeSpent();
     jsonSolution["iteration"] = result.getNumberOfIteration();
     jsonSolution["unfullfilled"] = solution.getPairBank().size();

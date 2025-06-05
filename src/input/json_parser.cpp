@@ -1,99 +1,155 @@
 #include "json_parser.h"
 
+#include "config.h"
+
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <nlohmann/json.hpp>
+#include <spdlog/spdlog.h>
 #include <utility>
-
-// spdlog repris du code lns-framework mais pas utilisé ici -> TODO
 
 namespace fs = std::filesystem;
 using json = nlohmann::json;
 
-bool checkFilePresence(std::string &filepath)
+// UTILITY
+
+bool checkFilePresence(std::string const &filepath)
 {
     return fs::is_regular_file(filepath);
 }
 
-PDPTWData parsing::parseJson(std::string filepath)
+std::string getFilenameWithoutExtension(std::string const &path)
+{
+    auto pos = path.find_last_of("/\\");
+    auto filename = (pos != std::string::npos) ? path.substr(pos + 1) : path;
+    auto dotPos = filename.find_last_of('.');
+    return (dotPos != std::string::npos) ? filename.substr(0, dotPos) : filename;
+}
+
+Location parseDepot(json const &depot_json)
+{
+    TimeWindow tw(depot_json.at("timeWindow")[0], depot_json.at("timeWindow")[1]);
+    return {0,
+            depot_json.at("longitude"),
+            depot_json.at("latitude"),
+            0,
+            tw,
+            depot_json.at("serviceDuration"),
+            0,
+            LocType::DEPOT};
+}
+
+Location parseLocation(json const &loc_json)
+{
+    LocType loc_type = (loc_json.at("locType") == "PICKUP") ? LocType::PICKUP : LocType::DELIVERY;
+    TimeWindow loc_tw(loc_json.at("timeWindow")[0], loc_json.at("timeWindow")[1]);
+
+    return {loc_json.at("id"),
+            loc_json.at("longitude"),
+            loc_json.at("latitude"),
+            loc_json.at("demand"),
+            loc_tw,
+            loc_json.at("serviceDuration"),
+            loc_json.at("pairedLocation"),
+            loc_type};
+}
+
+// PARSING
+
+PDPTWData parsing::parseJson(std::string const &filepath)
 {
     if (!checkFilePresence(filepath))
     {
         spdlog::error("Data file \"{}\" does not exist", filepath);
-        exit(1);
+        std::exit(EXIT_FAILURE);
     }
 
     std::ifstream jsonFile(filepath);
-
-    if (!jsonFile.is_open())
+    if (!jsonFile)
     {
         spdlog::error("Unable to open file: {}", filepath);
         spdlog::default_logger()->flush();
-        exit(1);
+        std::exit(EXIT_FAILURE);
     }
 
     try
     {
-        // extract filename (data name)
-        size_t pos = filepath.find_last_of("/\\");
-        std::string filename = (pos != std::string::npos) ? filepath.substr(pos + 1) : filepath;
-
-        size_t dotPos = filename.find_last_of('.');
-        if (dotPos != std::string::npos)
-        {
-            filename = filename.substr(0, dotPos);
-        }
-
-        // generate PDPTWData
         json j;
         jsonFile >> j;
-        return json_to_data(filename, j);
-        
-    } catch (std::exception const &e)// catching all exceptions to properly log the error and quit gracefully
+        const std::string filename = getFilenameWithoutExtension(filepath);
+
+        return ELEVATION ? json_to_data_with_elevation(filename, j) : json_to_data(filename, j);
+
+    } catch (std::exception const &e)
     {
-        spdlog::error("Error while parsing the input json:");
-        spdlog::error("{}", e.what());
+        spdlog::error("Error while parsing the input JSON: {}", e.what());
         spdlog::default_logger()->flush();
-        exit(1);
+        std::exit(EXIT_FAILURE);
     }
 }
 
-PDPTWData json_to_data(std::string dataName, json const &j)
+// JSON TO DATA
+
+PDPTWData json_to_data(std::string const &dataName, json const &j)
 {
-    int size = j.at("size").get<int>();
-    int capacity = j.at("capacity").get<int>();
+    int size = j.at("size");
+    int capacity = j.at("capacity");
 
-    auto depot_json = j.at("depot");
-
-    TimeWindow tw(depot_json.at("timeWindow").at(0), depot_json.at("timeWindow").at(1));
-    Location depot(0,
-                   depot_json.at("longitude"),
-                   depot_json.at("latitude"),
-                   0,
-                   tw,
-                   depot_json.at("serviceDuration"),
-                   0,
-                   LocType::DEPOT);
+    Location depot = parseDepot(j.at("depot"));
 
     std::vector<Location> locations;
-
     for (auto const &loc: j.at("locations"))
     {
-        LocType loc_type = (loc.at("locType") == "PICKUP") ? LocType::PICKUP : LocType::DELIVERY;
-        TimeWindow loc_tw(loc.at("timeWindow").at(0), loc.at("timeWindow").at(1));
-
-        locations.emplace_back(loc.at("id"),
-                               loc.at("longitude"),
-                               loc.at("latitude"),
-                               loc.at("demand"),
-                               loc_tw,
-                               loc.at("serviceDuration"),
-                               loc.at("pairedLocation"),
-                               loc_type);
+        locations.emplace_back(parseLocation(loc));
     }
 
     Matrix distance_matrix = j.at("distance_matrix").get<Matrix>();
 
-    return {std::move(dataName), size, capacity, depot, locations, distance_matrix};
+    return {dataName, size, capacity, depot, locations, distance_matrix};
+}
+
+PDPTWData json_to_data_with_elevation(std::string const &dataName, json const &j)
+{
+    int size = j.at("size");
+    int capacity = j.at("capacity");
+
+    Location depot = parseDepot(j.at("depot"));
+
+    std::vector<Location> locations;
+    for (auto const &loc: j.at("locations"))
+    {
+        locations.emplace_back(parseLocation(loc));
+    }
+
+    Matrix time_matrix = j.at("time_matrix").get<Matrix>();
+
+    std::vector<std::vector<std::vector<double>>> segment_slope_matrix;
+    std::vector<std::vector<std::vector<double>>> segment_distance_matrix;
+
+    for (auto const &row: j.at("slope_matrix"))
+    {
+        std::vector<std::vector<double>> slope_row;
+        std::vector<std::vector<double>> dist_row;
+
+        for (auto const &path: row)
+        {
+            std::vector<double> slope_vec;
+            std::vector<double> dist_vec;
+
+            for (auto const &seg: path)
+            {
+                slope_vec.push_back(seg.value("average", 0.0));
+                dist_vec.push_back(seg.value("distance", 0.0));
+            }
+
+            slope_row.push_back(slope_vec);
+            dist_row.push_back(dist_vec);
+        }
+
+        segment_slope_matrix.push_back(slope_row);
+        segment_distance_matrix.push_back(dist_row);
+    }
+
+    return {dataName, size, capacity, depot, locations, time_matrix, segment_slope_matrix, segment_distance_matrix};
 }

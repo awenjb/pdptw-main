@@ -40,12 +40,7 @@ std::string PDPTWData::getDataName() const
 
 Location const &PDPTWData::getLocation(int id) const
 {
-    if (id == 0)
-    {
-        return getDepot();
-    }
-    // location index from 0 to n-1
-    return locations.at(id - 1);
+    return (id == 0) ? depot : locations.at(id - 1);
 }
 
 Matrix const &PDPTWData::getMatrix() const
@@ -53,10 +48,41 @@ Matrix const &PDPTWData::getMatrix() const
     return costMatrix;
 }
 
+std::vector<std::vector<std::vector<double>>> const &PDPTWData::getSegmentSlopeMatrix() const
+{
+    return segmentSlopeMatrix;
+}
+
+std::vector<std::vector<std::vector<double>>> const &PDPTWData::getSegmentDistanceMatrix() const
+{
+    return segmentDistanceMatrix;
+}
+
 PDPTWData::PDPTWData(std::string dataName, int size, int capacity, Location depot, std::vector<Location> locations,
                      Matrix costMatrix)
     : dataName(dataName), size(size), capacity(capacity), depot(depot), locations(std::move(locations)),
-      costMatrix(std::move(costMatrix))
+      costMatrix(std::move(costMatrix)), segmentSlopeMatrix({}), segmentDistanceMatrix({})
+{
+    // Associate pair of locations
+    pairs.clear();
+    for (Location const &loc: this->locations)
+    {
+        if (loc.getLocType() == LocType::PICKUP)
+        {
+            // vector indexed from 0 / Location indexed from 1
+            pairs.emplace_back(loc, this->locations.at(loc.getPair() - 1), loc.getId());
+        }
+    }
+    // Compute closest location matrix
+    initClosestLocations();
+}
+
+PDPTWData::PDPTWData(std::string dataName, int size, int capacity, Location depot, std::vector<Location> locations,
+                     Matrix costMatrix, std::vector<std::vector<std::vector<double>>> segmentSlopeMatrix,
+                     std::vector<std::vector<std::vector<double>>> segmentDistanceMatrix)
+    : dataName(dataName), size(size), capacity(capacity), depot(depot), locations(std::move(locations)),
+      costMatrix(std::move(costMatrix)), segmentSlopeMatrix(std::move(segmentSlopeMatrix)),
+      segmentDistanceMatrix(std::move(segmentDistanceMatrix))
 {
     // Associate pair of locations
     pairs.clear();
@@ -95,6 +121,17 @@ int PDPTWData::getLocationCount() const
     return getLocations().size();
 }
 
+std::vector<std::vector<std::tuple<double, double>>> const &PDPTWData::getPreCalculation() const
+{
+    return preCalculation;
+}
+
+void PDPTWData::setPreCalculation(std::vector<std::vector<std::tuple<double, double>>> &&penalties)
+{
+    preCalculation = std::move(penalties);
+}
+
+// Dislay
 void PDPTWData::print() const
 {
     std::cout << "Instance name : " << dataName << "\n";
@@ -225,9 +262,8 @@ void PDPTWData::initClosestLocations()
         std::vector<int> closestLocationsIndexes(getLocationCount());
         std::iota(closestLocationsIndexes.begin(), closestLocationsIndexes.end(), 0);
 
-        // Do the sorting
         std::ranges::sort(closestLocationsIndexes, {}, [this, &location](int index) {
-            return data::TravelTime(*this, location.getId(), locations.at(index).getId());
+            return data::travelCost(*this, location.getId(), locations.at(index).getId());
         });
 
         // we store the indexes in the final container

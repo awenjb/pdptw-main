@@ -5,6 +5,7 @@
 #include "lns/constraints/constraint.h"
 #include "utils.h"
 
+#include <algorithm>
 #include <vector>
 
 namespace enumeration
@@ -72,7 +73,7 @@ namespace enumeration
                 {
                     continue;
                 }
-                
+
                 // for every delivery position
                 for (int d = p; d <= routeSize; ++d)
                 {
@@ -104,6 +105,83 @@ namespace enumeration
                 }
             }
             ++routeIndex;
+        }
+    }
+
+    void enumerateAllInsertPairLTTKBest(Solution const &solution, Pair const &pair,
+                                        std::unique_ptr<AtomicRecreation> &bestModificationPtr, double &bestCost,
+                                        double blinkRate, size_t k)
+    {
+        int routeIndex = 0;
+        PDPTWData const &data = solution.getData();
+        std::vector<std::pair<double, std::unique_ptr<InsertPair>>> candidates;
+        std::vector<std::pair<double, std::unique_ptr<AtomicRecreation>>> bestK;
+
+        bestK.clear();
+
+        for (Route const &route: solution.getRoutes())
+        {
+            int routeSize = route.getSize();
+            std::vector<int> const &routeIDs = route.getRoute();
+
+            for (int p = 0; p <= routeSize; ++p)
+            {
+                int prevPickup = (p == 0) ? 0 : routeIDs.at(p - 1);
+                int nextPickup = (p >= routeSize) ? 0 : routeIDs.at(p);
+                double pickupCost = data::addedCostForInsertion(data, prevPickup, pair.getPickup().getId(), nextPickup);
+
+                for (int d = p; d <= routeSize; ++d)
+                {
+                    int prevDelivery = (d == 0) ? 0 : routeIDs.at(d - 1);
+                    if (p == d)
+                    {
+                        prevDelivery = pair.getPickup().getId();
+                    }
+                    int nextDelivery = (d >= routeIDs.size()) ? 0 : routeIDs.at(d);
+                    double deliveryCost =
+                            data::addedCostForInsertion(data, prevDelivery, pair.getDelivery().getId(), nextDelivery);
+
+                    double cost = pickupCost + deliveryCost;
+                    Index index = std::make_tuple(routeIndex, p, d);
+                    InsertPair modification(index, pair);
+
+                    // this check does not take into account the added travel time due to more weight
+                    if (util::getRandom() >= blinkRate && solution.checkModification(modification))
+                    {
+                        candidates.emplace_back(cost, std::make_unique<InsertPair>(modification));
+                    }
+                }
+            }
+            ++routeIndex;
+        }
+
+        std::sort(candidates.begin(), candidates.end(), [](auto const &a, auto const &b) { return a.first < b.first; });
+
+        for (auto &[cost, ptr]: candidates)
+        {
+            if (solution.checkModificationLTT(*ptr))
+            {
+                bestK.emplace_back(cost, std::move(ptr));
+                if (bestK.size() >= k)
+                {
+                    break;
+                }
+            }
+        }
+
+        // Trouver le meilleur dans bestK
+        if (!bestK.empty())
+        {
+            auto bestIt = std::min_element(
+                    bestK.begin(), bestK.end(), [](auto const &a, auto const &b) { return a.first < b.first; });
+            bestCost = bestIt->first;
+            bestModificationPtr = std::move(bestIt->second);
+        }
+        else
+        {
+            // Aucun candidat valide trouvé : initialiser avec une valeur par défaut
+            bestCost = std::numeric_limits<double>::max();
+            bestModificationPtr = nullptr;
         }
     }
 

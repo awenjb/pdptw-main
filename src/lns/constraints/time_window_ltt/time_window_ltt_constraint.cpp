@@ -1,4 +1,5 @@
 #include "input/data.h"
+#include "input/load_dependent.h"
 #include "input/pdptw_data.h"
 #include "input/time_window.h"
 #include "lns/modification/pair/insert_pair.h"
@@ -6,13 +7,14 @@
 #include "lns/modification/route/remove_route.h"
 #include "lns/solution/route.h"
 #include "lns/solution/solution.h"
-#include "time_window_constraint.h"
+
+#include "time_window_ltt_constraint.h"
 
 #include <iostream>
 #include <iterator>
 #include <vector>
 
-TimeWindowConstraint::TimeWindowConstraint(Solution const &solution) : Constraint(solution)
+TimeWindowLTTConstraint::TimeWindowLTTConstraint(Solution const &solution) : Constraint(solution)
 {
     arrivalTimeContainer.clear();
     for (Route const &route: solution.getRoutes())
@@ -21,20 +23,20 @@ TimeWindowConstraint::TimeWindowConstraint(Solution const &solution) : Constrain
     }
 }
 
-TimeWindowConstraint::~TimeWindowConstraint()
+TimeWindowLTTConstraint::~TimeWindowLTTConstraint()
 {
     arrivalTimeContainer.clear();
 }
 
-std::unique_ptr<Constraint> TimeWindowConstraint::clone(Solution const &newOwningSolution) const
+std::unique_ptr<Constraint> TimeWindowLTTConstraint::clone(Solution const &newOwningSolution) const
 {
-    std::unique_ptr<TimeWindowConstraint> clonePtr = std::make_unique<TimeWindowConstraint>(newOwningSolution);
+    std::unique_ptr<TimeWindowLTTConstraint> clonePtr = std::make_unique<TimeWindowLTTConstraint>(newOwningSolution);
     clonePtr->arrivalTimeContainer = arrivalTimeContainer;
     return clonePtr;
 }
 
 
-bool TimeWindowConstraint::checkInsertion(PDPTWData const &data, Pair const &pair, int routeIndex, int pickupPos,
+bool TimeWindowLTTConstraint::checkInsertion(PDPTWData const &data, Pair const &pair, int routeIndex, int pickupPos,
                                           int deliveryPos) const
 {
     auto const &route = getSolution().getRoute(routeIndex);
@@ -44,10 +46,12 @@ bool TimeWindowConstraint::checkInsertion(PDPTWData const &data, Pair const &pai
 
     int pickupID = pair.getPickup().getId();
     int deliveryID = pair.getDelivery().getId();
+    
 
     // Empty route
     if (n == 0)
     {
+        // TRAVEL COST LOAD DEPENDENT ?
         double arrival = data::travelCost(data, 0, pickupID);
         if (!data.getLocation(pickupID).getTimeWindow().isValid(arrival))
         {
@@ -76,7 +80,9 @@ bool TimeWindowConstraint::checkInsertion(PDPTWData const &data, Pair const &pai
     std::vector<double> simulatedArrivals;
     simulatedArrivals.resize(newRoute.size());
 
+    double load = 0;
     double time = 0;
+    double slope = 0;
     int prev = 0;
 
     // Calculate new arrival time with the new route
@@ -85,8 +91,9 @@ bool TimeWindowConstraint::checkInsertion(PDPTWData const &data, Pair const &pai
     {
         int curr = newRoute.at(i);
 
-        // travel time
-        time += data::travelCost(data, prev, curr);
+        load += data.getLocation(curr).getDemand();
+        
+        time += ltt::getTravelTimeLTT(data, load, prev, curr);
 
         if (!data.getLocation(curr).getTimeWindow().isValid(time))
         {
@@ -105,7 +112,7 @@ bool TimeWindowConstraint::checkInsertion(PDPTWData const &data, Pair const &pai
     return true;
 }
 
-void TimeWindowConstraint::ApplyModif(PDPTWData const &data, Pair const &pair, int routeIndex, int pickupPos,
+void TimeWindowLTTConstraint::ApplyModif(PDPTWData const &data, Pair const &pair, int routeIndex, int pickupPos,
                                       int deliveryPos, bool addPair)
 {
     std::vector<int> const &route = getSolution().getRoute(routeIndex).getRoute();
@@ -114,13 +121,19 @@ void TimeWindowConstraint::ApplyModif(PDPTWData const &data, Pair const &pair, i
     std::vector<double> newArrivalTimes;
     newArrivalTimes.resize(route.size());
 
+    double load = 0;
     double time = 0;
+    double slope = 0;
     int prev = 0;
 
     for (size_t i = 0; i < route.size(); ++i)
     {
         int curr = route.at(i);
-        time += data::travelCost(data, prev, curr);
+
+        load += data.getLocation(curr).getDemand();
+
+        time += ltt::getTravelTimeLTT(data, load, prev, curr);
+
 
         auto const &tw = data.getLocation(curr).getTimeWindow();
         time = std::max(time, tw.getStart());
@@ -136,7 +149,7 @@ void TimeWindowConstraint::ApplyModif(PDPTWData const &data, Pair const &pair, i
     arrivalTimeContainer.at(routeIndex) = std::move(newArrivalTimes);
 }
 
-bool TimeWindowConstraint::check(InsertPair const &op) const
+bool TimeWindowLTTConstraint::check(InsertPair const &op) const
 {
     return checkInsertion(getSolution().getData(),
                           op.getPair(),
@@ -145,7 +158,7 @@ bool TimeWindowConstraint::check(InsertPair const &op) const
                           op.getDeliveryInsertion());
 }
 
-void TimeWindowConstraint::apply(InsertPair const &op)
+void TimeWindowLTTConstraint::apply(InsertPair const &op)
 {
     ApplyModif(getSolution().getData(),
                op.getPair(),
@@ -155,22 +168,22 @@ void TimeWindowConstraint::apply(InsertPair const &op)
                true);
 }
 
-bool TimeWindowConstraint::check(InsertRoute const &op) const
+bool TimeWindowLTTConstraint::check(InsertRoute const &op) const
 {
     return true;
 }
 
-void TimeWindowConstraint::apply(InsertRoute const &op)
+void TimeWindowLTTConstraint::apply(InsertRoute const &op)
 {
     arrivalTimeContainer.emplace_back();
 }
 
-bool TimeWindowConstraint::check(RemovePair const &op) const
+bool TimeWindowLTTConstraint::check(RemovePair const &op) const
 {
     return true;
 }
 
-void TimeWindowConstraint::apply(RemovePair const &op)
+void TimeWindowLTTConstraint::apply(RemovePair const &op)
 {
     ApplyModif(getSolution().getData(),
                op.getPair(),
@@ -180,17 +193,17 @@ void TimeWindowConstraint::apply(RemovePair const &op)
                false);
 }
 
-bool TimeWindowConstraint::check(RemoveRoute const &op) const
+bool TimeWindowLTTConstraint::check(RemoveRoute const &op) const
 {
     return true;
 }
 
-void TimeWindowConstraint::apply(RemoveRoute const &op)
+void TimeWindowLTTConstraint::apply(RemoveRoute const &op)
 {
     arrivalTimeContainer.erase(arrivalTimeContainer.begin() + op.getRouteIndex());
 }
 
-void TimeWindowConstraint::print() const
+void TimeWindowLTTConstraint::print() const
 {
     int n = arrivalTimeContainer.size();
     std::cout << "TW without FTS:" << std::endl;

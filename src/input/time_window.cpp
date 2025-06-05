@@ -1,5 +1,8 @@
 #include "time_window.h"
 
+#include <algorithm>
+#include <iostream>
+
 TimeWindow::TimeWindow(TimeInteger s, TimeInteger e) : start(s), end(e) {}
 
 TimeInteger TimeWindow::getStart() const
@@ -27,7 +30,8 @@ bool TimeWindow::isIn(TimeInteger t) const
     return start <= t && t <= end;
 }
 
+// Display
 void TimeWindow::print() const
 {
-    std::cout << "Time Window : [" << start << ", " << end << "] \n";
+    std::cout << "Time Window : [" << start << ", " << end << "]\n";
 }

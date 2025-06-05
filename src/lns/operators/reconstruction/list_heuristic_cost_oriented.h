@@ -47,3 +47,4 @@ std::function<void(ModificationType &&)> keepBestSolution(Solution const &soluti
         }
     };
 }
+

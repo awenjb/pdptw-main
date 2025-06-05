@@ -7,7 +7,8 @@
 
 namespace parsing
 {
-    PDPTWData parseJson(std::string filepath);
+    PDPTWData parseJson(std::string const &filepath);
 }
 
-PDPTWData json_to_data(std::string dataName, const json& j);
+PDPTWData json_to_data(std::string const &dataName, json const &j);
+PDPTWData json_to_data_with_elevation(std::string const &dataName, json const &j);
