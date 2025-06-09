@@ -10,7 +10,8 @@
 #include <vector>
 
 /**
- * Capacity constraint.
+ * Enforces capacity constraints on routes.
+ * Tracks the maximum used capacity between pairs of locations.
  */
 class CapacityConstraint : public Constraint
 {
@@ -18,17 +19,14 @@ public:
     using CapacityVector = std::vector<int>;
 
 private:
-
     /**
-     *  Linearise matrix
-     *  Store the maximum used capacity between two locations.
-     *  A cell is not updated to 0 when the location is removed from a route.
+     * Matrix storing maximum capacity used between two locations.
+     * Note: When a location is removed from a route, its corresponding maxCapacity
+     * cells are NOT reset to zero.
      */
     std::vector<double> maxCapacity;
-    /*
-     *  number of locations
-     */
-    int n;
+
+    int n;//number of locations
 
     void apply(InsertPair const &op) override;
     void apply(InsertRoute const &op) override;
@@ -46,14 +44,14 @@ public:
 
     std::unique_ptr<Constraint> clone(Solution const &newOwningSolution) const override;
 
-    /*
-     *  Update MaxCapacity.
-     *  Suppose the route has already been updated
+    /**
+     * Update the maxCapacity matrix for a given route.
+     * Assumes the route has already been updated.
      */
     void updateMaxCapacity(Route const &route);
 
-    /*
-     *  Return capacity vector of a route
+    /**
+     * Get the capacity vector (max capacities) for a specific route.
      */
     CapacityVector const &getRouteCapacities(int routeIndex) const;
 

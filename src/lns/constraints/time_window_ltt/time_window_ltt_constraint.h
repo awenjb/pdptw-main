@@ -9,8 +9,7 @@
 #include <vector>
 
 /**
- * Time Window Constraint
- * Check that the time windows are respected.
+ * Constraint that ensures all pickup and delivery respect their time windows.
  */
 class TimeWindowLTTConstraint : public Constraint
 {
@@ -22,33 +21,26 @@ public:
     TimeWindowLTTConstraint(TimeWindowLTTConstraint const &) = default;
     ~TimeWindowLTTConstraint() override;
 
-
-    /**
-     *  Initialize the FTS vectors
-     */
-    void initFTS();
+    void initFTS();//Initializes Forward Time Slack vectors for each route in the solution.
 
     std::unique_ptr<Constraint> clone(Solution const &newOwningSolution) const override;
-
 
     void print() const override;
 
 private:
-    std::vector<ForwardTimeSlack> FTSContainer;
+    std::vector<ForwardTimeSlack> FTSContainer;//Stores the FTS (Forward Time Slack) state for each route.
 
-    /* Debut Ajout pour calcul sans FTS */ 
     std::vector<ArrivalTimeVector> arrivalTimeContainer;
 
-    /* Fin Ajout pour calcul sans FTS */
-
     /**
-     *  Check if the insertion of a pair pickup/delivery is valid or not.
-     *  COPY the route where we insert the pair !
+     * Checks whether inserting a pickup/delivery pair into the specified route
+     * (at given positions) respects the time window constraints.
+     * Assumes the route is copied and not modified in-place.
      */
     bool checkInsertion(PDPTWData const &data, Pair const &pair, int routeIndex, int pickupPos, int deliveryPos) const;
 
     /**
-     *  Apply the modification to the time window constraint
+     * Applies the modification to the FTS structure after insertion or removal of a pair. (TO DO)
      */
     void ApplyModif(PDPTWData const &data, Pair const &pair, int routeIndex, int pickupPos, int deliveryPos,
                     bool addPair);

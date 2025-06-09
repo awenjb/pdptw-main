@@ -4,42 +4,51 @@
 #include "types.h"
 
 /*
- *  Represent the forward time slack of a route.
+ * Represents and manages the Forward Time Slack (FTS) of a route.
+ * FTS helps determine whether time window constraints are respected 
+ * when modifying routes (e.g., inserting or removing requests).
  */
 class ForwardTimeSlack
 {
 private:
-    std::vector<TimeInteger> earliestArrival;
-    std::vector<TimeInteger> latestArrival;
+    std::vector<TimeInteger> earliestArrival;// Earliest arrival times at each location in the route.
+    std::vector<TimeInteger> latestArrival;  // Latest arrival times allowed at each location in the route.
+    /**
+     * Forward Time Slack values at each location.
+     * Represents the flexibility remaining at each step of the route.
+     */
     std::vector<TimeInteger> FTS;
 
 public:
     explicit ForwardTimeSlack() = default;
 
-    /*
-     *  Check if the insertion of a new pickup/delivery pair is feasible.
-     *  ForwardTimeSlack is supposed to be correct. Only check FTS and Time windows.
+    /**
+     * Checks whether inserting a pickup/delivery pair at specified positions
+     * respects the current time windows and forward slack constraints.
+     * Assumes that the FTS has already been computed and is up to date.
      */
     bool isPickupDeliveryInsertionValid(PDPTWData const &data, Route const &route, int pickupID, int deliveryID,
                                         int insertPickupIndex, int insertDeliveryIndex) const;
 
-    /*
-     *  Compute FTS values from scratch.
+    /**
+     * Initializes all FTS, earliestArrival, and latestArrival values from scratch
+     * based on the current route and the problem's time window data.
      */
     void initFTS(PDPTWData const &data, Route const &route);
 
-    /*
-     *  Update FTS.
-     *  Suppose the route has already been updated (but not the FTS)
+    /**
+     * Updates FTS after a new pickup and delivery have been inserted into the route.
+     * Assumes the route is already updated but FTS values are not.
      */
     void updateFTSAfterInsertion(PDPTWData const &data, Route const &route, int insertPickupIndex,
                                  int insertDeliveryIndex);
-    /*
-     *  Update FTS.
-     *  Suppose the route has already been updated (but not the FTS)
+
+    /**
+     * Updates FTS after a pickup and delivery have been removed from the route.
+     * Assumes the route is already updated but FTS values are not.
      */
     void updateFTSAfterDeletion(PDPTWData const &data, Route const &route, int removePickupIndex,
-        int removeDeliveryIndex);
+                                int removeDeliveryIndex);
 
 
     std::vector<TimeInteger> const &getFTS() const;

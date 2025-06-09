@@ -10,38 +10,23 @@
 #include <tuple>
 
 /**
- * A modification that will insert a pair (pickup/delivery) of location in a route at the given index.
- * First index for the pickup location and second index for the delivery location.
- * Insertion index are the index before modification !
+ * InsertPair represents a modification that inserts a pair of locations
+ * (pickup and delivery) into a specific route at specified positions.
+ * 
+ * The indices provided refer to the positions in the route before the insertion is performed.
+ * - `pickupInsertion` is the index where the pickup will be inserted.
+ * - `deliveryInsertion` is the index where the delivery will be inserted.
  */
 class InsertPair : public AtomicRecreation
 {
-    /**
-     * The route index on which the insertion will be made
-     */
-    int routeIndex;
+    int routeIndex;       // Index of the route where the pair will be inserted.
+    int pickupInsertion;  // Index at which the pickup location will be inserted (before modification).
+    int deliveryInsertion;// Index at which the delivery location will be inserted (before modification).
 
-    /**
-     * Index at which the insertion must be made
-     */
-    int pickupInsertion;
+    Location const &pickupLocation;  // Reference to the pickup location of the pair.
+    Location const &deliveryLocation;// Reference to the delivery location of the pair.
 
-    /**
-     * Index at which the insertion must be made
-     */
-    int deliveryInsertion;
-
-    /**
-     * The pickup location to insert
-     */
-    Location const &pickupLocation;
-
-    /**
-     * The delivery location to insert
-     */
-    Location const &deliveryLocation;
-
-    Pair const &pair;
+    Pair const &pair;// Reference to the pair being inserted.
 
 public:
     InsertPair(int routeIndex, int pickupInsertion, int deliveryInsertion, Pair const &pair);

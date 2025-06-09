@@ -1,16 +1,11 @@
 #pragma once
 
+#include "input/location.h"
 #include "lns/modification/atomic_recreation.h"
 #include "lns/solution/solution.h"
-#include "input/location.h"
 
-/**
- * Insert a new empty route in the solution
- * Do not cost anything
- */
 class InsertRoute : public AtomicRecreation
 {
-
 public:
     InsertRoute();
 
@@ -19,4 +14,4 @@ public:
     int getAddedPairs() const override;
 
     ModificationCheckVariant asCheckVariant() const override;
-};  
+};

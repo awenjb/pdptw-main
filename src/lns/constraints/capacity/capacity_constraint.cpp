@@ -3,32 +3,35 @@
 #include "input/location.h"
 #include "input/pdptw_data.h"
 
-#include <unistd.h>
+#include <iostream>
 
-CapacityConstraint::CapacityConstraint(Solution const &solution) : Constraint(solution), n(getSolution().getData().getSize())
+CapacityConstraint::CapacityConstraint(Solution const &solution)
+    : Constraint(solution), n(getSolution().getData().getSize())
 {
-    // Init an empty maxCapacity
-    maxCapacity = std::vector<double>(n * n, 0.0);
+    maxCapacity = std::vector<double>(n * n, 0.0);// Initialize maxCapacity vector with zeros
 }
 
 std::unique_ptr<Constraint> CapacityConstraint::clone(Solution const &newOwningSolution) const
 {
+    // Create a copy of the constraint for a new solution instance
     std::unique_ptr<CapacityConstraint> clonePtr = std::make_unique<CapacityConstraint>(newOwningSolution);
     clonePtr->maxCapacity = maxCapacity;
     return clonePtr;
 }
 
-void CapacityConstraint::updateMaxCapacity(const Route &route)
+void CapacityConstraint::updateMaxCapacity(Route const &route)
 {
-    const std::vector<int> &routeIDs = route.getRoute();
-    const PDPTWData &data = getSolution().getData();
-    int m = routeIDs.size();
+    std::vector<int> const &routeIDs = route.getRoute();
+    PDPTWData const &data = getSolution().getData();
+    int routeSize = routeIDs.size();
 
-    std::vector<double> cumulated(m, 0.0);
+    std::vector<double> cumulated(routeSize, 0.0);
+
+    // Calculate cumulative demand along the route
     double currentSum = 0.0;
-
+    
     // Depot to Location
-    for (int i = 0; i < m; ++i)
+    for (int i = 0; i < routeSize; ++i)
     {
         int locationID = routeIDs.at(i);
         currentSum += data.getLocation(locationID).getDemand();
@@ -39,12 +42,12 @@ void CapacityConstraint::updateMaxCapacity(const Route &route)
     }
 
     // Location to Location
-    for (int i = 0; i < m; ++i)
+    for (int i = 0; i < routeSize; ++i)
     {
         int fromID = routeIDs.at(i);
         double maxCharge = (i == 0) ? 0.0 : cumulated.at(i - 1);
 
-        for (int j = i; j < m; ++j)
+        for (int j = i; j < routeSize; ++j)
         {
             if (j > 0)
             {
@@ -85,7 +88,6 @@ bool CapacityConstraint::checkModif(Pair const &pair, int routeIndex, int Pickup
     return maxCapacity.at(pickupLocationID * n + deliveryLocationID) + demand <= vehicleCapacity;
 }
 
-
 void CapacityConstraint::applyModif(Pair const &pair, int routeIndex, int PickupPosition, int DeliveryPosition,
                                     bool addPair)
 {
@@ -94,13 +96,11 @@ void CapacityConstraint::applyModif(Pair const &pair, int routeIndex, int Pickup
 
 bool CapacityConstraint::check(InsertPair const &op) const
 {
-    //std::cout << " #Capa Check";
     return checkModif(op.getPair(), op.getRouteIndex(), op.getPickupInsertion(), op.getDeliveryInsertion());
 }
 
 void CapacityConstraint::apply(InsertPair const &op)
 {
-    //std::cout << "-> Apply Modification on Capacity \n";
     applyModif(op.getPair(), op.getRouteIndex(), op.getPickupInsertion(), op.getDeliveryInsertion(), true);
 }
 
@@ -135,6 +135,7 @@ void CapacityConstraint::apply(RemoveRoute const &op)
     // No-op
 }
 
+// Display
 void CapacityConstraint::print() const
 {
     std::cout << "Max Capacity Matrix:" << std::endl;

@@ -122,6 +122,7 @@ PDPTWData json_to_data_with_elevation(std::string const &dataName, json const &j
         locations.emplace_back(parseLocation(loc));
     }
 
+    Matrix distance_matrix = j.at("distance_matrix").get<Matrix>();
     Matrix time_matrix = j.at("time_matrix").get<Matrix>();
 
     std::vector<std::vector<std::vector<double>>> segment_slope_matrix;
@@ -151,5 +152,5 @@ PDPTWData json_to_data_with_elevation(std::string const &dataName, json const &j
         segment_distance_matrix.push_back(dist_row);
     }
 
-    return {dataName, size, capacity, depot, locations, time_matrix, segment_slope_matrix, segment_distance_matrix};
+    return {dataName, size, capacity, depot, locations, distance_matrix, segment_slope_matrix, segment_distance_matrix};
 }
