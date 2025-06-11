@@ -23,5 +23,9 @@ namespace util
      * @return the random generator directly, it is a deterministic random
      */
     std::mt19937_64 &getRawRandom();
+    /**
+     * @return a random integer number between min (included) and max (included)
+     */
+    double getRandomDouble(double min, double max);
 
 }// namespace util

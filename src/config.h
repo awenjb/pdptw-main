@@ -4,27 +4,27 @@
 /**********************************************/
 // Parameters
 
+// (obsolete) Number of iterations for the algorithm or simulation to run.
+int const NUMBER_ITERATION = 1000000;
+
+// (obsolete) % of NUMBER_ITERATION
+// If no new best solution is found within LNS_FREQUENCY small iterations, then the next iteration will be a large iteration.
+double const LNS_FREQUENCY = 0.05;
+
 // Penalty for excluding a certain pickup-delivery pair, aims to minimize the number of excluded pairs.
 int const EXCLUSION_PENALTY = 1000000;
 
 // Penalty applied to a route, aims to minimize the number of routes.
 int const ROUTE_PENALTY = 0;
 
-// Number of vehicles involved at the start of the optimization process (cannot be increased).
+// Number of vehicles involved at the start of the optimization process (cannot be increased during the process).
 int const NUMBER_VEHICLE = 50;
 
-// Number of iterations for the algorithm or simulation to run.
-int const NUMBER_ITERATION = 1000000;
+// % of total time given to the first phase (fleet minimization)
+double const FIRST_PHASE_THRESHOLD = 0;
 
 // Number of seconds for the algorithm to run.
-int const MAX_DURATION_SEC = 20;
-
-// % of total time given to the first phase (route minimisation)
-double const FIRST_PHASE_THRESHOLD = 0.1;
-
-// % of NUMBER_ITERATION
-// If no new best solution is found within LNS_FREQUENCY small iterations, then the next iteration will be a large iteration.
-double const LNS_FREQUENCY = 0.05;
+int const MAX_DURATION_SEC = 10;
 
 
 /**********************************************/
@@ -49,12 +49,13 @@ bool const PRINT = true;
 bool const COMPLETE_STORE = true;
 
 // Flag indicating whether the final solution is stored.
-bool const STORE_SOLUTION = false;
+bool const STORE_SOLUTION = true;
 
 
 /**********************************************/
 // Directories
-std::string const OUTPUT_DIRECTORY = "./../../output";
+
+std::string const OUTPUT_DIRECTORY = "./../../output/elevations";
 
 
 /**********************************************/
@@ -64,4 +65,4 @@ std::string const OUTPUT_DIRECTORY = "./../../output";
 bool const ELEVATION = false;
 
 // Weight bike + cyclist
-double const WEIGHT = 140;
+double const WEIGHT = 140;  

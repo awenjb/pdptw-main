@@ -1,5 +1,6 @@
 #include "time_window_constraint.h"
 
+#include "config.h"
 #include "input/data.h"
 #include "input/pdptw_data.h"
 #include "input/time_window.h"
@@ -34,7 +35,7 @@ void TimeWindowConstraint::initFTS()
 {
     FTSContainer.clear();
     FTSContainer.reserve(getSolution().getRoutes().size());
-    
+
     int i = 0;
     for (Route const &route: getSolution().getRoutes())
     {
@@ -59,15 +60,31 @@ bool TimeWindowConstraint::checkInsertion(PDPTWData const &data, Pair const &pai
 void TimeWindowConstraint::ApplyModif(PDPTWData const &data, Pair const &pair, int routeIndex, int pickupPos,
                                       int deliveryPos, bool addPair)
 {
-    if (addPair)
+    if (ELEVATION)
     {
-        FTSContainer.at(routeIndex)
-                .updateFTSAfterInsertion(data, getSolution().getRoute(routeIndex), pickupPos, deliveryPos);
+        if (addPair)
+        {
+            FTSContainer.at(routeIndex)
+                    .updateFTSAfterInsertionLTT(data, getSolution().getRoute(routeIndex), pickupPos, deliveryPos);
+        }
+        else
+        {
+            FTSContainer.at(routeIndex)
+                    .updateFTSAfterDeletionLTT(data, getSolution().getRoute(routeIndex), pickupPos, deliveryPos);
+        }
     }
     else
     {
-        FTSContainer.at(routeIndex)
-                .updateFTSAfterDeletion(data, getSolution().getRoute(routeIndex), pickupPos, deliveryPos);
+        if (addPair)
+        {
+            FTSContainer.at(routeIndex)
+                    .updateFTSAfterInsertion(data, getSolution().getRoute(routeIndex), pickupPos, deliveryPos);
+        }
+        else
+        {
+            FTSContainer.at(routeIndex)
+                    .updateFTSAfterDeletion(data, getSolution().getRoute(routeIndex), pickupPos, deliveryPos);
+        }
     }
 }
 
@@ -130,7 +147,7 @@ void TimeWindowConstraint::print() const
 {
     std::cout << "Time Window : Earliest / Latest / FTS" << std::endl;
     int i = 0;
-    for (const ForwardTimeSlack& FTS: FTSContainer)
+    for (ForwardTimeSlack const &FTS: FTSContainer)
     {
         std::cout << "#" << i << std::endl;
         FTS.print();

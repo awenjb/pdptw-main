@@ -367,6 +367,11 @@ void Solution::print() const
         ++i;
     }
 
+    std::cout << "\nTW :\n";
+    auto const &tw = constraints.at(1);
+    tw->print();
+
+
     // std::cout << "Constraints:\n";
     // for (auto const &constraint: constraints)
     // {

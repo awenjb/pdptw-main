@@ -50,6 +50,20 @@ public:
     void updateFTSAfterDeletion(PDPTWData const &data, Route const &route, int removePickupIndex,
                                 int removeDeliveryIndex);
 
+    /**
+     * Updates FTS after a new pickup and delivery have been inserted into the route (consider load-dependent travel time).
+     * Assumes the route is already updated but FTS values are not.
+     */
+    void updateFTSAfterInsertionLTT(PDPTWData const &data, Route const &route, int insertPickupIndex,
+                                    int insertDeliveryIndex);
+
+    /**
+     * Updates FTS after a pickup and delivery have been removed from the route (consider load-dependent travel time).
+     * Assumes the route is already updated but FTS values are not.
+     */
+    void updateFTSAfterDeletionLTT(PDPTWData const &data, Route const &route, int removePickupIndex,
+                                   int removeDeliveryIndex);
+
 
     std::vector<TimeInteger> const &getFTS() const;
     std::vector<TimeInteger> const &getEarliestArrival() const;

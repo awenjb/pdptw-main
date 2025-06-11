@@ -46,6 +46,12 @@ unsigned int util::getRandomInt(unsigned int min, unsigned int max)
     return std::uniform_int_distribution<>(min, max)(randomGenerator);
 }
 
+double util::getRandomDouble(double min, double max)
+{
+    checkSeed();
+    return std::uniform_real_distribution<double>(min, max)(randomGenerator);
+}
+
 std::mt19937_64 &util::getRawRandom()
 {
     checkSeed();

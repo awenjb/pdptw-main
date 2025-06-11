@@ -1,6 +1,7 @@
 #include "forward_time_slack.h"
 
 #include "input/data.h"
+#include "input/load_dependent.h"
 #include "lns/solution/solution.h"
 
 std::vector<TimeInteger> const &ForwardTimeSlack::getFTS() const
@@ -276,6 +277,140 @@ void ForwardTimeSlack::updateFTSAfterDeletion(PDPTWData const &data, Route const
     }
 
     // Recalculate FTS
+    for (int i = 0; i <= n; ++i)
+    {
+        FTS.at(i) = latestArrival.at(i) - earliestArrival.at(i);
+    }
+}
+
+void ForwardTimeSlack::updateFTSAfterInsertionLTT(PDPTWData const &data, Route const &route, int insertPickupIndex,
+                                                  int insertDeliveryIndex)
+{
+    int n = route.getSize();
+    std::vector<int> const &routeIDs = route.getRoute();
+
+    earliestArrival.resize(n + 1, 0);
+    latestArrival.resize(n + 1, 0);
+    FTS.resize(n + 1, 0);
+
+    // Forward pass — compute earliestArrival using load-dependent travel time
+    double load = 0;
+    for (int i = 0; i <= n; ++i)
+    {
+        if (i == 0)
+        {
+            int first = routeIDs.at(0);
+            double depotStart = data.getDepot().getTimeWindow().getStart();
+            double firstTWStart = data.getLocation(first).getTimeWindow().getStart();
+            double travelTime = ltt::getTravelTimeLTT(data, load, 0, first);
+            earliestArrival.at(0) = std::max(firstTWStart, depotStart + travelTime);
+            load += data.getLocation(first).getDemand();
+        }
+        else
+        {
+            int prev = routeIDs.at(i - 1);
+            int curr = (i == n) ? 0 : routeIDs.at(i);// return to depot if end
+            double service = data.getLocation(prev).getServiceDuration();
+            double travelTime = ltt::getTravelTimeLTT(data, load, prev, curr);
+            double startTW = data.getLocation(curr).getTimeWindow().getStart();
+            earliestArrival.at(i) = std::max(startTW, earliestArrival.at(i - 1) + service + travelTime);
+            if (i < n)
+            {
+                load += data.getLocation(curr).getDemand();
+            }
+        }
+    }
+
+    // Backward pass — compute latestArrival
+    latestArrival.at(n) = data.getDepot().getTimeWindow().getEnd();
+    double loadBack = 0;
+    latestArrival.at(n - 1) = data.getLocation(routeIDs.at(n - 1)).getTimeWindow().getEnd();
+    loadBack += data.getLocation(routeIDs.at(n - 1)).getDemand();
+    for (int i = n - 2; i >= 0; --i)
+    {
+        int curr = routeIDs.at(i);
+        int next = routeIDs.at(i + 1);
+        double service = data.getLocation(curr).getServiceDuration();
+        double travelTime = ltt::getTravelTimeLTT(data, loadBack, curr, next);
+        double endTW = data.getLocation(curr).getTimeWindow().getEnd();
+
+        latestArrival.at(i) = std::min(latestArrival.at(i + 1) - service - travelTime, endTW);
+        loadBack += data.getLocation(curr).getDemand();
+    }
+
+    // FTS
+    for (int i = 0; i <= n; ++i)
+    {
+        FTS.at(i) = latestArrival.at(i) - earliestArrival.at(i);
+    }
+}
+
+void ForwardTimeSlack::updateFTSAfterDeletionLTT(PDPTWData const &data, Route const &route, int removePickupIndex,
+                                                 int removeDeliveryIndex)
+{
+    int n = route.getSize();
+    std::vector<int> const &routeIDs = route.getRoute();
+
+    if (n == 0)
+    {
+        earliestArrival.clear();
+        latestArrival.clear();
+        FTS.clear();
+        return;
+    }
+
+    earliestArrival.resize(n + 1, 0);
+    latestArrival.resize(n + 1, 0);
+    FTS.resize(n + 1, 0);
+
+    // Forward pass — compute earliestArrival using load-dependent travel time
+    double load = 0;
+    for (int i = 0; i <= n; ++i)
+    {
+        if (i == 0)
+        {
+            int first = routeIDs.at(0);
+            double depotStart = data.getDepot().getTimeWindow().getStart();
+            double firstTWStart = data.getLocation(first).getTimeWindow().getStart();
+            double travelTime = ltt::getTravelTimeLTT(data, load, 0, first);
+            earliestArrival.at(0) = std::max(firstTWStart, depotStart + travelTime);
+            load += data.getLocation(first).getDemand();
+        }
+        else
+        {
+            int prev = routeIDs.at(i - 1);
+            int curr = (i == n) ? 0 : routeIDs.at(i);// return to depot if end
+            double service = data.getLocation(prev).getServiceDuration();
+            double travelTime = ltt::getTravelTimeLTT(data, load, prev, curr);
+            double startTW = data.getLocation(curr).getTimeWindow().getStart();
+            earliestArrival.at(i) = std::max(startTW, earliestArrival.at(i - 1) + service + travelTime);
+            if (i < n)
+            {
+                load += data.getLocation(curr).getDemand();
+            }
+        }
+    }
+
+    // Backward pass — compute latestArrival using load-dependent travel time
+    latestArrival.at(n) = data.getDepot().getTimeWindow().getEnd();
+
+    double loadBack = 0;
+    latestArrival.at(n - 1) = data.getLocation(routeIDs.at(n - 1)).getTimeWindow().getEnd();
+    loadBack += data.getLocation(routeIDs.at(n - 1)).getDemand();
+
+    for (int i = n - 2; i >= 0; --i)
+    {
+        int curr = routeIDs.at(i);
+        int next = routeIDs.at(i + 1);
+        double service = data.getLocation(curr).getServiceDuration();
+        double travelTime = ltt::getTravelTimeLTT(data, loadBack, curr, next);
+        double endTW = data.getLocation(curr).getTimeWindow().getEnd();
+
+        latestArrival.at(i) = std::min(latestArrival.at(i + 1) - service - travelTime, endTW);
+        loadBack += data.getLocation(curr).getDemand();
+    }
+
+    // Compute forward time slack
     for (int i = 0; i <= n; ++i)
     {
         FTS.at(i) = latestArrival.at(i) - earliestArrival.at(i);

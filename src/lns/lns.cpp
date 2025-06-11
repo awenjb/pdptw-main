@@ -12,6 +12,7 @@
 #include "output/solution_checker.h"
 
 #include <chrono>
+#include <cmath>
 #include <vector>
 
 output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector &opSelector,
@@ -42,7 +43,7 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
 
     currentTime = getTimeSinceInSec(runtime.start);
     spdlog::info("SLNS | Iteration {} | Time {}s ", runtime.numberOfIteration, currentTime);
-    
+
     // while (iterationMax > 0)
     while ((currentTime - startTime) < MAX_DURATION_SEC)
     {
@@ -128,8 +129,6 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
     return result;
 }
 
-
-
 output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector &opSelectorSmall,
                                OperatorSelector &opSelectorLarge, AcceptanceFunction const &acceptFunctor)
 {
@@ -138,8 +137,11 @@ output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector
 
     // fixed iteration
     // int iterationMax = NUMBER_ITERATION;
-    
-    int frequency = NUMBER_ITERATION * LNS_FREQUENCY;
+    // int frequency = NUMBER_ITERATION * LNS_FREQUENCY;
+
+    // Define LNS frequency as proposed by Dumas
+    int instanceSize = initialSolution.getData().getSize();
+    int frequency = static_cast<int>(pow(std::abs(instanceSize), 1.5));
 
     unsigned long startTime = getTimeSinceInSec(runtime.start);
     unsigned long currentTime = startTime;

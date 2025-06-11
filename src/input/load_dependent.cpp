@@ -64,7 +64,7 @@ double ltt::fontaineMethod(double distance, double slope, double load)
 }
 
 double ltt::fontaineCalculation(std::vector<double> const &segmentDistance, std::vector<double> const &segmentSlope,
-                                double weight)
+                                double load)
 {
     double travelTime = 0.0;
     size_t size = segmentDistance.size();
@@ -72,7 +72,7 @@ double ltt::fontaineCalculation(std::vector<double> const &segmentDistance, std:
 
     for (std::size_t i = 0; i < size; ++i)
     {
-        travelTime += fontaineMethod(segmentDistance.at(i), segmentSlope.at(i), weight);
+        travelTime += fontaineMethod(segmentDistance.at(i), segmentSlope.at(i), load);
     }
     return travelTime;
 }

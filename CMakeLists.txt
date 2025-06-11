@@ -44,6 +44,7 @@ add_executable(pdptw src/mains/main.cpp
                 src/lns/operators/destruction/clean_empty_route.cpp
                 src/lns/operators/destruction/random_destroy.cpp
                 src/lns/operators/destruction/string_removal.cpp
+                src/lns/operators/destruction/split_string_removal.cpp
                 src/lns/operators/destruction/bank_focus_string_removal/bank_focus_string_removal.cpp
                 src/lns/operators/reconstruction/enumerate.cpp
                 src/lns/operators/reconstruction/list_heuristic_cost_oriented.cpp

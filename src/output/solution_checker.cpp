@@ -2,6 +2,7 @@
 
 #include "config.h"
 #include "input/data.h"
+#include "input/load_dependent.h"
 #include "input/location.h"
 #include "input/pdptw_data.h"
 #include "lns/operators/destruction/clean_empty_route.h"
@@ -133,8 +134,7 @@ void checker::checkTimeWindows(Solution const &sol, PDPTWData const &data)
                 if (ELEVATION)
                 {
                     load += data.getLocation(curr).getDemand();
-                    // slope = data::getSlope(data, prev, curr);
-                    // travelTime /= data::loadDependantPenalisation(load, slope);
+                    travelTime = ltt::getTravelTimeLTT(data, load, prev, curr);
                 }
 
                 time += travelTime;
@@ -157,8 +157,7 @@ void checker::checkTimeWindows(Solution const &sol, PDPTWData const &data)
             if (ELEVATION)
             {
                 load += data.getLocation(prev).getDemand();
-                // slope = data::getSlope(data, prev, 0);
-                // travelTime /= data::loadDependantPenalisation(load, slope);
+                travelTime = ltt::getTravelTimeLTT(data, load, prev, 0);
             }
 
             if (!data.getLocation(0).getTimeWindow().isValid(time))

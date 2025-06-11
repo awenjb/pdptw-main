@@ -14,63 +14,6 @@
 #include <spdlog/spdlog.h>
 #include <vector>
 
-// void fleetMinimization(int &iterationMax, LnsRuntimeData &runtime, Solution &actualSolution)
-// {
-//     double firstPhaseIteration = NUMBER_ITERATION * (1 - FIRST_PHASE_ITERATION);
-
-//     SimpleOperatorSelector minimizationSelector;
-//     addAllReconstructor(minimizationSelector);
-//     minimizationSelector.addDestructor(BankFocusStringRemoval(10, 10));
-
-//     while (iterationMax > firstPhaseIteration)
-//     {
-//         ++runtime.numberOfIteration;
-//         logProgress(runtime, actualSolution);
-
-//         Solution candidateSolution = actualSolution;
-
-//         if (candidateSolution.getBank().empty())
-//         {
-//             CleanEmptyRoute clean;
-//             clean.destroySolution(candidateSolution);
-//         }
-
-//         auto destructReconstructPair = minimizationSelector.getOperatorPair();
-//         destructReconstructPair.destructor().destroySolution(candidateSolution);
-//         destructReconstructPair.reconstructor().reconstructSolution(candidateSolution, 0.01);
-//         candidateSolution.computeAndStoreSolutionCost();
-
-//         if (isReducingNbRoutes(candidateSolution, runtime.bestSolution))
-//         {
-//             checker::checkAll(candidateSolution, candidateSolution.getData(), false);
-
-//             unsigned long now = getTimeSinceInMs(runtime.start);
-
-//             runtime.bestSolution = candidateSolution;
-//             runtime.bestIterationFleet = runtime.numberOfIteration;
-//             runtime.bestTimeFleet = now;
-//             runtime.bestIteration = runtime.numberOfIteration;
-//             runtime.bestTime = now;
-
-//             runtime.bestTimes.emplace_back(now);
-//             runtime.bestIterations.emplace_back(runtime.numberOfIteration);
-//             runtime.bestVehicles.emplace_back(runtime.bestSolution.getNumberOfRoutes());
-//             runtime.bestCosts.emplace_back((runtime.bestSolution.getRawCost() * 100.0) / 100.0);
-
-//             minimizationSelector.betterSolutionFound();
-
-//             // new best solution !
-//             spdlog::info("New Best | Iteration {} \t | Time {}ms \t | Routes {} \t | Cost {}",
-//                          runtime.numberOfIteration,
-//                          getTimeSinceInMs(runtime.start),
-//                          runtime.bestSolution.getRoutes().size(),
-//                          std::ceil(runtime.bestSolution.getRawCost() * 100.0) / 100.0);
-//         }
-
-//         actualSolution = std::move(candidateSolution);
-//         --iterationMax;
-//     }
-// }
 
 int sumAbs(Solution const &solution, std::vector<int> const &absCounter)
 {
@@ -121,8 +64,14 @@ void fleetMinimizationCVB(/*int &iterationMax,*/ LnsRuntimeData &runtime, Soluti
     SimpleOperatorSelector minimizationSelector;
     //minimizationSelector.addReconstructor(ListHeuristicCostOriented(SortingStrategyType::DEMAND, EnumerationType::ALL_INSERT_PAIR), 1);
     addAllReconstructor(minimizationSelector);
-    minimizationSelector.addDestructor(BankFocusStringRemoval(10, 10));
+    // minimizationSelector.addDestructor(BankFocusStringRemoval(10, 10));
+    // int manyPairs = actualSolution.getData().getSize() * 40 / 100;
+    // minimizationSelector.addDestructor(RandomDestroy(manyPairs));
+
     minimizationSelector.addDestructor(StringRemoval(10, 10));
+    minimizationSelector.addDestructor(SplitStringRemoval(10, 10));
+
+
 
     // counter of the number of solutions where c was not served by any routes
     std::vector<int> absCounter = std::vector<int>(actualSolution.getData().getSize() + 1, 0);
