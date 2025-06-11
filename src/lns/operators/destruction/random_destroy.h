@@ -5,7 +5,9 @@
 class RandomDestroy : public DestructionOperator
 {
 public:
-    explicit RandomDestroy(int numberOfPairsToDestroy) : numberOfPairsToDestroy(numberOfPairsToDestroy) {}
+    explicit RandomDestroy(int numberOfPairsToDestroyMin, int numberOfPairsToDestroyMax)
+        : numberOfPairsToDestroyMin(numberOfPairsToDestroyMin), numberOfPairsToDestroyMax(numberOfPairsToDestroyMax)
+    {}
 
     /**
      * This operator removes numberOfPairsToDestroy pairs randomly in the solution.
@@ -13,5 +15,6 @@ public:
     void destroySolution(Solution &solution) const override;
 
 private:
-    int numberOfPairsToDestroy;
+    int numberOfPairsToDestroyMax;
+    int numberOfPairsToDestroyMin;
 };

@@ -9,7 +9,9 @@
 
 void RandomDestroy::destroySolution(Solution &solution) const
 {
+    
     int nbRequests = solution.requestsFulfilledCount();
+    int numberOfPairsToDestroy = util::getRandomInt(numberOfPairsToDestroyMin, numberOfPairsToDestroyMax);
     int actualNumberOfPairsToDestroy = std::min(nbRequests, numberOfPairsToDestroy);
     int remainingPairToDelete = actualNumberOfPairsToDestroy;
 

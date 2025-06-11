@@ -59,12 +59,12 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
     // lns operators
     SimpleOperatorSelector smallSelector;
     addAllReconstructor(smallSelector);
-    smallSelector.addDestructor(RandomDestroy(pairs));
+    smallSelector.addDestructor(RandomDestroy(pairs, pairs));
     smallSelector.addDestructor(StringRemoval(10, 10));
 
     SimpleOperatorSelector largeSelector;
     addAllReconstructor(largeSelector);
-    largeSelector.addDestructor(RandomDestroy(manyPairs));
+    largeSelector.addDestructor(RandomDestroy(manyPairs, manyPairs));
     largeSelector.addDestructor(StringRemoval(10, 10));
 
     std::unique_ptr<output::LnsOutput> result;
