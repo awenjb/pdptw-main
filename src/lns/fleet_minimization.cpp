@@ -59,7 +59,9 @@ void fleetMinimizationCVB(/*int &iterationMax,*/ LnsRuntimeData &runtime, Soluti
 
     unsigned long startTime = getTimeSinceInSec(runtime.start);
     unsigned long currentTime = startTime;
-    unsigned long firstPhaseThreshold = MAX_DURATION_SEC * FIRST_PHASE_THRESHOLD;
+    unsigned long firstPhaseThreshold = MAX_DURATION_SEC * FIRST_PHASE_TIME_THRESHOLD;
+
+    int iterationsWithoutImprovement = 0;
 
     SimpleOperatorSelector minimizationSelector;
     //minimizationSelector.addReconstructor(ListHeuristicCostOriented(SortingStrategyType::DEMAND, EnumerationType::ALL_INSERT_PAIR), 1);
@@ -77,7 +79,7 @@ void fleetMinimizationCVB(/*int &iterationMax,*/ LnsRuntimeData &runtime, Soluti
     std::vector<int> absCounter = std::vector<int>(actualSolution.getData().getSize() + 1, 0);
 
 
-    while ((currentTime - startTime) < firstPhaseThreshold)
+    while ((currentTime - startTime) < firstPhaseThreshold && iterationsWithoutImprovement < FIRST_PHASE_ITERATION_THRESHOLD)
     {
         ++runtime.numberOfIteration;
         logProgress(runtime, actualSolution);
@@ -91,12 +93,15 @@ void fleetMinimizationCVB(/*int &iterationMax,*/ LnsRuntimeData &runtime, Soluti
 
         std::vector<int> const &candidateBank = candidateSolution.getBank();
 
+        bool hasImproved = false;
+
         // is Better Candidate
         if ((candidateBank.size() < actualSolution.getBank().size()) ||
             (sumAbs(candidateSolution, absCounter) < sumAbs(actualSolution, absCounter)))
         {
             //std::cout << "better candidate" << std::endl;
             actualSolution = candidateSolution;
+            hasImproved = true;
         }
 
         // is Empty Candidate Bank
@@ -124,6 +129,16 @@ void fleetMinimizationCVB(/*int &iterationMax,*/ LnsRuntimeData &runtime, Soluti
 
             actualSolution = candidateSolution;
             removeOneRoute(actualSolution, absCounter);
+        }
+
+        // update improvement counter
+        if (hasImproved)
+        {
+            iterationsWithoutImprovement = 0;
+        }
+        else
+        {
+            ++iterationsWithoutImprovement;
         }
 
         // update absCounter

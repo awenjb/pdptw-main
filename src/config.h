@@ -21,10 +21,14 @@ int const ROUTE_PENALTY = 0;
 int const NUMBER_VEHICLE = 50;
 
 // % of total time given to the first phase (fleet minimization)
-double const FIRST_PHASE_THRESHOLD = 0;
+double const FIRST_PHASE_TIME_THRESHOLD = 0.1;
+
+// Number of iterations allowed without imporvement (fleet minimization)
+double const FIRST_PHASE_ITERATION_THRESHOLD  = 50000;
 
 // Number of seconds for the algorithm to run.
 int const MAX_DURATION_SEC = 10;
+
 
 
 /**********************************************/
