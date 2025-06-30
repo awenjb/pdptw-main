@@ -135,6 +135,9 @@ void checker::checkTimeWindows(Solution const &sol, PDPTWData const &data)
                 {
                     load += data.getLocation(curr).getDemand();
                     travelTime = ltt::getTravelTimeLTT(data, load, prev, curr);
+                    // travelTime = ltt::fontaineCalculation(data.getSegmentDistanceMatrix().at(prev).at(curr),
+                    //                                       data.getSegmentSlopeMatrix().at(prev).at(curr),
+                    //                                       load);
                 }
 
                 time += travelTime;
@@ -158,6 +161,9 @@ void checker::checkTimeWindows(Solution const &sol, PDPTWData const &data)
             {
                 load += data.getLocation(prev).getDemand();
                 travelTime = ltt::getTravelTimeLTT(data, load, prev, 0);
+                // travelTime = ltt::fontaineCalculation(data.getSegmentDistanceMatrix().at(prev).at(0),
+                //                                       data.getSegmentSlopeMatrix().at(prev).at(0),
+                //                                       load);
             }
 
             if (!data.getLocation(0).getTimeWindow().isValid(time))

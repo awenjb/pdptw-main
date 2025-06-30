@@ -57,6 +57,7 @@ bool TimeWindowLTTConstraint::checkInsertion(PDPTWData const &data, Pair const &
         //                                           load);
         // using penalty method
         double arrival = ltt::getTravelTimeLTT(data, load, 0, pickupID);
+        // double arrival = data.getMatrix().at(0).at(pickupID) / 6.94444;
 
         if (!data.getLocation(pickupID).getTimeWindow().isValid(arrival))
         {
@@ -69,6 +70,8 @@ bool TimeWindowLTTConstraint::checkInsertion(PDPTWData const &data, Pair const &
         // double travelToD = ltt::fontaineCalculation(data.getSegmentDistanceMatrix().at(pickupID).at(deliveryID),
         //                                             data.getSegmentSlopeMatrix().at(pickupID).at(deliveryID),
         //                                             0);
+        // double travelToD = data.getMatrix().at(pickupID).at(deliveryID) / 6.94444;
+
         // using penalty method
         double travelToD = ltt::getTravelTimeLTT(data, 0, pickupID, deliveryID);
         double arrivalD = startP + serviceP + travelToD;
@@ -108,6 +111,7 @@ bool TimeWindowLTTConstraint::checkInsertion(PDPTWData const &data, Pair const &
         // time += ltt::fontaineCalculation(data.getSegmentDistanceMatrix().at(prev).at(curr),
         //                                  data.getSegmentSlopeMatrix().at(prev).at(curr),
         //                                  load);
+        // time += data.getMatrix().at(prev).at(curr) / 6.94444;
 
         if (!data.getLocation(curr).getTimeWindow().isValid(time))
         {
@@ -147,6 +151,11 @@ void TimeWindowLTTConstraint::ApplyModif(PDPTWData const &data, Pair const &pair
         load += data.getLocation(curr).getDemand();
 
         time += ltt::getTravelTimeLTT(data, load, prev, curr);
+
+        // time += ltt::fontaineCalculation(data.getSegmentDistanceMatrix().at(prev).at(curr),
+        //                                  data.getSegmentSlopeMatrix().at(prev).at(curr),
+        //                                  load);
+        // time += data.getMatrix().at(prev).at(curr) / 6.94444;
 
         auto const &tw = data.getLocation(curr).getTimeWindow();
         time = std::max(time, tw.getStart());

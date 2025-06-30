@@ -5,12 +5,12 @@ output::LnsOutput::LnsOutput(Solution const &bestSolution, unsigned int numberOf
                      unsigned int bestIterationFleetMin, unsigned long bestTimeFleetMin, unsigned int bestIteration,
                      unsigned long bestTime, std::vector<unsigned long> const &bestTimes,
                      std::vector<int> const &bestIterations, std::vector<int> const &bestVehicles,
-                     std::vector<double> const &bestCosts)
+                     std::vector<double> const &bestCosts, unsigned long totalTravelTime)
     : bestSolution(bestSolution), numberOfIteration(numberOfIteration),
       numberOfIterationFleetMin(numberOfIterationFleetMin), timeSpent(timeSpent), timeSpentFleetMin(timeSpentFleetMin),
       bestIterationFleetMin(bestIterationFleetMin), bestTimeFleetMin(bestTimeFleetMin), bestIteration(bestIteration),
       bestTime(bestTime), bestTimes(bestTimes), bestIterations(bestIterations), bestVehicles(bestVehicles),
-      bestCosts(bestCosts)
+      bestCosts(bestCosts), totalTravelTime(totalTravelTime)
 {}
 
 Solution output::LnsOutput::getBestSolution() const
@@ -76,4 +76,9 @@ std::vector<int> const &output::LnsOutput::getBestVehicles() const
 std::vector<double> const &output::LnsOutput::getBestCosts() const
 {
     return bestCosts;
+}
+
+unsigned long output::LnsOutput::getTotalTravelTime() const
+{
+    return totalTravelTime;
 }

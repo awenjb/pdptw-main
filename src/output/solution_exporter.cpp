@@ -51,7 +51,7 @@ nlohmann::ordered_json output::getCompleteJson(output::LnsOutput const &result)
     jsonSolution["date"] = getCurrentDate();
     jsonSolution["reference"] = "...";
     jsonSolution["vehicles"] = solution.getNumberOfRoutes();
-    jsonSolution["cost"] =  std::ceil(solution.getRawCost() * 100.0) / 100.0;
+    jsonSolution["cost"] = std::ceil(solution.getRawCost() * 100.0) / 100.0;
     // jsonSolution["total_distance"] = std::ceil(solution.getRawCost() * 100.0) / 100.0;
     // jsonSolution["total_duration"] = std::ceil(solution.getRawCost() * 100.0) / 100.0;
     jsonSolution["time(s)"] = result.getTimeSpent();
@@ -68,6 +68,11 @@ nlohmann::ordered_json output::getCompleteJson(output::LnsOutput const &result)
     jsonSolution["bestCosts"] = result.getBestCosts();
     jsonSolution["bestTimes(ms)"] = result.getBestTimes();
     jsonSolution["bestIterations"] = result.getBestIterations();
+
+    if (ELEVATION)
+    {
+        jsonSolution["totalTravelTime"] = result.getTotalTravelTime();
+    }
 
 
     return jsonSolution;
@@ -94,8 +99,7 @@ void output::exportToJson(output::LnsOutput const &result)
     nlohmann::ordered_json jsonData;
     if (COMPLETE_STORE)
     {
-        jsonData =
-                output::getCompleteJson(result);
+        jsonData = output::getCompleteJson(result);
     }
     else
     {

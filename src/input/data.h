@@ -29,9 +29,14 @@ namespace data
     double routeCost(PDPTWData const &data, Route const &route);
 
     /**
-     * Return the travel cost between two location
+     * Return the travel cost (distance) between two location
      * (take location id in parameters)
      */
     double travelCost(PDPTWData const &data, int from, int to);
 
+    /**
+     * Return the total travel time when elevation is used
+     */
+    double totalTravelTime(PDPTWData const &data, Solution const &sol);
+    
 }// namespace data

@@ -20,6 +20,8 @@ namespace output
         unsigned int bestIteration;
         unsigned long bestTime;
 
+        unsigned long totalTravelTime;
+
         std::vector<unsigned long> bestTimes;
         std::vector<int> bestIterations;
         std::vector<int> bestVehicles;
@@ -31,7 +33,7 @@ namespace output
                   unsigned long timeSpent, unsigned long timeSpentFleetMin, unsigned int bestIterationFleetMin,
                   unsigned long bestTimeFleetMin, unsigned int bestIteration, unsigned long bestTime,
                   std::vector<unsigned long> const &bestTimes, std::vector<int> const &bestIterations,
-                  std::vector<int> const &bestVehicles, std::vector<double> const &bestCost);
+                  std::vector<int> const &bestVehicles, std::vector<double> const &bestCost, unsigned long totalTravelTime);
 
         // Getters
         Solution getBestSolution() const;
@@ -45,6 +47,8 @@ namespace output
 
         unsigned int getBestIteration() const;
         unsigned long getBestTime() const;
+
+        unsigned long getTotalTravelTime() const;
 
         std::vector<unsigned long> const &getBestTimes() const;
         std::vector<int> const &getBestIterations() const;

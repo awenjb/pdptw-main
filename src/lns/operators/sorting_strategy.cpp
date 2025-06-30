@@ -14,8 +14,7 @@ double getDistanceToDepot(PDPTWData const &data, int pairID)
 
 std::vector<int> const &sorting_strategy::LastInFirstOut::sortPairs() const
 {
-    auto &bank = getSolution().getPairBank();
-    return bank;
+    return getSolution().getPairBank();
 }
 
 std::vector<int> const &sorting_strategy::FirstInFirstOut::sortPairs() const
@@ -35,79 +34,94 @@ std::vector<int> const &sorting_strategy::Shuffle::sortPairs() const
 std::vector<int> const &sorting_strategy::Demand::sortPairs() const
 {
     auto &bank = getSolution().getPairBank();
+    auto const &data = getSolution().getData();
 
-    // Pair ID = Pickup ID
     std::sort(bank.begin(), bank.end(), [&](int a, int b) {
-        return getSolution().getData().getLocation(a).getDemand() > getSolution().getData().getLocation(b).getDemand();
+        return data.getLocation(a).getDemand() > data.getLocation(b).getDemand();
     });
+
     return bank;
 }
 
 std::vector<int> const &sorting_strategy::Close::sortPairs() const
 {
     auto &bank = getSolution().getPairBank();
-    // Pair ID = Pickup ID
+    auto const &data = getSolution().getData();
+
     std::sort(bank.begin(), bank.end(), [&](int a, int b) {
-        return (getDistanceToDepot(getSolution().getData(), a) +
-                getDistanceToDepot(getSolution().getData(), getSolution().getData().getLocation(a).getPair())) /
-                       2 <
-               (getDistanceToDepot(getSolution().getData(), b) +
-                getDistanceToDepot(getSolution().getData(), getSolution().getData().getLocation(b).getPair())) /
-                       2;
+        int pairA = data.getLocation(a).getPair();
+        int pairB = data.getLocation(b).getPair();
+
+        double avgDistA = (getDistanceToDepot(data, a) + getDistanceToDepot(data, pairA)) / 2.0;
+        double avgDistB = (getDistanceToDepot(data, b) + getDistanceToDepot(data, pairB)) / 2.0;
+
+        return avgDistA < avgDistB;
     });
+
     return bank;
 }
 
 std::vector<int> const &sorting_strategy::Far::sortPairs() const
 {
     auto &bank = getSolution().getPairBank();
-    // Pair ID = Pickup ID
+    auto const &data = getSolution().getData();
+
     std::sort(bank.begin(), bank.end(), [&](int a, int b) {
-        return (getDistanceToDepot(getSolution().getData(), a) +
-                getDistanceToDepot(getSolution().getData(), getSolution().getData().getLocation(a).getPair())) /
-                       2 >
-               (getDistanceToDepot(getSolution().getData(), b) +
-                getDistanceToDepot(getSolution().getData(), getSolution().getData().getLocation(b).getPair())) /
-                       2;
+        int pairA = data.getLocation(a).getPair();
+        int pairB = data.getLocation(b).getPair();
+
+        double avgDistA = (getDistanceToDepot(data, a) + getDistanceToDepot(data, pairA)) / 2.0;
+        double avgDistB = (getDistanceToDepot(data, b) + getDistanceToDepot(data, pairB)) / 2.0;
+
+        return avgDistA > avgDistB;
     });
+
     return bank;
 }
 
 std::vector<int> const &sorting_strategy::TimeWindowWidth::sortPairs() const
 {
     auto &bank = getSolution().getPairBank();
-    // Pair ID = Pickup ID
+    auto const &data = getSolution().getData();
+
     std::sort(bank.begin(), bank.end(), [&](int a, int b) {
-        const Location &locA = getSolution().getData().getLocation(a);
-        const Location &locB = getSolution().getData().getLocation(b);
-        return locA.getTimeWindow().getWidth() +
-                       getSolution().getData().getLocation(locA.getPair()).getTimeWindow().getWidth() / 2 <
-               locB.getTimeWindow().getWidth() +
-                       getSolution().getData().getLocation(locB.getPair()).getTimeWindow().getWidth() / 2;
+        const auto &locA = data.getLocation(a);
+        const auto &locB = data.getLocation(b);
+        int pairA = locA.getPair();
+        int pairB = locB.getPair();
+
+        double widthA = (locA.getTimeWindow().getWidth() + data.getLocation(pairA).getTimeWindow().getWidth()) / 2.0;
+        double widthB = (locB.getTimeWindow().getWidth() + data.getLocation(pairB).getTimeWindow().getWidth()) / 2.0;
+
+        return widthA < widthB;
     });
+
     return bank;
 }
 
 std::vector<int> const &sorting_strategy::TimeWindowStart::sortPairs() const
 {
     auto &bank = getSolution().getPairBank();
-    // Pair ID = Pickup ID
+    auto const &data = getSolution().getData();
+
     std::sort(bank.begin(), bank.end(), [&](int a, int b) {
-        return getSolution().getData().getLocation(a).getTimeWindow().getStart() <
-               getSolution().getData().getLocation(b).getTimeWindow().getStart();
+        return data.getLocation(a).getTimeWindow().getStart() < data.getLocation(b).getTimeWindow().getStart();
     });
+
     return bank;
 }
 
 std::vector<int> const &sorting_strategy::TimeWindowEnd::sortPairs() const
 {
     auto &bank = getSolution().getPairBank();
-    // Pair ID = Pickup ID
+    auto const &data = getSolution().getData();
+
     std::sort(bank.begin(), bank.end(), [&](int a, int b) {
-        const Location &locA = getSolution().getData().getLocation(a);
-        const Location &locB = getSolution().getData().getLocation(b);
-        return getSolution().getData().getLocation(locA.getPair()).getTimeWindow().getEnd() >
-               getSolution().getData().getLocation(locB.getPair()).getTimeWindow().getEnd();
+        int pairA = data.getLocation(a).getPair();
+        int pairB = data.getLocation(b).getPair();
+
+        return data.getLocation(pairA).getTimeWindow().getEnd() > data.getLocation(pairB).getTimeWindow().getEnd();
     });
+
     return bank;
 }

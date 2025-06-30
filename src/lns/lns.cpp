@@ -15,6 +15,9 @@
 #include <cmath>
 #include <vector>
 
+/**
+ * LNS code, based on the initial 2e-VRP framework
+ */
 output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector &opSelector,
                               AcceptanceFunction const &acceptFunctor)
 {
@@ -34,7 +37,7 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
     if (TWO_PHASE_ALGORITHM)
     {
         spdlog::info("Route Minimization");
-        fleetMinimizationCVB(/*iterationMax,*/ runtime, actualSolution);
+        fleetMinimizationCVB(runtime, actualSolution);
     }
 
     actualSolution = runtime.bestSolution;
@@ -123,12 +126,16 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
                                     runtime.bestTimes,
                                     runtime.bestIterations,
                                     runtime.bestVehicles,
-                                    runtime.bestCosts);
+                                    runtime.bestCosts,
+                                    0);
 
 
     return result;
 }
 
+/**
+ * SLNS code
+ */
 output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector &opSelectorSmall,
                                OperatorSelector &opSelectorLarge, AcceptanceFunction const &acceptFunctor)
 {
@@ -137,7 +144,6 @@ output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector
 
     // fixed iteration
     // int iterationMax = NUMBER_ITERATION;
-    // int frequency = NUMBER_ITERATION * LNS_FREQUENCY;
 
     // Define LNS frequency as proposed by Dumas
     int instanceSize = initialSolution.getData().getSize();
@@ -152,7 +158,7 @@ output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector
     if (TWO_PHASE_ALGORITHM)
     {
         spdlog::info("Route Minimization");
-        fleetMinimizationCVB(/*iterationMax,*/ runtime, actualSolution);
+        fleetMinimizationCVB(runtime, actualSolution);
     }
 
     actualSolution = runtime.bestSolution;
@@ -163,8 +169,8 @@ output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector
 
     spdlog::info("SLNS | Iteration {} | Time {}s ", runtime.numberOfIteration, currentTime);
 
+    // while (iterationMax > 0)
     while ((currentTime - startTime) < MAX_DURATION_SEC)
-    //while (iterationMax > 0)
     {
         // Init iteration
         ++runtime.numberOfIteration;
@@ -227,10 +233,19 @@ output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector
         }
 
         currentTime = getTimeSinceInSec(runtime.start);
-        //--iterationMax;
+        // --iterationMax;
     }
 
     spdlog::info("End | Iteration {} | Time {}s", runtime.numberOfIteration, getTimeSinceInSec(runtime.start));
+
+
+    // compute total travel time
+    if (ELEVATION)
+    {
+        double travelTime = data::totalTravelTime(runtime.bestSolution.getData(), runtime.bestSolution);
+
+        std::cout << travelTime << std::endl;
+    }
 
 
     auto result = output::LnsOutput(runtime.bestSolution,
@@ -245,7 +260,8 @@ output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector
                                     runtime.bestTimes,
                                     runtime.bestIterations,
                                     runtime.bestVehicles,
-                                    runtime.bestCosts);
+                                    runtime.bestCosts,
+                                    0);
 
 
     return result;

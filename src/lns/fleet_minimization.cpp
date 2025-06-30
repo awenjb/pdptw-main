@@ -4,6 +4,7 @@
 #include "lns/modification/route/remove_route.h"
 #include "lns/operators/destruction/bank_focus_string_removal/bank_focus_string_removal.h"
 #include "lns/operators/destruction/clean_empty_route.h"
+#include "lns/operators/destruction/split_string_removal.h"
 #include "lns/operators/selector/operator_selector.h"
 #include "lns_runtime_data.h"
 #include "lns_utils.h"
@@ -14,97 +15,91 @@
 #include <spdlog/spdlog.h>
 #include <vector>
 
-
 int sumAbs(Solution const &solution, std::vector<int> const &absCounter)
 {
     int sum = 0;
-    for (int i: solution.getBank())
+    for (int request: solution.getBank())
     {
-        sum += absCounter.at(i);
+        sum += absCounter.at(request);
     }
     return sum;
 }
 
 void removeOneRoute(Solution &solution, std::vector<int> const &absCounter)
 {
-    int routeIndex = 0;
-    int index = 0;
+    int bestRouteIndex = -1;
+    int minSum = std::numeric_limits<int>::max();
 
-    int min = std::numeric_limits<int>::max();
-
-    std::vector<Route> const &routes = solution.getRoutes();
-    for (Route const &route: routes)
+    auto const &routes = solution.getRoutes();
+    for (size_t i = 0; i < routes.size(); ++i)
     {
-        int sum = 0;
-        std::vector<int> const &locIDs = route.getRoute();
-        for (int id: locIDs)
+        int routeSum = 0;
+        for (int id: routes.at(i).getRoute())
         {
-            sum += absCounter.at(id);
+            routeSum += absCounter.at(id);
         }
-        if (sum < min)
+
+        if (routeSum < minSum)
         {
-            min = sum;
-            routeIndex = index;
+            minSum = routeSum;
+            bestRouteIndex = static_cast<int>(i);
         }
-        ++index;
     }
 
-    RemoveRoute remove = RemoveRoute(routeIndex);
-    solution.applyDestructSolution(remove);
+    if (bestRouteIndex != -1)
+    {
+        RemoveRoute remove(bestRouteIndex);
+        solution.applyDestructSolution(remove);
+    }
 }
 
-void fleetMinimizationCVB(/*int &iterationMax,*/ LnsRuntimeData &runtime, Solution &actualSolution)
+void fleetMinimizationCVB(LnsRuntimeData &runtime, Solution &currentSolution)
 {
-    // const double firstPhaseThreshold = NUMBER_ITERATION * (1 - FIRST_PHASE_ITERATION);
-
     unsigned long startTime = getTimeSinceInSec(runtime.start);
-    unsigned long currentTime = startTime;
     unsigned long firstPhaseThreshold = MAX_DURATION_SEC * FIRST_PHASE_TIME_THRESHOLD;
 
     int iterationsWithoutImprovement = 0;
 
+    // Initialize operator selector with destruction and reconstruction strategies
     SimpleOperatorSelector minimizationSelector;
-    //minimizationSelector.addReconstructor(ListHeuristicCostOriented(SortingStrategyType::DEMAND, EnumerationType::ALL_INSERT_PAIR), 1);
     addAllReconstructor(minimizationSelector);
-    // minimizationSelector.addDestructor(BankFocusStringRemoval(10, 10));
-    // int manyPairs = actualSolution.getData().getSize() * 40 / 100;
-    // minimizationSelector.addDestructor(RandomDestroy(manyPairs));
-
     minimizationSelector.addDestructor(StringRemoval(10, 10));
     minimizationSelector.addDestructor(SplitStringRemoval(10, 10));
 
+    // Absence counter: how often a request is not served in candidate solutions
+    std::vector<int> absCounter = std::vector<int>(currentSolution.getData().getSize() + 1, 0);
 
-
-    // counter of the number of solutions where c was not served by any routes
-    std::vector<int> absCounter = std::vector<int>(actualSolution.getData().getSize() + 1, 0);
-
-
-    while ((currentTime - startTime) < firstPhaseThreshold && iterationsWithoutImprovement < FIRST_PHASE_ITERATION_THRESHOLD)
+    // while (iterationMax > NUMBER_ITERATION * (1-FIRST_PHASE_TIME_THRESHOLD) && iterationsWithoutImprovement < FIRST_PHASE_ITERATION_THRESHOLD)
+    while ((getTimeSinceInSec(runtime.start) - startTime) < firstPhaseThreshold &&
+           iterationsWithoutImprovement < FIRST_PHASE_ITERATION_THRESHOLD)
     {
         ++runtime.numberOfIteration;
-        logProgress(runtime, actualSolution);
+        logProgress(runtime, currentSolution);
 
-        Solution candidateSolution = actualSolution;
+        Solution candidateSolution = currentSolution;
+
+        // Choose and apply operator pair
         auto destructReconstructPair = minimizationSelector.getOperatorPair();
-
         destructReconstructPair.destructor().destroySolution(candidateSolution);
         destructReconstructPair.reconstructor().reconstructSolution(candidateSolution, 0.01);
         candidateSolution.computeAndStoreSolutionCost();
 
         std::vector<int> const &candidateBank = candidateSolution.getBank();
+        std::vector<int> const &currentBank = currentSolution.getBank();
+
+        int currentSumAbs = sumAbs(currentSolution, absCounter);
+        int candidateSumAbs = sumAbs(candidateSolution, absCounter);
 
         bool hasImproved = false;
 
-        // is Better Candidate
-        if ((candidateBank.size() < actualSolution.getBank().size()) ||
-            (sumAbs(candidateSolution, absCounter) < sumAbs(actualSolution, absCounter)))
+        // Check if candidate is better
+        if ((candidateBank.size() < currentBank.size()) || (candidateSumAbs < currentSumAbs))
         {
-            //std::cout << "better candidate" << std::endl;
-            actualSolution = candidateSolution;
+            currentSolution = candidateSolution;
             hasImproved = true;
         }
 
-        // is Empty Candidate Bank
+        // If candidate bank is empty, update best solution
         if (candidateBank.empty())
         {
             CleanEmptyRoute clean;
@@ -127,27 +122,17 @@ void fleetMinimizationCVB(/*int &iterationMax,*/ LnsRuntimeData &runtime, Soluti
                              std::ceil(runtime.bestSolution.getRawCost() * 100.0) / 100.0);
             }
 
-            actualSolution = candidateSolution;
-            removeOneRoute(actualSolution, absCounter);
+            currentSolution = candidateSolution;
+            removeOneRoute(currentSolution, absCounter);
         }
 
-        // update improvement counter
-        if (hasImproved)
-        {
-            iterationsWithoutImprovement = 0;
-        }
-        else
-        {
-            ++iterationsWithoutImprovement;
-        }
+        // Update the number of iterations since last improvement
+        iterationsWithoutImprovement = hasImproved ? 0 : iterationsWithoutImprovement + 1;
 
-        // update absCounter
-        for (int i: candidateBank)
+        // Update absCounter
+        for (int request: candidateBank)
         {
-            ++absCounter.at(i);
+            ++absCounter.at(request);
         }
-
-        currentTime = getTimeSinceInSec(runtime.start);
-        // --iterationMax;
     }
 }

@@ -311,7 +311,11 @@ void ForwardTimeSlack::updateFTSAfterInsertionLTT(PDPTWData const &data, Route c
             int prev = routeIDs.at(i - 1);
             int curr = (i == n) ? 0 : routeIDs.at(i);// return to depot if end
             double service = data.getLocation(prev).getServiceDuration();
+
+            
             double travelTime = ltt::getTravelTimeLTT(data, load, prev, curr);
+            // double travelTime = data.getMatrix().at(prev).at(curr) / 6.94444;
+            
             double startTW = data.getLocation(curr).getTimeWindow().getStart();
             earliestArrival.at(i) = std::max(startTW, earliestArrival.at(i - 1) + service + travelTime);
             if (i < n)
@@ -331,7 +335,12 @@ void ForwardTimeSlack::updateFTSAfterInsertionLTT(PDPTWData const &data, Route c
         int curr = routeIDs.at(i);
         int next = routeIDs.at(i + 1);
         double service = data.getLocation(curr).getServiceDuration();
+
+
         double travelTime = ltt::getTravelTimeLTT(data, loadBack, curr, next);
+        // double travelTime = data.getMatrix().at(curr).at(next) / 6.94444;
+        
+        
         double endTW = data.getLocation(curr).getTimeWindow().getEnd();
 
         latestArrival.at(i) = std::min(latestArrival.at(i + 1) - service - travelTime, endTW);
@@ -372,7 +381,11 @@ void ForwardTimeSlack::updateFTSAfterDeletionLTT(PDPTWData const &data, Route co
             int first = routeIDs.at(0);
             double depotStart = data.getDepot().getTimeWindow().getStart();
             double firstTWStart = data.getLocation(first).getTimeWindow().getStart();
+
+
             double travelTime = ltt::getTravelTimeLTT(data, load, 0, first);
+            // double travelTime = data.getMatrix().at(0).at(first) / 6.94444;
+
             earliestArrival.at(0) = std::max(firstTWStart, depotStart + travelTime);
             load += data.getLocation(first).getDemand();
         }
@@ -381,7 +394,11 @@ void ForwardTimeSlack::updateFTSAfterDeletionLTT(PDPTWData const &data, Route co
             int prev = routeIDs.at(i - 1);
             int curr = (i == n) ? 0 : routeIDs.at(i);// return to depot if end
             double service = data.getLocation(prev).getServiceDuration();
+
+
             double travelTime = ltt::getTravelTimeLTT(data, load, prev, curr);
+            // double travelTime = data.getMatrix().at(0).at(first) / 6.94444;
+
             double startTW = data.getLocation(curr).getTimeWindow().getStart();
             earliestArrival.at(i) = std::max(startTW, earliestArrival.at(i - 1) + service + travelTime);
             if (i < n)

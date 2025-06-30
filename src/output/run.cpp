@@ -1,4 +1,7 @@
 #include "run.h"
+
+#include "config.h"
+#include "input/load_dependent.h"
 #include "input/json_parser.h"
 #include "lns/lns.h"
 
@@ -30,6 +33,10 @@ void runAllInDirectory(std::string const &directoryPath, std::function<void(PDPT
     for (std::string file: files)
     {
         PDPTWData data = parsing::parseJson(file);
+        if (ELEVATION)
+        {
+            ltt::preCalculation(data);
+        }
         Solution startingSolution = Solution::emptySolution(data);
         function(data, startingSolution);
     }
