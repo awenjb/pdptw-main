@@ -9,7 +9,7 @@
 #include <vector>
 
 /**
- * Constraint that ensures all pickup and delivery respect their time windows.
+ * Constraint that ensures all pickup and delivery respect their time windows (with load-dependent travel time)
  */
 class TimeWindowLTTConstraint : public Constraint
 {

@@ -27,7 +27,18 @@ private:
 
 namespace sisr
 {
+    /**
+     * Computes the average number of locations per route.
+     */
     double computeAverageCardinality(std::vector<Route> const &routes);
+
+    /**
+     * Remove a string of locations.
+     */
     void removeString(Solution &solution, int routeIndex, unsigned int stringLength, int startLocation);
+
+    /**
+     * Main ruin function as described in the SISR paper, with preserved subsequences.
+     */
     void SISRsRuin(Solution &solution, unsigned int maxStringSize, unsigned int averageNumberRemovedElement);
 };// namespace

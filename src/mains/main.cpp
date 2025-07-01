@@ -19,8 +19,8 @@
 #include "lns/operators/destruction/bank_focus_string_removal/bank_focus_string_removal.h"
 #include "lns/operators/destruction/clean_empty_route.h"
 #include "lns/operators/destruction/random_destroy.h"
-#include "lns/operators/destruction/string_removal.h"
 #include "lns/operators/destruction/split_string_removal.h"
+#include "lns/operators/destruction/string_removal.h"
 #include "lns/operators/reconstruction/enumerate.h"
 #include "lns/operators/reconstruction/list_heuristic_cost_oriented.h"
 #include "lns/operators/selector/operator_selector.h"
@@ -51,34 +51,26 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
     // lns parameters
     int requests = data.getPairCount();
 
-    int pairsMin = requests * 5 / 100;
-    int pairsMax = requests * 10 / 100;
+    // int pairsMin = requests * 5 / 100;
+    // int pairsMax = requests * 10 / 100;
     int manyPairsMin = requests * 10 / 100;
     int manyPairsMax = requests * 20 / 100;
 
     // threshold function
     ThresholdAcceptance acceptor(0.05);
 
-    // lns operators
+    // lns small operators
     SimpleOperatorSelector smallSelector;
     addAllReconstructor(smallSelector);
-    // smallSelector.addDestructor(RandomDestroy(pairsMin, pairsMax));
     smallSelector.addDestructor(StringRemoval(10, 10));
     smallSelector.addDestructor(SplitStringRemoval(10, 10));
 
+    // lns large operators
     SimpleOperatorSelector largeSelector;
     addAllReconstructor(largeSelector);
     largeSelector.addDestructor(RandomDestroy(manyPairsMin, manyPairsMax));
-    // largeSelector.addDestructor(StringRemoval(15, 15));
-    // largeSelector.addDestructor(SplitStringRemoval(15, 15));
 
     std::unique_ptr<output::LnsOutput> result;
-
-    // if (PRINT)
-    // {
-    //     startingSolution.getData().print();
-    // }
-
 
     if (SLNS)
     {
@@ -88,12 +80,12 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
     }
     else
     {
+        // run lns
         std::vector<SmallLargeOperatorSelector::StepSelector> selectors;
         selectors.emplace_back(10, std::move(smallSelector));
         selectors.emplace_back(50, std::move(largeSelector));
         SmallLargeOperatorSelector smallLargeSelector(std::move(selectors));
 
-        // run lns
         result = std::make_unique<output::LnsOutput>(lns::runLns(startingSolution, smallLargeSelector, acceptor));
     }
 
@@ -114,12 +106,7 @@ int main(int argc, char **argv)
 
     ///////////////////////////////////////////////////////////////////////
 
-    //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n100/bar-n100-1.json";
     std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100/lc103.json";
-    //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes_1.json";
-    //std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/n5000/bar-n5000-1.json";
-    //std::string filepath =  "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes/Nantes_31_10_2023.json";
-
     // std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/nantes_elevation/Nantes_5_elevation.json";
 
 

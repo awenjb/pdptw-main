@@ -34,12 +34,7 @@ namespace sisr
     double computeAverageCardinalitySplit(std::vector<Route> const &routes);
 
     /**
-     * Old version: remove a full string around a start location.
-     */
-    void removeStringSplit(Solution &solution, int routeIndex, unsigned int stringLength, int startLocation);
-
-    /**
-     * New version: remove a string of locations but preserve a subsequence inside it.
+     * Remove a string of locations but preserve a subsequence inside it.
      */
     void removeAroundSubsequenceSplit(Solution &solution, int routeIndex, unsigned int stringLength, unsigned int preserveLength, int startLocation);
 

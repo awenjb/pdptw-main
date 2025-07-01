@@ -23,11 +23,11 @@ int const NUMBER_VEHICLE = 50;
 // % of total time given to the first phase (fleet minimization)
 double const FIRST_PHASE_TIME_THRESHOLD = 0;
 
-// Number of iterations allowed without imporvement (fleet minimization)
+// Number of iterations allowed without improvement (fleet minimization)
 double const FIRST_PHASE_ITERATION_THRESHOLD  = 100000;
 
 // Number of seconds for the algorithm to run.
-int const MAX_DURATION_SEC = 60;
+int const MAX_DURATION_SEC = 30;
 
 
 /**********************************************/

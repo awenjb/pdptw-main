@@ -9,7 +9,9 @@ ListHeuristicCostOriented::ListHeuristicCostOriented(SortingStrategyType strateg
 void ListHeuristicCostOriented::reconstructSolution(Solution &solution, double blinkRate) const
 {
     std::vector<int> sortedPairs;
-    // selection strategy
+    sortedPairs.reserve(solution.getBank().size());
+    
+    // Sorting strategy
     switch (strategy)
     {
         case SortingStrategyType::LIFO: {
@@ -54,6 +56,7 @@ void ListHeuristicCostOriented::reconstructSolution(Solution &solution, double b
             break;
     }
 
+    // Reconstruction
     for (int pairID: sortedPairs)
     {
         Pair const &pair = solution.getData().getPair(pairID);

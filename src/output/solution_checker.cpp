@@ -125,9 +125,9 @@ void checker::checkTimeWindows(Solution const &sol, PDPTWData const &data)
             load = 0;
             time = data.getDepot().getTimeWindow().getStart();
 
-            for (size_t i = 0; i < route.getRoute().size(); ++i)
+            for (int i: route.getRoute())
             {
-                curr = route.getRoute().at(i);
+                curr = i;
 
                 travelTime = data::travelCost(data, prev, curr);
 
@@ -135,9 +135,6 @@ void checker::checkTimeWindows(Solution const &sol, PDPTWData const &data)
                 {
                     load += data.getLocation(curr).getDemand();
                     travelTime = ltt::getTravelTimeLTT(data, load, prev, curr);
-                    // travelTime = ltt::fontaineCalculation(data.getSegmentDistanceMatrix().at(prev).at(curr),
-                    //                                       data.getSegmentSlopeMatrix().at(prev).at(curr),
-                    //                                       load);
                 }
 
                 time += travelTime;
@@ -156,14 +153,13 @@ void checker::checkTimeWindows(Solution const &sol, PDPTWData const &data)
 
             // check return to depot
 
-            travelTime = data::travelCost(data, prev, 0);
             if (ELEVATION)
             {
-                load += data.getLocation(prev).getDemand();
                 travelTime = ltt::getTravelTimeLTT(data, load, prev, 0);
-                // travelTime = ltt::fontaineCalculation(data.getSegmentDistanceMatrix().at(prev).at(0),
-                //                                       data.getSegmentSlopeMatrix().at(prev).at(0),
-                //                                       load);
+            }
+            else
+            {
+                travelTime = data::travelCost(data, prev, 0);
             }
 
             if (!data.getLocation(0).getTimeWindow().isValid(time))
@@ -183,7 +179,6 @@ void checker::checkTimeWindows(Solution const &sol, PDPTWData const &data)
 
 void checker::checkAll(Solution const &sol, PDPTWData const &data, bool checkRequests)
 {
-    // TO DO, check in the solution if all locations are visited ! (in checkSolutionCoherence ?)
     if (checkRequests)
     {
         if (!sol.getBank().empty())

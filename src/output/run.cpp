@@ -30,7 +30,7 @@ void runAllInDirectory(std::string const &directoryPath, std::function<void(PDPT
 {
     std::vector<std::string> files = getFilesInDirectory(directoryPath);
 
-    for (std::string file: files)
+    for (const std::string& file: files)
     {
         PDPTWData data = parsing::parseJson(file);
         if (ELEVATION)

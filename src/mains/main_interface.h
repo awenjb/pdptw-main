@@ -7,6 +7,10 @@
 
 #include <functional>
 
-void addAllReconstructor(SimpleOperatorSelector &selector);
-int mainInterface(int argc, char **argv, std::function<void(PDPTWData &, Solution &)> function);
 
+/**
+ * Function adding multiple reconstruction operators to an operator selector.
+ */
+void addAllReconstructor(SimpleOperatorSelector &selector);
+
+int mainInterface(int argc, char **argv, std::function<void(PDPTWData &, Solution &)> function);

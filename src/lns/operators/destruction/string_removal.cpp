@@ -141,7 +141,10 @@ namespace sisr
                 // (9) l_t
                 unsigned int actualSizeOfThisString = util::getRandomInt(1, maxSizeOfThisString);
 
+                // Applies suppression around neighbor in the targeted route
                 removeString(solution, routeIndex, actualSizeOfThisString, neighbor);
+
+                // Mark this route as already modified
                 routeIndexUsed.emplace_back(routeIndex);
 
                 if (routeIndexUsed.size() >= numberOfString)
@@ -152,7 +155,7 @@ namespace sisr
         }
     }
 
-}// namespace
+}// namespace sisr
 
 void StringRemoval::destroySolution(Solution &solution) const
 {

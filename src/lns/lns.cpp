@@ -133,6 +133,8 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
     return result;
 }
 
+
+
 /**
  * SLNS code
  */
@@ -179,7 +181,6 @@ output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector
         Solution candidateSolution = actualSolution;
         if (SlnsIteration < frequency)
         {
-            // Small iteration
             // Select small operators
             auto destructReconstructPair = opSelectorSmall.getOperatorPair();
             // Apply small operators
@@ -191,7 +192,6 @@ output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector
         }
         else
         {
-            // Large iteration
             candidateSolution = runtime.bestSolution;
             // Select large operators
             auto destructReconstructPair = opSelectorLarge.getOperatorPair();
@@ -204,18 +204,18 @@ output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector
             SlnsIteration = 0;
         }
 
+        // New best solution
         if (isBetterSolution(candidateSolution, runtime.bestSolution))
         {
-            checker::checkAll(candidateSolution, candidateSolution.getData(), false);
+            checker::checkAll(candidateSolution, candidateSolution.getData(), true);
 
             // remove empty route from the solution
             CleanEmptyRoute clean = CleanEmptyRoute();
             clean.destroySolution(candidateSolution);
 
             unsigned long now = getTimeSinceInMs(runtime.start);
-            updateBestSolution(runtime, candidateSolution, now);
+            updateBestSolution(runtime, candidateSolution, now); // Copy the solution
 
-            // new best solution !
             spdlog::info("New Best | Iteration {} \t | Time {}ms \t | Routes {} \t | Cost {}",
                          runtime.numberOfIteration,
                          getTimeSinceInMs(runtime.start),
@@ -223,8 +223,8 @@ output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector
                          std::ceil(runtime.bestSolution.getRawCost() * 100.0) / 100.0);
         }
 
-        // Check if we use the candidate solution as the new actual solution
-        // operator can force to take the new solution
+        // Check if we accept the candidate solution as the new actual solution
+        // A large iteration can force to take the new solution
         if (largeIteration ||
             acceptFunctor(candidateSolution, actualSolution, runtime.bestSolution) == AcceptationStatus::ACCEPT)
         {
