@@ -102,16 +102,12 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
 
 int main(int argc, char **argv)
 {
-    // return mainInterface(argc, argv, &simpleLNS);
+    return mainInterface(argc, argv, &simpleLNS);
 
     ///////////////////////////////////////////////////////////////////////
     // One file
 
     // std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100/lc103.json";
-    // std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes_1.json";
-    // std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/nantes_elevation/Nantes_5_elevation.json";
-
-    // std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/instances_pdp_elevation/pdptw_instance_size_200_seed_3.json";
 
     // PDPTWData data = parsing::parseJson(filepath);
 
@@ -131,8 +127,8 @@ int main(int argc, char **argv)
     //////////////////////////////////////////////////////////////////////
     // Multiple file
 
-    std::string path = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_400";
-    runAllInDirectory(path, simpleLNS);
+    // std::string path = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_400";
+    // runAllInDirectory(path, simpleLNS);
 
 
     // return 0;
