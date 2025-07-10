@@ -2,6 +2,7 @@
 
 #include "config.h"
 #include "input/data.h"
+#include "input/load_dependent.h"
 #include "input/pdptw_data.h"
 #include "input/time_window.h"
 #include "lns/constraints/time_window/forward_time_slack.h"
@@ -9,6 +10,8 @@
 #include "lns/modification/pair/remove_pair.h"
 #include "lns/modification/route/remove_route.h"
 #include "lns/solution/solution.h"
+
+#include <tuple>
 
 TimeWindowConstraint::TimeWindowConstraint(Solution const &solution) : Constraint(solution)
 {
@@ -31,23 +34,24 @@ std::unique_ptr<Constraint> TimeWindowConstraint::clone(Solution const &newOwnin
     return clonePtr;
 }
 
-void TimeWindowConstraint::initFTS()
-{
-    FTSContainer.clear();
-    FTSContainer.reserve(getSolution().getRoutes().size());
+// void TimeWindowConstraint::initFTS()
+// {
+//     FTSContainer.clear();
+//     FTSContainer.reserve(getSolution().getRoutes().size());
 
-    int i = 0;
-    for (Route const &route: getSolution().getRoutes())
-    {
-        FTSContainer.emplace_back();
-        FTSContainer.at(i).initFTS(getSolution().getData(), route);
-        ++i;
-    }
-}
+//     int i = 0;
+//     for (Route const &route: getSolution().getRoutes())
+//     {
+//         FTSContainer.emplace_back();
+//         FTSContainer.at(i).initFTS(getSolution().getData(), route);
+//         ++i;
+//     }
+// }
 
 bool TimeWindowConstraint::checkInsertion(PDPTWData const &data, Pair const &pair, int routeIndex, int pickupPos,
                                           int deliveryPos) const
 {
+
     return FTSContainer.at(routeIndex)
             .isPickupDeliveryInsertionValid(data,
                                             getSolution().getRoute(routeIndex),

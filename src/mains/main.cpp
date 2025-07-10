@@ -107,10 +107,14 @@ int main(int argc, char **argv)
     ///////////////////////////////////////////////////////////////////////
 
     std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100/lc103.json";
+    // std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/Nantes_1.json";
     // std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/nantes_elevation/Nantes_5_elevation.json";
 
+    // std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/instances_pdp_elevation/pdptw_instance_size_20_seed_4.json";
 
     PDPTWData data = parsing::parseJson(filepath);
+
+    // data.print();
 
     // pre calculate some value in case of a load-dependent instances
     if (ELEVATION)
@@ -123,7 +127,7 @@ int main(int argc, char **argv)
 
     simpleLNS(data, startingSolution);
 
-    // std::string path = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/nantes_elevation";
+    // std::string path = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_400";
     // runAllInDirectory(path, simpleLNS);
 
 

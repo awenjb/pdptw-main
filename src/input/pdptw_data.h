@@ -36,6 +36,7 @@ class PDPTWData
     std::vector<Pair> pairs;
 
     Matrix costMatrix;// Cost matrix (distance)
+    Matrix timeMatrix;// Time travel matrix
 
     // For each location, a sorted list of other location IDs by proximity (excluding depot)
     std::vector<std::vector<int>> closestLocations;
@@ -69,7 +70,7 @@ public:
      * Constructs a PDPTWData instance including segmented slope and distance matrices.
      */
     PDPTWData(std::string dataName, int size, int capacity, Location depot, std::vector<Location> locations,
-              Matrix costMatrix, std::vector<std::vector<std::vector<double>>> segmentSlopeMatrix,
+              Matrix costMatrix, Matrix timeMatrix, std::vector<std::vector<std::vector<double>>> segmentSlopeMatrix,
               std::vector<std::vector<std::vector<double>>> segmentDistanceMatrix);
 
     /**

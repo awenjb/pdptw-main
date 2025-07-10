@@ -28,8 +28,6 @@ public:
     void print() const override;
 
 private:
-    std::vector<ForwardTimeSlack> FTSContainer;//Stores the FTS (Forward Time Slack) state for each route.
-
     std::vector<ArrivalTimeVector> arrivalTimeContainer;
 
     /**

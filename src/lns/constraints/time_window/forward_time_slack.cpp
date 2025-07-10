@@ -19,58 +19,6 @@ std::vector<TimeInteger> const &ForwardTimeSlack::getLatestArrival() const
     return latestArrival;
 }
 
-void ForwardTimeSlack::initFTS(PDPTWData const &data, Route const &route)
-{
-    int n = route.getSize();
-    std::vector<int> const &routeIDs = route.getRoute();
-
-    earliestArrival = std::vector<TimeInteger>(n + 1, 0);
-    latestArrival = std::vector<TimeInteger>(n + 1, 0);
-    FTS = std::vector<TimeInteger>(n + 1, 0);
-
-    // Compute arrival times
-    double depotStart = data.getDepot().getTimeWindow().getStart();
-    double firstLocationStart = data.getLocation(routeIDs.at(0)).getTimeWindow().getStart();
-    double depotToFirst = data::travelCost(data, 0, routeIDs.at(0));
-
-    earliestArrival.at(0) = std::max(firstLocationStart, depotStart + depotToFirst);
-
-    for (int i = 1; i < n; ++i)
-    {
-        double start = data.getLocation(routeIDs.at(i)).getTimeWindow().getStart();
-        double service = data.getLocation(routeIDs.at(i - 1)).getServiceDuration();
-        double travelTime = data::travelCost(data, routeIDs.at(i - 1), routeIDs.at(i));
-
-        earliestArrival.at(i) = std::max(start, earliestArrival.at(i - 1) + service + travelTime);
-    }
-
-    // Compute earliest arrival at depot after last location
-    double lastService = data.getLocation(routeIDs.at(n - 1)).getServiceDuration();
-    double lastToDepot = data::travelCost(data, routeIDs.at(n - 1), 0);
-    earliestArrival.at(n) = earliestArrival.at(n - 1) + lastService + lastToDepot;
-
-    // Compute latest arrival times
-    latestArrival.at(n - 1) = data.getLocation(routeIDs.at(n - 1)).getTimeWindow().getEnd();
-
-    for (int i = n - 2; i >= 0; --i)
-    {
-        double end = data.getLocation(routeIDs.at(i)).getTimeWindow().getEnd();
-        double service = data.getLocation(routeIDs.at(i)).getServiceDuration();
-        double travelTime = data::travelCost(data, routeIDs.at(i), routeIDs.at(i + 1));
-
-        latestArrival.at(i) = std::min(latestArrival.at(i + 1) - service - travelTime, end);
-    }
-
-    // latest arrival at depot
-    latestArrival.at(n) = data.getDepot().getTimeWindow().getEnd();
-
-    // Compute FTS
-    for (int i = 0; i <= n; ++i)
-    {
-        FTS.at(i) = latestArrival.at(i) - earliestArrival.at(i);
-    }
-}
-
 bool ForwardTimeSlack::isPickupDeliveryInsertionValid(PDPTWData const &data, Route const &route, int pickupID,
                                                       int deliveryID, int insertPickupIndex,
                                                       int insertDeliveryIndex) const
@@ -312,10 +260,10 @@ void ForwardTimeSlack::updateFTSAfterInsertionLTT(PDPTWData const &data, Route c
             int curr = (i == n) ? 0 : routeIDs.at(i);// return to depot if end
             double service = data.getLocation(prev).getServiceDuration();
 
-            
+
             double travelTime = ltt::getTravelTimeLTT(data, load, prev, curr);
             // double travelTime = data.getMatrix().at(prev).at(curr) / 6.94444;
-            
+
             double startTW = data.getLocation(curr).getTimeWindow().getStart();
             earliestArrival.at(i) = std::max(startTW, earliestArrival.at(i - 1) + service + travelTime);
             if (i < n)
@@ -339,8 +287,8 @@ void ForwardTimeSlack::updateFTSAfterInsertionLTT(PDPTWData const &data, Route c
 
         double travelTime = ltt::getTravelTimeLTT(data, loadBack, curr, next);
         // double travelTime = data.getMatrix().at(curr).at(next) / 6.94444;
-        
-        
+
+
         double endTW = data.getLocation(curr).getTimeWindow().getEnd();
 
         latestArrival.at(i) = std::min(latestArrival.at(i + 1) - service - travelTime, endTW);
@@ -433,6 +381,9 @@ void ForwardTimeSlack::updateFTSAfterDeletionLTT(PDPTWData const &data, Route co
         FTS.at(i) = latestArrival.at(i) - earliestArrival.at(i);
     }
 }
+
+
+
 
 void ForwardTimeSlack::print() const
 {

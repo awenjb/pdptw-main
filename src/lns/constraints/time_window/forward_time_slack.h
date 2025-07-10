@@ -31,12 +31,6 @@ public:
                                         int insertPickupIndex, int insertDeliveryIndex) const;
 
     /**
-     * Initializes all FTS, earliestArrival, and latestArrival values from scratch
-     * based on the current route and the problem's time window data.
-     */
-    void initFTS(PDPTWData const &data, Route const &route);
-
-    /**
      * Updates FTS after a new pickup and delivery have been inserted into the route.
      * Assumes the route is already updated but FTS values are not.
      */
@@ -63,6 +57,11 @@ public:
      */
     void updateFTSAfterDeletionLTT(PDPTWData const &data, Route const &route, int removePickupIndex,
                                    int removeDeliveryIndex);
+
+
+    std::pair<double, double> getDelays(PDPTWData const &data, Route const &route, int pickupID,
+                                                    int deliveryID, int insertPickupIndex,
+                                                    int insertDeliveryIndex) const;
 
 
     std::vector<TimeInteger> const &getFTS() const;

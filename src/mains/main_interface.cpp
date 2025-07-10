@@ -13,6 +13,8 @@ void addAllReconstructor(SimpleOperatorSelector &selector)
 {
     selector.addReconstructor(ListHeuristicCostOriented(SortingStrategyType::SHUFFLE, EnumerationType::ALL_INSERT_PAIR),
                               1);
+    selector.addReconstructor(ListHeuristicCostOriented(SortingStrategyType::DEMAND, EnumerationType::ALL_INSERT_PAIR),
+                              1);
     selector.addReconstructor(ListHeuristicCostOriented(SortingStrategyType::FAR, EnumerationType::ALL_INSERT_PAIR), 1);
     selector.addReconstructor(ListHeuristicCostOriented(SortingStrategyType::CLOSE, EnumerationType::ALL_INSERT_PAIR),
                               1);

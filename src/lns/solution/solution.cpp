@@ -234,6 +234,11 @@ std::vector<std::unique_ptr<Constraint>> const &Solution::getConstraints() const
     return constraints;
 }
 
+std::unique_ptr<Constraint> const &Solution::getLttConstraint() const
+{
+    return lttConstraint;
+}
+
 int Solution::requestsFulfilledCount() const
 {
     int count = 0;

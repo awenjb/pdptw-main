@@ -13,6 +13,8 @@
 
 #include <chrono>
 #include <cmath>
+#include <cstdio>
+#include <iterator>
 #include <vector>
 
 /**
@@ -50,6 +52,7 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
     // while (iterationMax > 0)
     while ((currentTime - startTime) < MAX_DURATION_SEC)
     {
+        std::cout << iterationMax << std::endl;
         // Init iteration
         ++runtime.numberOfIteration;
         logProgress(runtime, actualSolution);
@@ -133,8 +136,6 @@ output::LnsOutput lns::runLns(Solution const &initialSolution, OperatorSelector 
     return result;
 }
 
-
-
 /**
  * SLNS code
  */
@@ -214,7 +215,7 @@ output::LnsOutput lns::runSlns(Solution const &initialSolution, OperatorSelector
             clean.destroySolution(candidateSolution);
 
             unsigned long now = getTimeSinceInMs(runtime.start);
-            updateBestSolution(runtime, candidateSolution, now); // Copy the solution
+            updateBestSolution(runtime, candidateSolution, now);// Copy the solution
 
             spdlog::info("New Best | Iteration {} \t | Time {}ms \t | Routes {} \t | Cost {}",
                          runtime.numberOfIteration,

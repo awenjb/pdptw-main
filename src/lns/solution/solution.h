@@ -182,6 +182,8 @@ public:
      */
     void computeAndStoreSolutionCost();
 
+    std::unique_ptr<Constraint> const &getLttConstraint() const;
+
 private:
     /*
      * Initializes the object, called by the constructor.

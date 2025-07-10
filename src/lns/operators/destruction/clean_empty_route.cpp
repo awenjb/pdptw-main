@@ -5,12 +5,15 @@ CleanEmptyRoute::CleanEmptyRoute() {}
 
 void CleanEmptyRoute::destroySolution(Solution &solution) const
 {
-    for (int routeIndex = solution.getRoutes().size() - 1; routeIndex >= 0; --routeIndex)
-    {
-        if (solution.getRoute(routeIndex).getRoute().empty())
+    // if (solution.getPairBank().empty())
+    // {
+        for (int routeIndex = solution.getRoutes().size() - 1; routeIndex >= 0; --routeIndex)
         {
-            RemoveRoute remRoute = RemoveRoute(routeIndex);
-            solution.applyDestructSolution(remRoute);
+            if (solution.getRoute(routeIndex).getRoute().empty())
+            {
+                RemoveRoute remRoute = RemoveRoute(routeIndex);
+                solution.applyDestructSolution(remRoute);
+            }
         }
-    }
+    // }
 }

@@ -5,7 +5,7 @@
 // Parameters
 
 // (obsolete) Number of iterations for the algorithm or simulation to run.
-int const NUMBER_ITERATION = 100000;
+int const NUMBER_ITERATION = 10000;
 
 // (obsolete) % of NUMBER_ITERATION
 // If no new best solution is found within LNS_FREQUENCY small iterations, then the next iteration will be a large iteration.
@@ -46,7 +46,7 @@ bool const SEED_SET = true;
 int const RANDOM_SEED = 100;
 
 // Flag indicating whether the solution is printed at the end of the execution.
-bool const PRINT = false;
+bool const PRINT = true;
 
 // Flag indicating whether the solution is stored with complete information or not.
 bool const COMPLETE_STORE = true;

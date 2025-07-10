@@ -8,6 +8,7 @@
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
 #include <utility>
+#include <vector>
 
 namespace fs = std::filesystem;
 using json = nlohmann::json;
@@ -122,35 +123,50 @@ PDPTWData json_to_data_with_elevation(std::string const &dataName, json const &j
         locations.emplace_back(parseLocation(loc));
     }
 
-    Matrix distance_matrix = j.at("distance_matrix").get<Matrix>();
-    Matrix time_matrix = j.at("time_matrix").get<Matrix>();
+    Matrix distance_matrix(size, std::vector<double>(size, 0.0));
+    Matrix time_matrix(size, std::vector<double>(size, 0.0));
 
     std::vector<std::vector<std::vector<double>>> segment_slope_matrix;
     std::vector<std::vector<std::vector<double>>> segment_distance_matrix;
 
-    for (auto const &row: j.at("slope_matrix"))
+    // Lire matrice de distance -> calculer matrice de temps (constant 25km/h)
+    // Lire vecteur de pente discrétiser
+    int i = 0;
+    for (auto const &row: j.at("matrix"))
     {
         std::vector<std::vector<double>> slope_row;
         std::vector<std::vector<double>> dist_row;
-
-        for (auto const &path: row)
+        int j = 0;
+        for (auto const &path_info: row)
         {
-            std::vector<double> slope_vec;
-            std::vector<double> dist_vec;
+            // std::cout << j << " ";
+            // vecteur associé à la discrétisation des pentes
+            std::vector<double> slope_vec(21);// slopes from -10 to 10
+            std::iota(slope_vec.begin(), slope_vec.end(), -10);
 
-            for (auto const &seg: path)
-            {
-                slope_vec.push_back(seg.value("average", 0.0));
-                dist_vec.push_back(seg.value("distance", 0.0));
-            }
+
+            // vecteur contenant la distance pour chaque intervalle de pente
+            std::vector<double> dist_vec = path_info.at("slopes");
+
+            double distance = path_info.at("distance");
+
+            distance_matrix[i][j] = distance;
+            time_matrix[i][j] = distance / 6.94444;// 25 km/h ≈ 6.94444 m/s
+
+            // std::cout << distance << " " << time_matrix[i][j] << std::endl;
 
             slope_row.push_back(slope_vec);
             dist_row.push_back(dist_vec);
+
+            j++;
         }
+        std::cout << std::endl;
 
         segment_slope_matrix.push_back(slope_row);
         segment_distance_matrix.push_back(dist_row);
+
+        i++;
     }
 
-    return {dataName, size, capacity, depot, locations, distance_matrix, segment_slope_matrix, segment_distance_matrix};
+    return {dataName, size, capacity, depot, locations, distance_matrix, time_matrix, segment_slope_matrix, segment_distance_matrix};
 }

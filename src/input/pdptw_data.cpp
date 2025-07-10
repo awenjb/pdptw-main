@@ -78,10 +78,10 @@ PDPTWData::PDPTWData(std::string dataName, int size, int capacity, Location depo
 }
 
 PDPTWData::PDPTWData(std::string dataName, int size, int capacity, Location depot, std::vector<Location> locations,
-                     Matrix costMatrix, std::vector<std::vector<std::vector<double>>> segmentSlopeMatrix,
+                     Matrix costMatrix, Matrix timeMatrix, std::vector<std::vector<std::vector<double>>> segmentSlopeMatrix,
                      std::vector<std::vector<std::vector<double>>> segmentDistanceMatrix)
     : dataName(dataName), size(size), capacity(capacity), depot(depot), locations(std::move(locations)),
-      costMatrix(std::move(costMatrix)), segmentSlopeMatrix(std::move(segmentSlopeMatrix)),
+      costMatrix(std::move(costMatrix)), timeMatrix(std::move(timeMatrix)), segmentSlopeMatrix(std::move(segmentSlopeMatrix)),
       segmentDistanceMatrix(std::move(segmentDistanceMatrix))
 {
     // Associate pair of locations
@@ -152,6 +152,16 @@ void PDPTWData::print() const
         for (auto const &dist: row)
         {
             std::cout << dist << " ";
+        }
+        std::cout << "\n";
+    }
+
+    std::cout << "Time Matrix:\n";
+    for (auto const &row: timeMatrix)
+    {
+        for (auto const &time: row)
+        {
+            std::cout << time << " ";
         }
         std::cout << "\n";
     }

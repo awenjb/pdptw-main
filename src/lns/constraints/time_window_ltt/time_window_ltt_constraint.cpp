@@ -1,5 +1,6 @@
 #include "time_window_ltt_constraint.h"
 
+#include "config.h"
 #include "input/data.h"
 #include "input/load_dependent.h"
 #include "input/pdptw_data.h"
@@ -204,6 +205,7 @@ void TimeWindowLTTConstraint::apply(RemoveRoute const &op)
 {
     arrivalTimeContainer.erase(arrivalTimeContainer.begin() + op.getRouteIndex());
 }
+
 
 void TimeWindowLTTConstraint::print() const
 {

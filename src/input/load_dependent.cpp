@@ -165,13 +165,10 @@ double ltt::getTravelTimeLTT(PDPTWData const &data, double load, int from, int t
 {
     // double constantTime = data.getMatrix().at(from).at(to) / 6.94444;
 
-    double fontaineTime = ltt::fontaineCalculation(data.getSegmentDistanceMatrix().at(from).at(to),
-                                                   data.getSegmentSlopeMatrix().at(from).at(to),
-                                                   0);
+    // double fontaineTime = ltt::fontaineCalculation(data.getSegmentDistanceMatrix().at(from).at(to),
+    //                                                data.getSegmentSlopeMatrix().at(from).at(to),
+    //                                                0);
 
-    // std::tuple<double, double> constants = data.getPreCalculation().at(from).at(to);
-    // return std::get<0>(constants) + std::get<1>(constants) * (WEIGHT + load);
-    // return constantTime;
-
-    return fontaineTime;
+    std::tuple<double, double> constants = data.getPreCalculation().at(from).at(to);
+    return std::get<0>(constants) + std::get<1>(constants) * (WEIGHT + load);
 }

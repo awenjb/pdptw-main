@@ -63,8 +63,13 @@ void fleetMinimizationCVB(LnsRuntimeData &runtime, Solution &currentSolution)
     // Initialize operator selector with destruction and reconstruction strategies
     SimpleOperatorSelector minimizationSelector;
     addAllReconstructor(minimizationSelector);
+    // minimizationSelector.addReconstructor(
+    //         ListHeuristicCostOriented(SortingStrategyType::FIFO, EnumerationType::ALL_INSERT_PAIR), 1);
     minimizationSelector.addDestructor(StringRemoval(10, 10));
     minimizationSelector.addDestructor(SplitStringRemoval(10, 10));
+
+    // minimizationSelector.addDestructor(BankFocusStringRemoval(10, 10));
+
 
     // Absence counter: how often a request is not served in candidate solutions
     std::vector<int> absCounter = std::vector<int>(currentSolution.getData().getSize() + 1, 0);
