@@ -114,6 +114,16 @@ bool TimeWindowLTTConstraint::checkInsertion(PDPTWData const &data, Pair const &
         prev = curr;
     }
 
+    // After the last point, the vehicle returns to the depot
+    double travelBackToDepot = ltt::getTravelTimeLTT(data, load, prev, 0);
+    double depotArrival = time + travelBackToDepot;
+
+    // Check that the final arrival respects the depot time window
+    if (!data.getDepot().getTimeWindow().isValid(depotArrival))
+    {
+        return false;
+    }
+
     return true;
 }
 
@@ -205,7 +215,6 @@ void TimeWindowLTTConstraint::apply(RemoveRoute const &op)
 {
     arrivalTimeContainer.erase(arrivalTimeContainer.begin() + op.getRouteIndex());
 }
-
 
 void TimeWindowLTTConstraint::print() const
 {

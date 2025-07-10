@@ -129,8 +129,7 @@ PDPTWData json_to_data_with_elevation(std::string const &dataName, json const &j
     std::vector<std::vector<std::vector<double>>> segment_slope_matrix;
     std::vector<std::vector<std::vector<double>>> segment_distance_matrix;
 
-    // Lire matrice de distance -> calculer matrice de temps (constant 25km/h)
-    // Lire vecteur de pente discrétiser
+    // Read the Path Information Matrix
     int i = 0;
     for (auto const &row: j.at("matrix"))
     {
@@ -139,8 +138,7 @@ PDPTWData json_to_data_with_elevation(std::string const &dataName, json const &j
         int j = 0;
         for (auto const &path_info: row)
         {
-            // std::cout << j << " ";
-            // vecteur associé à la discrétisation des pentes
+            // vector associated with the discretization of the slopes
             std::vector<double> slope_vec(21);// slopes from -10 to 10
             std::iota(slope_vec.begin(), slope_vec.end(), -10);
 
@@ -153,14 +151,11 @@ PDPTWData json_to_data_with_elevation(std::string const &dataName, json const &j
             distance_matrix[i][j] = distance;
             time_matrix[i][j] = distance / 6.94444;// 25 km/h ≈ 6.94444 m/s
 
-            // std::cout << distance << " " << time_matrix[i][j] << std::endl;
-
             slope_row.push_back(slope_vec);
             dist_row.push_back(dist_vec);
 
             j++;
         }
-        std::cout << std::endl;
 
         segment_slope_matrix.push_back(slope_row);
         segment_distance_matrix.push_back(dist_row);

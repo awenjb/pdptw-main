@@ -164,6 +164,10 @@ void checker::checkTimeWindows(Solution const &sol, PDPTWData const &data)
 
             if (!data.getLocation(0).getTimeWindow().isValid(time))
             {
+                if (PRINT)
+                {
+                    sol.print();
+                }
                 spdlog::error("Arrival time not valid for the location {} time window in route {}.", curr, routeID);
                 errorFlag = true;
             }

@@ -32,15 +32,31 @@ bool ForwardTimeSlack::isPickupDeliveryInsertionValid(PDPTWData const &data, Rou
         return false;
     }
 
-    // if the route is empty, only check de time window
+    // Check horizon and time windows
     if (routeIDs.empty())
     {
         double startTW = data.getLocation(pickupID).getTimeWindow().getStart();
         double endTW = data.getLocation(deliveryID).getTimeWindow().getEnd();
 
+        double travelToPickup = data::travelCost(data, 0, pickupID);
+        double arrivalPickup = data.getDepot().getTimeWindow().getStart() + travelToPickup;
+
+        double startP = std::max(arrivalPickup, data.getLocation(pickupID).getTimeWindow().getStart());
+        double serviceP = data.getLocation(pickupID).getServiceDuration();
+
+        double travelToDelivery = data::travelCost(data, pickupID, deliveryID);
+        double arrivalDelivery = startP + serviceP + travelToDelivery;
+
+        double startD = std::max(arrivalDelivery, data.getLocation(deliveryID).getTimeWindow().getStart());
+        double serviceD = data.getLocation(deliveryID).getServiceDuration();
+
+        double travelBackToDepot = data::travelCost(data, deliveryID, 0);
+        double depotArrival = startD + serviceD + travelBackToDepot;
+
         return (insertPickupIndex == 0) && (insertDeliveryIndex == 0) &&
                (!(startTW > data.getDepot().getTimeWindow().getEnd() ||
-                  endTW < data.getDepot().getTimeWindow().getStart()));
+                  endTW < data.getDepot().getTimeWindow().getStart())) &&
+               (data.getDepot().getTimeWindow().isValid(depotArrival));
     }
 
 
@@ -73,7 +89,7 @@ bool ForwardTimeSlack::isPickupDeliveryInsertionValid(PDPTWData const &data, Rou
 
     double pickupDuration = arrivalNext - earliestArrival.at(insertPickupIndex);
     // Check FTS
-    if (/*next != 0 &&*/ pickupDuration >= getFTS().at(insertPickupIndex))
+    if (pickupDuration >= getFTS().at(insertPickupIndex))
     {
         return false;
     }
@@ -107,9 +123,24 @@ bool ForwardTimeSlack::isPickupDeliveryInsertionValid(PDPTWData const &data, Rou
     double deliveryDuration = arrivalNextDelivery - earliestArrival.at(insertDeliveryIndex);
 
     // Check FTS validity
-    if (/*nextDelivery != 0 &&*/ deliveryDuration >= getFTS().at(insertDeliveryIndex))
+    if (deliveryDuration >= getFTS().at(insertDeliveryIndex))
     {
         return false;
+    }
+
+    // If the delivery is inserted in last position, the vehicle returns to the depot afterwards
+    // We have to check if we don't go over the horizon
+    bool isLastDelivery = (insertDeliveryIndex == n);
+
+    if (isLastDelivery)
+    {
+        double travelBackToDepot = data::travelCost(data, deliveryID, 0);
+        double depotArrival = newArrivalDelivery + serviceDelivery + travelBackToDepot;
+
+        if (!data.getDepot().getTimeWindow().isValid(depotArrival))
+        {
+            return false;
+        }
     }
 
     return true;
@@ -381,9 +412,6 @@ void ForwardTimeSlack::updateFTSAfterDeletionLTT(PDPTWData const &data, Route co
         FTS.at(i) = latestArrival.at(i) - earliestArrival.at(i);
     }
 }
-
-
-
 
 void ForwardTimeSlack::print() const
 {
