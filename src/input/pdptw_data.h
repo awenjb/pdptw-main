@@ -55,7 +55,7 @@ class PDPTWData
 public:
     PDPTWData();
     PDPTWData(PDPTWData const &rhs) = delete;
-    PDPTWData(PDPTWData &&rhs) noexcept;
+    PDPTWData(PDPTWData &&rhs) noexcept = default;
     PDPTWData &operator=(PDPTWData &&rhs) noexcept;
     PDPTWData &operator=(PDPTWData const &rhs) = delete;
     ~PDPTWData() = default;
