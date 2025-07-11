@@ -4,7 +4,7 @@ Gitlab : https://gitlab.imt-atlantique.fr/a24jacqb/pdptw-main.git
 
 This code is based on Nicolas Pierre's code for the 2E-VRP-TW
 
-Data : https://uncloud.univ-nantes.fr/index.php/s/BiH64xBTEeRdycK
+Instances : https://uncloud.univ-nantes.fr/index.php/s/eJBRBc6wMCEtkoW
 
 # Installation
  
