@@ -102,26 +102,28 @@ void simpleLNS(PDPTWData const &data, Solution &startingSolution)
 
 int main(int argc, char **argv)
 {
-    return mainInterface(argc, argv, &simpleLNS);
+    // return mainInterface(argc, argv, &simpleLNS);
 
     ///////////////////////////////////////////////////////////////////////
     // One file
 
     // std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100/lc103.json";
+    std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/instances_pdp_elevation/pdptw_instance_size_20_seed_0.json";
 
-    // PDPTWData data = parsing::parseJson(filepath);
 
-    // // data.print();
+    PDPTWData data = parsing::parseJson(filepath);
 
-    // // pre calculate some value in case of a load-dependent instances
-    // if (ELEVATION)
-    // {
-    //     ltt::preCalculation(data);
-    // }
+    // data.print();
 
-    // Solution startingSolution = Solution::emptySolution(data);
+    // pre calculate some value in case of a load-dependent instances
+    if (ELEVATION)
+    {
+        ltt::preCalculation(data);
+    }
 
-    // simpleLNS(data, startingSolution);
+    Solution startingSolution = Solution::emptySolution(data);
+
+    simpleLNS(data, startingSolution);
 
 
     //////////////////////////////////////////////////////////////////////

@@ -157,29 +157,41 @@ namespace enumeration
 
         std::sort(candidates.begin(), candidates.end(), [](auto const &a, auto const &b) { return a.first < b.first; });
 
+        int tested = 0;
         for (auto &[cost, ptr]: candidates)
         {
             if (solution.checkModificationLTT(*ptr))
             {
-                bestK.emplace_back(cost, std::move(ptr));
-                if (bestK.size() >= k)
-                {
-                    break;
-                }
+                bestCost = cost;
+                bestModificationPtr = std::move(ptr);
+                break; //
+                // if (bestK.size() >= k) 
+                // {
+                //     break;
+                // }
             }
+            ++tested; //
+            if (tested >= k) //
+            { //
+                break; //
+            } //
         }
 
-        // Trouver le meilleur dans bestK
+        // if (!bestK.empty())
+        // {
+        //     auto bestIt = std::min_element(
+        //             bestK.begin(), bestK.end(), [](auto const &a, auto const &b) { return a.first < b.first; });
+        //     bestCost = bestIt->first;
+        //     bestModificationPtr = std::move(bestIt->second);
+        // }
+        // else
+        // {
+        //     // aucun candidat valide trouvé : initialiser avec une valeur par défaut
+        //     bestCost = std::numeric_limits<double>::max();
+        //     bestModificationPtr = nullptr;
+        // }
         if (!bestK.empty())
         {
-            auto bestIt = std::min_element(
-                    bestK.begin(), bestK.end(), [](auto const &a, auto const &b) { return a.first < b.first; });
-            bestCost = bestIt->first;
-            bestModificationPtr = std::move(bestIt->second);
-        }
-        else
-        {
-            // Aucun candidat valide trouvé : initialiser avec une valeur par défaut
             bestCost = std::numeric_limits<double>::max();
             bestModificationPtr = nullptr;
         }

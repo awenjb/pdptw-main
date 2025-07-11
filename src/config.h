@@ -65,7 +65,7 @@ std::string const OUTPUT_DIRECTORY = "./../../output";
 // Load-dependent travel time
 
 // Consider elevation (instances with elevation are necessary)
-bool const ELEVATION = false;
+bool const ELEVATION = true;
 
 // Weight bike + cyclist
 double const WEIGHT = 140;  

@@ -1,5 +1,6 @@
 #include "forward_time_slack.h"
 
+#include "config.h"
 #include "input/data.h"
 #include "input/load_dependent.h"
 #include "lns/solution/solution.h"
@@ -32,31 +33,45 @@ bool ForwardTimeSlack::isPickupDeliveryInsertionValid(PDPTWData const &data, Rou
         return false;
     }
 
-    // Check horizon and time windows
+
     if (routeIDs.empty())
     {
-        double startTW = data.getLocation(pickupID).getTimeWindow().getStart();
-        double endTW = data.getLocation(deliveryID).getTimeWindow().getEnd();
-
         double travelToPickup = data::travelCost(data, 0, pickupID);
+        if (ELEVATION)
+        {
+            travelToPickup = ltt::getTravelTimeLTT(data, 0, 0, pickupID);
+        }
+
         double arrivalPickup = data.getDepot().getTimeWindow().getStart() + travelToPickup;
 
         double startP = std::max(arrivalPickup, data.getLocation(pickupID).getTimeWindow().getStart());
         double serviceP = data.getLocation(pickupID).getServiceDuration();
 
         double travelToDelivery = data::travelCost(data, pickupID, deliveryID);
+        if (ELEVATION)
+        {
+            travelToDelivery = ltt::getTravelTimeLTT(data, 0, pickupID, deliveryID);
+        }
         double arrivalDelivery = startP + serviceP + travelToDelivery;
 
         double startD = std::max(arrivalDelivery, data.getLocation(deliveryID).getTimeWindow().getStart());
         double serviceD = data.getLocation(deliveryID).getServiceDuration();
 
         double travelBackToDepot = data::travelCost(data, deliveryID, 0);
+        if (ELEVATION)
+        {
+            travelBackToDepot = ltt::getTravelTimeLTT(data, 0, deliveryID, 0);
+        }
         double depotArrival = startD + serviceD + travelBackToDepot;
 
+        // std::cout << depotArrival << data.getDepot().getTimeWindow().getStart() << " "
+        //           << data.getDepot().getTimeWindow().getEnd() << std::endl;
+        // std::cout << data.getDepot().getTimeWindow().isValid(depotArrival) << std::endl;
+
         return (insertPickupIndex == 0) && (insertDeliveryIndex == 0) &&
-               (!(startTW > data.getDepot().getTimeWindow().getEnd() ||
-                  endTW < data.getDepot().getTimeWindow().getStart())) &&
-               (data.getDepot().getTimeWindow().isValid(depotArrival));
+               data.getLocation(pickupID).getTimeWindow().isValid(startP) &&
+               data.getLocation(deliveryID).getTimeWindow().isValid(startD) &&
+               data.getDepot().getTimeWindow().isValid(depotArrival);
     }
 
 
@@ -70,6 +85,11 @@ bool ForwardTimeSlack::isPickupDeliveryInsertionValid(PDPTWData const &data, Rou
     double arrivalPrev =
             (prev == 0) ? data.getDepot().getTimeWindow().getStart() : getEarliestArrival().at(insertPickupIndex - 1);
     double travelToNew = data::travelCost(data, prev, pickupID);
+    if (ELEVATION)
+    {
+        travelToNew = ltt::getTravelTimeLTT(data, 0, prev, pickupID);
+    }
+
     double serviceNew = data.getLocation(pickupID).getServiceDuration();
     double travelNewToNext = data::travelCost(data, pickupID, next);
 
