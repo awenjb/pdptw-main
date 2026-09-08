@@ -1,5 +1,6 @@
 #include "data.h"
 
+#include "config.h"
 #include "input/load_dependent.h"
 #include "lns/solution/solution.h"
 
@@ -20,6 +21,13 @@ double data::removedCostForSuppression(PDPTWData const &data, int before, int to
 
 double data::routeCost(PDPTWData const &data, Route const &route)
 {
+    // In load-dependent mode, the objective actually optimized must be the real
+    // load-dependent travel time, not the raw distance matrix.
+    if (ELEVATION)
+    {
+        return routeTravelTimeLTT(data, route.getRoute());
+    }
+
     Matrix const &matrix = data.getMatrix();
     std::vector<int> const &routeIDs = route.getRoute();
     double cost = 0.0;
@@ -83,4 +91,62 @@ double data::totalTravelTime(PDPTWData const &data, Solution const &sol)
     }
 
     return total;
+}
+
+double data::routeTravelTimeLTT(PDPTWData const &data, std::vector<int> const &routeIDs)
+{
+    if (routeIDs.empty())
+    {
+        return 0.0;
+    }
+
+    double total = 0.0;
+    double load = 0.0;
+    int prev = 0;
+
+    for (int curr: routeIDs)
+    {
+        load += data.getLocation(curr).getDemand();
+        total += ltt::getTravelTimeLTT(data, load, prev, curr);
+        prev = curr;
+    }
+
+    // return to the depot with a load of 0, consistent with data::totalTravelTime
+    // (every pickup has its matching delivery inside the route, so the net load back
+    // at the depot is always 0 for a valid route).
+    total += ltt::getTravelTimeLTT(data, 0, prev, 0);
+
+    return total;
+}
+
+double data::addedCostForInsertionLTT(PDPTWData const &data, Route const &route, int pickupID, int deliveryID,
+                                      int pickupPos, int deliveryPos)
+{
+    std::vector<int> const &routeIDs = route.getRoute();
+    double oldTime = routeTravelTimeLTT(data, routeIDs);
+
+    // Mirrors InsertPair::modifySolution: pickup inserted first, delivery position is
+    // expressed relative to the route *before* the pickup insertion, hence the +1 shift.
+    std::vector<int> newRoute = routeIDs;
+    newRoute.insert(newRoute.begin() + pickupPos, pickupID);
+    newRoute.insert(newRoute.begin() + deliveryPos + 1, deliveryID);
+
+    double newTime = routeTravelTimeLTT(data, newRoute);
+
+    return newTime - oldTime;
+}
+
+double data::removedCostForSuppressionLTT(PDPTWData const &data, Route const &route, int pickupPos, int deliveryPos)
+{
+    std::vector<int> const &routeIDs = route.getRoute();
+    double oldTime = routeTravelTimeLTT(data, routeIDs);
+
+    // Mirrors RemovePair::modifySolution: delivery removed first to keep pickupPos valid.
+    std::vector<int> newRoute = routeIDs;
+    newRoute.erase(newRoute.begin() + deliveryPos);
+    newRoute.erase(newRoute.begin() + pickupPos);
+
+    double newTime = routeTravelTimeLTT(data, newRoute);
+
+    return newTime - oldTime;
 }

@@ -107,8 +107,8 @@ int main(int argc, char **argv)
     ///////////////////////////////////////////////////////////////////////
     // One file
 
-    // std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/pdp_100/lc103.json";
-    std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/instances_pdp_elevation/pdptw_instance_size_20_seed_0.json";
+    std::string filepath = "/home/awenjb/Documents/GitHub/pdptw-main/Li_Lim_instances/pdp_200/LR1_2_8.json";
+    // std::string filepath = "/home/a24jacqb/Documents/Code/pdptw-main/data_in/instances_pdp_elevation/pdptw_instance_size_20_seed_0.json";
 
 
     PDPTWData data = parsing::parseJson(filepath);

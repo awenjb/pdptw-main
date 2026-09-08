@@ -113,39 +113,24 @@ namespace enumeration
                                         double blinkRate, size_t k)
     {
         int routeIndex = 0;
-        PDPTWData const &data = solution.getData();
         std::vector<std::pair<double, std::unique_ptr<InsertPair>>> candidates;
-        std::vector<std::pair<double, std::unique_ptr<AtomicRecreation>>> bestK;
-
-        bestK.clear();
 
         for (Route const &route: solution.getRoutes())
         {
             int routeSize = route.getSize();
-            std::vector<int> const &routeIDs = route.getRoute();
 
             for (int p = 0; p <= routeSize; ++p)
             {
-                int prevPickup = (p == 0) ? 0 : routeIDs.at(p - 1);
-                int nextPickup = (p >= routeSize) ? 0 : routeIDs.at(p);
-                double pickupCost = data::addedCostForInsertion(data, prevPickup, pair.getPickup().getId(), nextPickup);
-
                 for (int d = p; d <= routeSize; ++d)
                 {
-                    int prevDelivery = (d == 0) ? 0 : routeIDs.at(d - 1);
-                    if (p == d)
-                    {
-                        prevDelivery = pair.getPickup().getId();
-                    }
-                    int nextDelivery = (d >= routeIDs.size()) ? 0 : routeIDs.at(d);
-                    double deliveryCost =
-                            data::addedCostForInsertion(data, prevDelivery, pair.getDelivery().getId(), nextDelivery);
-
-                    double cost = pickupCost + deliveryCost;
                     Index index = std::make_tuple(routeIndex, p, d);
                     InsertPair modification(index, pair);
 
-                    // this check does not take into account the added travel time due to more weight
+                    // InsertPair::evaluate() returns the real load-dependent travel time delta
+                    // (via data::addedCostForInsertionLTT) when ELEVATION is on, so the added
+                    // weight of the pair on every affected edge is properly accounted for here.
+                    double cost = modification.evaluate(solution);
+
                     if (util::getRandom() >= blinkRate && solution.checkModification(modification))
                     {
                         candidates.emplace_back(cost, std::make_unique<InsertPair>(modification));
@@ -164,36 +149,13 @@ namespace enumeration
             {
                 bestCost = cost;
                 bestModificationPtr = std::move(ptr);
-                break; //
-                // if (bestK.size() >= k) 
-                // {
-                //     break;
-                // }
+                break;
             }
-            ++tested; //
-            if (tested >= k) //
-            { //
-                break; //
-            } //
-        }
-
-        // if (!bestK.empty())
-        // {
-        //     auto bestIt = std::min_element(
-        //             bestK.begin(), bestK.end(), [](auto const &a, auto const &b) { return a.first < b.first; });
-        //     bestCost = bestIt->first;
-        //     bestModificationPtr = std::move(bestIt->second);
-        // }
-        // else
-        // {
-        //     // aucun candidat valide trouvé : initialiser avec une valeur par défaut
-        //     bestCost = std::numeric_limits<double>::max();
-        //     bestModificationPtr = nullptr;
-        // }
-        if (!bestK.empty())
-        {
-            bestCost = std::numeric_limits<double>::max();
-            bestModificationPtr = nullptr;
+            ++tested;
+            if (tested >= k)
+            {
+                break;
+            }
         }
     }
 

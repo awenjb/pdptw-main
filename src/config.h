@@ -27,7 +27,7 @@ double const FIRST_PHASE_TIME_THRESHOLD = 0.1;
 double const FIRST_PHASE_ITERATION_THRESHOLD  = 100000;
 
 // Number of seconds for the algorithm to run.
-int const MAX_DURATION_SEC = 10;
+int const MAX_DURATION_SEC = 60;
 
 
 /**********************************************/
@@ -65,7 +65,7 @@ std::string const OUTPUT_DIRECTORY = "./../../output";
 // Load-dependent travel time
 
 // Consider elevation (instances with elevation are necessary)
-bool const ELEVATION = true;
+bool const ELEVATION = false;
 
 // Weight bike + cyclist
 double const WEIGHT = 140;  

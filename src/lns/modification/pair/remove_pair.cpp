@@ -1,5 +1,6 @@
 #include "remove_pair.h"
 
+#include "config.h"
 #include "input/data.h"
 #include "lns/solution/solution.h"
 
@@ -30,6 +31,14 @@ double RemovePair::evaluate(Solution const &solution) const
     Route const &route = solution.getRoute(routeIndex);
     std::vector<int> const &routeIDs = route.getRoute();
     PDPTWData const &data = solution.getData();
+
+    // Same reasoning as InsertPair::evaluate: removing a pair changes the load (and thus the
+    // travel time) of every edge between the pickup and the delivery, so the gain must be
+    // computed as a whole-route delta, not as independent edge costs.
+    if (ELEVATION)
+    {
+        return data::removedCostForSuppressionLTT(data, route, pickupDeletion, deliveryDeletion);
+    }
 
     // Estimate cost savings from removing the pickup
     int prevPickup = (pickupDeletion == 0) ? 0 : routeIDs.at(pickupDeletion - 1);

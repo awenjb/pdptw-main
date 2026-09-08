@@ -1,5 +1,6 @@
 #include "insert_pair.h"
 
+#include "config.h"
 #include "input/data.h"
 #include "lns/constraints/constraint.h"
 
@@ -27,6 +28,15 @@ double InsertPair::evaluate(Solution const &solution) const
     Route const &route = solution.getRoute(routeIndex);
     std::vector<int> const &routeIDs = route.getRoute();
     PDPTWData const &data = solution.getData();
+
+    // Load-dependent travel time is not additive edge-by-edge (inserting a pair changes the
+    // load, and hence the travel time, of every edge it spans), so the cost must be evaluated
+    // as a whole-route delta rather than by summing independent pickup/delivery edge costs.
+    if (ELEVATION)
+    {
+        return data::addedCostForInsertionLTT(data, route, pickupLocation.getId(), deliveryLocation.getId(),
+                                              pickupInsertion, deliveryInsertion);
+    }
 
     int prevPickup = (pickupInsertion == 0) ? 0 : routeIDs.at(pickupInsertion - 1);
     int nextPickup = (pickupInsertion >= routeIDs.size()) ? 0 : routeIDs.at(pickupInsertion);
